@@ -21,5 +21,6 @@ def good_night() -> str:
 
 
 def hello_goodbye():
+    """Doc String."""
     hello_world(1)
     good_night()
