@@ -18,6 +18,8 @@ stages:
 base:
   stage: build
   image: docker-private-snapshots.gesis.intra/gesis/dc:50-extend-base-image-for-python-usage
+  script:
+    - ls
 
 PyLint:
   stage: lint
@@ -51,26 +53,6 @@ Typecheck:
       - report.json
     reports:
       codequality: report.json
-
-# before_script:
-#   - python --version  # For debugging
-#   - pip install virtualenv
-#   - virtualenv venv
-#   - source venv/bin/activate
-
-# test:
-#   script:
-#     - pip install tox flake8
-#     - tox -e py,flake8
-
-# run:
-#   script:
-#     - pip install dist/*
-#     # run the command here
-#   artifacts:
-#     paths:
-#       - dist/*.whl
-
 
 # deploy:
 #   stage: deploy
