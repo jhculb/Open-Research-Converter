@@ -29,13 +29,13 @@ Ensure Pep8:
   stage: lint
   extends: base
   script:
-    -	/python/venv/bin/python -m flake8 ./ 
+    - /python/venv/bin/python -m flake8 ./ 
 
 Test:
   stage: test
   extends: base
   script:
-    -	/python/venv/bin/python -m coverage run -m pytest ./tests
+    - /python/venv/bin/python -m coverage run -m pytest ./tests
 
 Typecheck:
   stage: test
