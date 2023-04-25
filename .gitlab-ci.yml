@@ -3,6 +3,7 @@ variables:
   VERSION: "0.0-Alpha-Dev"
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
 
+
 cache:
   paths:
     - .cache/pip
@@ -10,17 +11,46 @@ cache:
 
 stages:
   - build
-  # - lint
-  # - test
+  - lint
+  - test
   # - deploy
 
-Build project on Runner:
+base:
   stage: build
   image: docker-private-snapshots.gesis.intra/gesis/dc:50-extend-base-image-for-python-usage
-  script:
-    - ls
-    - pwd
 
+PyLint:
+  stage: lint
+  extends: base
+  script:
+    - /python/venv/bin/python -m pylint ./src
+
+Ensure Pep8:
+  stage: lint
+  extends: base
+  script:
+    -	/python/venv/bin/python -m flake8 ./ 
+
+Test:
+  stage: test
+  extends: base
+  script:
+    -	/python/venv/bin/python -m coverage run -m pytest ./tests
+
+Typecheck:
+  stage: test
+  # extends: base
+  before_script:
+    - npm i -g pyright
+    - npm i -g pyright-to-gitlab-ci
+  script:
+   - pyright <python source> --outputjson > report_raw.json
+   - pyright-to-gitlab-ci --src report_raw.json --output report.json --base_path .
+  artifacts:
+    paths:
+      - report.json
+    reports:
+      codequality: report.json
 
 # before_script:
 #   - python --version  # For debugging
@@ -47,17 +77,3 @@ Build project on Runner:
 #   script: echo "Define your deployment script!"
 #   environment: production
 
-
-# ## TO INCLUDE TO USE GITLAB - USE DC-PY base image
-# job_name:
-#   before_script:
-#     - npm i -g pyright
-#     - npm i -g pyright-to-gitlab-ci
-#   script:
-#    - pyright <python source> --outputjson > report_raw.json
-#    - pyright-to-gitlab-ci --src report_raw.json --output report.json --base_path .
-#   artifacts:
-#     paths:
-#       - report.json
-#     reports:
-#       codequality: report.json
