@@ -19,6 +19,7 @@ Build project on Runner:
   image: docker-private-snapshots.gesis.intra/gesis/dc:50-extend-base-image-for-python-usage
   script:
     - ls
+    - pwd
 
 
 # before_script:
