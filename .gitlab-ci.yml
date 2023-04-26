@@ -46,7 +46,7 @@ Typecheck:
     - npm i -g pyright
     - npm i -g pyright-to-gitlab-ci
   script:
-   - pyright <python source> --outputjson > report_raw.json
+   - pyright ./src --outputjson > report_raw.json
    - pyright-to-gitlab-ci --src report_raw.json --output report.json --base_path .
   artifacts:
     paths:
