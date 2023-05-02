@@ -43,7 +43,7 @@ Test:
   artifacts:
     paths:
       - coverage.xml
-  #  reports:
+    reports: coverage.xml
 
 Typecheck:
   stage: test
