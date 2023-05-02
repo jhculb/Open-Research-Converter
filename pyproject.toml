@@ -11,7 +11,7 @@ maintainers = [
 	{name = "Alex Mühlbauer", email = "alexander.muehlbauer@gesis.org"},
 ]
 description = "template for python module"
-readme = "readme.md"
+readme = "README.md"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
