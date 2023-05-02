@@ -39,7 +39,7 @@ Test:
   script:
     - pwd
     - /python/venv/bin/python -m coverage run -m pytest ./tests
-    - /python/venv/bin/python -m coverage report --data-file=coverage.xml
+    - /python/venv/bin/python -m coverage report
   coverage: '/TOTAL.*\s+(\d+\%)/'
   artifacts:
     paths:
