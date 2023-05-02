@@ -21,7 +21,8 @@
 				"ms-vsliveshare.vsliveshare",
 				"ryanluker.vscode-coverage-gutters",
 				"bungcip.better-toml",
-				"GitHub.copilot"
+				// "GitHub.copilot",
+				"sonarsource.sonarlint-vscode"
 			],
 			"settings": {
 				"python.defaultInterpreterPath": "/usr/local/bin/python",
