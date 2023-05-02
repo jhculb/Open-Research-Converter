@@ -13,9 +13,9 @@ stages:
   - build
   - lint
   - test
-  # - sonarqube
-  # - prod
-  # - deploy
+  - sonarqube
+  - prod
+  - deploy
 
 base:
   stage: build
