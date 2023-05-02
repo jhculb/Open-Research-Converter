@@ -90,12 +90,20 @@ deploy-to-test-server:
 
 deploy-to-prod-server:
   stage: deploy
+  needs:
+    - sonarqube
+    - pytest-and-coverage
+    - typecheck
   script: echo "Define your deployment script!"
   environment: production
   when: manual
 
 publish-to-local-pypi:
   stage: deploy
+  needs:
+    - sonarqube
+    - pytest-and-coverage
+    - typecheck
   script: echo "Define your deployment script!"
   environment: production
   when: manual
