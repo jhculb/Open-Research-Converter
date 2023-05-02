@@ -41,9 +41,12 @@ Test:
     - /python/venv/bin/python -m coverage run -m pytest ./tests
   coverage: '/TOTAL.*\s+(\d+\%)/'
   artifacts:
-    paths:
-      - coverage.xml
-    reports: coverage.xml
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+
+
 
 Typecheck:
   stage: test
