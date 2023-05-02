@@ -40,5 +40,5 @@
 			}
 		}
 	},
-	"onCreateCommand": "pre-commit install-hooks"
+	"postCreateCommand": "sudo chown -R vscode . && pre-commit install-hooks"
 }
