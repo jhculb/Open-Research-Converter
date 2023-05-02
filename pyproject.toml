@@ -63,6 +63,7 @@ fast = true
 
 [tool.coverage.run]
 branch = true
+disable_warnings = ['no-data-collected']
 
 [tool.coverage.report]
 fail_under = 100
