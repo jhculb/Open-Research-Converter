@@ -13,29 +13,38 @@ stages:
   - build
   - lint
   - test
+  # - sonarqube
+  # - prod
   # - deploy
 
 base:
   stage: build
   image: docker-private-snapshots.gesis.intra/gesis/dc:50-extend-base-image-for-python-usage
   script:
-    - ls
+    - echo "This is the base stage - to configure and install other files not contained in the pyproject.toml do so here"
 
-PyLint:
+pylint:
   stage: lint
   extends: base
+  needs: 
+    - base
   script:
     - /python/venv/bin/python -m pylint ./src
 
-Ensure Pep8:
+ensure-pep8:
   stage: lint
   extends: base
+  needs: 
+    - base
   script:
     - /python/venv/bin/python -m flake8 ./ 
 
-Test:
+pytest-and-coverage:
   stage: test
   extends: base
+  needs: 
+    - pylint
+    - ensure-pep8
   script:
     - pwd
     - /python/venv/bin/python -m coverage run -m pytest ./tests
@@ -50,7 +59,7 @@ Test:
 
 
 
-Typecheck:
+typecheck:
   stage: test
   image: docker-private.gesis.intra/gesis/dc:42-install-npm
   before_script:
@@ -65,8 +74,26 @@ Typecheck:
     reports:
       codequality: report.json
 
-# deploy:
-#   stage: deploy
-#   script: echo "Define your deployment script!"
-#   environment: production
+sonarqube:
+  stage: sonarqube
+  extends: base
+  script: echo "todo - configure sonarqube deployment!"
+
+deploy-to-test-server:
+  stage: deploy
+  extends: base
+  when: manual
+  script: echo "Use this to deploy your project to a test server"
+
+deploy-to-prod-server:
+  stage: deploy
+  script: echo "Define your deployment script!"
+  environment: production
+  when: manual
+
+publish-to-local-pypi:
+  stage: deploy
+  script: echo "Define your deployment script!"
+  environment: production
+  when: manual
 
