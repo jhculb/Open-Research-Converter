@@ -57,10 +57,11 @@ pytest-and-coverage:
         coverage_format: cobertura
         path: coverage.xml
 
-
-
 typecheck:
   stage: test
+  needs:
+    - pylint
+    - ensure-pep8
   image: docker-private.gesis.intra/gesis/dc:42-install-npm
   before_script:
     - npm i -g pyright
@@ -76,6 +77,8 @@ typecheck:
 
 sonarqube:
   stage: sonarqube
+  needs:
+   - base
   extends: base
   script: echo "todo - configure sonarqube deployment!"
 
