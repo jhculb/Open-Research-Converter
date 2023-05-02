@@ -38,6 +38,7 @@ Test:
   extends: base
   script:
     - /python/venv/bin/python -m coverage run -m pytest ./tests
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
 
 Typecheck:
   stage: test
