@@ -31,7 +31,7 @@ Ensure Pep8:
   stage: lint
   extends: base
   script:
-    - /python/venv/bin/python -m flake8 ./ 
+    - /python/venv/bin/python -m flake8 ./
 
 Test:
   stage: test
@@ -58,4 +58,3 @@ Typecheck:
 #   stage: deploy
 #   script: echo "Define your deployment script!"
 #   environment: production
-

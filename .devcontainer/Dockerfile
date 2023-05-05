@@ -10,3 +10,5 @@ RUN touch README.md \
     && mkdir -p src/python_package \
     && python -m flit install --only-deps --deps develop \
     && rm -r pyproject.toml README.md src
+
+# Add auto ssh config
