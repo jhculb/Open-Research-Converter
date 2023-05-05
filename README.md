@@ -94,6 +94,8 @@ The READMEs for gitlab and the microsoft template, from which this project is ba
 ## Authors
 * John Culbert (john.culbert@gesis.org)
 	* Python template configuration
+### Maintainer
+* Alex Mühlbauer (alexander.muehlbauer@gesis.org)
 ### Thanks
 * Microsoft - Daniel Ciborowski
 	* Template was adapted from https://github.com/microsoft/python-package-template
