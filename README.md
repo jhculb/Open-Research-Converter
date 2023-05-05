@@ -1,7 +1,78 @@
-# GESIS adapted python base project
-## Introduction
-This project aims to
-## Ideal/Intended Development Flow
+# GESIS Python Project Template
+Version 0.1.0 - Beta Testing
+# Table of Contents
+
+- [GESIS Python Project Template](#gesis-python-project-template)
+- [Table of Contents](#table-of-contents)
+- [To-Dos](#to-dos)
+  * [Development](#development)
+  * [Known Bugs / Issues](#known-bugs---issues)
+  * [Infrastructure & Integration](#infrastructure---integration)
+  * [Meta](#meta)
+- [Introduction](#introduction)
+- [Ideal/Intended Development Flow](#ideal-intended-development-flow)
+  * [Configuring ssh and git inside the dev container](#configuring-ssh-and-git-inside-the-dev-container)
+- [Useful Commands and Information](#useful-commands-and-information)
+  * [Badges](#badges)
+  * [Template and GitLabs READMEs](#template-and-gitlabs-readmes)
+- [Authors](#authors)
+  * [Author](#author)
+  * [Maintainer](#maintainer)
+  * [Thanks](#thanks)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
+
+
+# To-Dos
+The issues board found on the template project is authoratitive.
+
+## Development
+* Configure SonarQube for testing of template
+	* Add to README
+* Add Makefile for common development commands
+* Add Template Dockerfile and Docker-compose
+## Known Bugs / Issues
+* Occasionally when initialising a development container it may report an error
+	* Temporary Fix: This error disappears when the development container is rerun
+## Infrastructure & Integration
+* Configure local PyPI repository
+	1. Awaiting setup of Gitlab pypi repository
+	2. Add repository to .pypirc
+	3. Add command to configure repository for development container
+* Configure for deployment to Gitlab Docker Repository
+	1. Check whether this is desired
+	2. Add repository to gitlab-ci.yml
+	3. Add configuration for project template
+* Configure template for SonarQube key and set stage as optional depending on presence of key
+* Publish base docker images
+	* dc-py
+	* dc-npm-py ?
+## Meta
+* Code review on template structure
+	* Find reviewers
+* User Testing
+	* Broaden search to KTS, GESIS
+
+# Introduction
+This project aims to provide a template for python module development which allows for quick configuration of good development practice and standard adherence at GESIS.
+
+The project includes:
+* A standard project structure and dependency & configuration management file
+	* Following PEP 621
+* Pre-configured CI/CD, which allows for
+	* Automated code quality enforcement
+	* Automated deployment, publishing, hosting, etc.
+* Pre-configured tool settings
+	* Development tools such as black, pylint and flake8 can often conflict with each other, requiring developers to discover and then sort out problems - leading to lost development time.
+	* The pyproject.toml has (hopefully) all the conflicts
+* An optional devcontainer environment intended for use with VSCode, which allows for
+	* A standardised development environment between developers
+	* Programmatic configuration of the development environment
+	* Quick teardown/reinstantiation of development environments
+	* Enforced code quality
+
+# Ideal/Intended Development Flow
 This assumes usage of VSCode and Devcontainer, though configuration of the desired tools can equally be done on a host machine or VM.
 
 Dev containers allow for shared development baselines, to minimise the chance that 'it works on my machine' is said during development, as the development container allows for (and should encourage) programmatically defined development infrastructure - and therefore should be the same between developers, and minimise issues in deployment or handover.
@@ -15,7 +86,6 @@ Dev containers allow for shared development baselines, to minimise the chance th
 		2. Install dev-container extension on vscode
 			1. This should be prompted once the .devcontainer folder is found
 			1. dev-container may require installation of docker desktop (recommended) or an alternative docker host (such as podman)
-	4. Switch to !!!!!!!!!!!Dev Container Branch!!!!!!!!!!!!!!!!! (TODO Rename once confirmed)
 	5. Start Dev Container
 2. Configuration
 	1. Development environment configuration
@@ -34,8 +104,8 @@ Dev containers allow for shared development baselines, to minimise the chance th
 	3. CI/CD Configuration
 		* The CI/CD for GESIS' gitlab is defined in `.gitlab-ci.yml`
 		1. If non-python packages are required in your base image, install them in the script of the base image
-		2. !!!!!!!!!!!!!!!!TODO!!!!!!!!!!!!!! SonarQube config
-		3. !!!!!!!!!!!!!!!!TODO!!!!!!!!!!!!!!
+		2. !!!!!!!!!!!!!!!!!!!!!!!!!TODO!!!!!!!!!!!!!!!!!!!!!!!!! SonarQube config
+		3. !!!!!!!!!!!!!!!!!!!!!!!!!TODO!!!!!!!!!!!!!!!!!!!!!!!!!
 		4. Configure your automated deployment if desired
 		5. Confi
 3. Development (Including best practices)
@@ -78,25 +148,25 @@ Dev containers allow for shared development baselines, to minimise the chance th
 		* Publish the module to a local or public PyPI repository
 		* Publish the docker image to a local or public Docker repository
 
-### Configuring ssh and git inside the dev container
+## Configuring ssh and git inside the dev container
 If one opens the dev container and git diff reports most or all files changed this is likely due to line endings.
 If one is unable to pull/push/interact with the remote (due to credentials, so one gets the header when pushing but then is rejected) this is likely because of the
 * Ensure ssh key added to Host Environment
 	* (e.g ssh-add -l, ensure not "No identities available")
 *
 https://code.visualstudio.com/remote/advancedcontainers/sharing-git-credentials
-#### Known Bugs
-* Occasionally when initialising a development container it may report an error
-	* Temporary Fix: This error disappears when the development container is rerun
-## Useful Commands and Information
-### Template and GitLabs READMEs
+# Useful Commands and Information
+## Badges
+One can add and configure badges with `anybadge` !!!!!!!!!!!!!!!!!!!!!!!!!Complete!!!!!!!!!!!!!!!!!!!!!!!!!
+## Template and GitLabs READMEs
 The READMEs for gitlab and the microsoft template, from which this project is based, can be found in ./readme.
-## Authors
+# Authors
+## Author
 * John Culbert (john.culbert@gesis.org)
 	* Python template configuration
-### Maintainer
+## Maintainer
 * Alex Mühlbauer (alexander.muehlbauer@gesis.org)
-### Thanks
+## Thanks
 * Microsoft - Daniel Ciborowski
 	* Template was adapted from https://github.com/microsoft/python-package-template
 * Gitlab - Christian Clauss
