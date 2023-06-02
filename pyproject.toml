@@ -13,6 +13,7 @@ maintainers = [
 ]
 description = "template for python module"
 readme = "README.md"
+packages = [{include = "py-project-template", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
