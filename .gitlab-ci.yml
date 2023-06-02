@@ -13,7 +13,7 @@ stages:
   - build
   - lint
   - test
-  # - deploy
+  - deploy
 
 base:
   stage: build
@@ -69,3 +69,15 @@ Typecheck:
 #   stage: deploy
 #   script: echo "Define your deployment script!"
 #   environment: production
+
+publish:
+  stage: deploy
+  needs: [test, lint]
+  script:
+    - echo "This is the build stage"
+    - poetry config repositories.gitlab ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi
+    - echo "Repository gitlab configured ..."
+    - poetry build
+    - echo "Build done ..."
+    - poetry publish --repository gitlab -u gitlab-ci-token -p ${CI_JOB_TOKEN}
+    - echo "Publishing done!"
