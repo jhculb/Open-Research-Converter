@@ -72,7 +72,7 @@ Typecheck:
 
 publish:
   stage: deploy
-  needs: [test, lint]
+  extends: base
   script:
     - echo "This is the build stage"
     - poetry config repositories.gitlab ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi
