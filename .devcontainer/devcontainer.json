@@ -41,5 +41,5 @@
 			}
 		}
 	},
-	"onCreateCommand": "sudo chown -R vscode .git && pre-commit install-hooks"
+	"postCreateCommand": "sudo chown -R vscode .git && pip install pre-commit==3.3.2 && pre-commit install-hooks"
 }
