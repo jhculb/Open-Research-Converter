@@ -37,7 +37,7 @@ Test:
   stage: test
   extends: base
   script:
-    - python -m coverage run -m pytest ./tests
+    - poetry run coverage run -m pytest ./tests
   coverage: '/TOTAL.*\s+(\d+\%)/'
   artifacts:
     paths:
