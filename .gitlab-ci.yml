@@ -19,7 +19,7 @@ base:
   stage: build
   image: docker-private-snapshots.gesis.intra/gesis/dc:50-extend-base-image-for-python-usage
   script:
-    - /python/venv/bin/python -m poetry install --only dev --no-root
+    - poetry install --only dev --no-root
 
 PyLint:
   stage: lint
