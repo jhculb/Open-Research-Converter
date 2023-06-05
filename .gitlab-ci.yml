@@ -19,19 +19,19 @@ base:
   stage: build
   image: docker-private-snapshots.gesis.intra/gesis/dc:50-extend-base-image-for-python-usage
   script:
-    - /python/venv/bin/python -m poetry install --only dev
+    - /python/venv/bin/python -m poetry install --only dev --no-root
 
 PyLint:
   stage: lint
   extends: base
   script:
-    - pylint ./src
+    - /python/venv/bin/python -m pylint ./src
 
 Ensure Pep8:
   stage: lint
   extends: base
   script:
-    - flake8 ./
+    - /python/venv/bin/python -m flake8 ./
 
 Test:
   stage: test
