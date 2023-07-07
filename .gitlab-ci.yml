@@ -17,7 +17,7 @@ stages:
 
 base:
   stage: build
-  image: docker-private-snapshots.gesis.intra/gesis/dc:50-extend-base-image-for-python-usage
+  image: docker-private.gesis.intra/gesis/dc-python:1.0
   script:
     - /python/venv/bin/python -m poetry install --only dev
 
@@ -52,7 +52,7 @@ Test:
 
 Typecheck:
   stage: test
-  image: docker-private.gesis.intra/gesis/dc:42-install-npm
+  image: docker-private.gesis.intra/gesis/dc-nodejs:1.0
   before_script:
     - npm i -g pyright
     - npm i -g pyright-to-gitlab-ci
