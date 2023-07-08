@@ -69,7 +69,7 @@ publish:
   stage: deploy
   extends: base
   script:
-    - echo "This is the build stage"
+    - echo "This is the publishing stage"
     - /python/venv/bin/python -m poetry config repositories.gitlab ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi
     - echo "Repository gitlab configured ..."
     - /python/venv/bin/python -m poetry build
