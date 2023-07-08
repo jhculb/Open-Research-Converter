@@ -19,7 +19,7 @@ base:
   stage: build
   image: docker-private.gesis.intra/gesis/dc-python:1.0
   script:
-    - poetry install --with dev
+    - poetry install --with dev --no-root
 
 PyLint:
   stage: lint
