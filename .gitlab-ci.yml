@@ -18,23 +18,28 @@ base:
   image: docker-private.gesis.intra/gesis/dc-python:1.0
   script:
     - poetry install --with dev --no-root
-    - source `poetry env info --path`/bin/activate
 
 PyLint:
   stage: lint
   extends: base
+  before script:
+    - source `poetry env info --path`/bin/activate
   script:
     - python -m pylint ./src
 
 Ensure Pep8:
   stage: lint
   extends: base
+  before script:
+    - source `poetry env info --path`/bin/activate
   script:
     - python -m flake8 ./
 
 Test:
   stage: test
   extends: base
+  before script:
+    - source `poetry env info --path`/bin/activate
   script:
     - python -m coverage run -m pytest ./tests
   coverage: '/TOTAL.*\s+(\d+\%)/'
