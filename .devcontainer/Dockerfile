@@ -14,14 +14,8 @@ ENV PYTHONFAULTHANDLER=1 \
 	POETRY_VERSION=1.5.1
 
 RUN python -m pip install --upgrade pip \
-	&& python -m pip install 'flit>=3.8.0'
+	&& pip install "poetry==$POETRY_VERSION"
 
 COPY pyproject.toml poetry.lock ./
 
-ENV FLIT_ROOT_INSTALL=1
-
-COPY pyproject.toml .
-RUN touch README.md \
-	&& mkdir -p src/python_package \
-	&& python -m flit install --only-deps --deps develop \
-	&& rm -r pyproject.toml README.md src
+RUN poetry install --only dev --no-root
