@@ -20,6 +20,7 @@ base:
   image: docker-private.gesis.intra/gesis/dc-python:1.0
   script:
     - poetry install --with dev --no-root
+    - poetry shell
 
 PyLint:
   stage: lint
@@ -46,8 +47,6 @@ Test:
       coverage_report:
         coverage_format: cobertura
         path: coverage.xml
-
-
 
 Typecheck:
   stage: test
