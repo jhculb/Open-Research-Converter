@@ -22,26 +22,20 @@ base:
 PyLint:
   stage: lint
   extends: base
-  before script:
-    - source `poetry env info --path`/bin/activate
   script:
-    - python -m pylint ./src
+    - /python/venv/bin/python -m pylint ./src
 
 Ensure Pep8:
   stage: lint
   extends: base
-  before script:
-    - source `poetry env info --path`/bin/activate
   script:
-    - python -m flake8 ./
+    - /python/venv/bin/python -m flake8 ./
 
 Test:
   stage: test
   extends: base
-  before script:
-    - source `poetry env info --path`/bin/activate
   script:
-    - python -m coverage run -m pytest ./tests
+    - /python/venv/bin/python -m coverage run -m pytest ./tests
   coverage: '/TOTAL.*\s+(\d+\%)/'
   artifacts:
     paths:
