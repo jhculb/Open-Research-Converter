@@ -17,28 +17,27 @@ stages:
 
 base:
   stage: build
-  image: docker-private-snapshots.gesis.intra/gesis/dc:50-extend-base-image-for-python-usage
+  image: docker-private.gesis.intra/gesis/dc-python:1.0
   script:
-    - /python/venv/bin/python -m poetry install --only dev
+    - poetry install
 
 PyLint:
   stage: lint
   extends: base
   script:
-    - pylint ./src
+    - python -m pylint ./src
 
 Ensure Pep8:
   stage: lint
   extends: base
   script:
-    - flake8 ./
+    - python -m flake8 ./
 
 Test:
   stage: test
   extends: base
   script:
-    - pwd
-    - coverage run -m pytest ./tests
+    - poetry run coverage run -m pytest ./tests
   coverage: '/TOTAL.*\s+(\d+\%)/'
   artifacts:
     paths:
