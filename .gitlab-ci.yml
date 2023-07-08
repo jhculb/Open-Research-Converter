@@ -26,6 +26,7 @@ PyLint:
   stage: lint
   extends: base
   script:
+    - poetry show --latest
     - poetry run pylint ./src
 
 Ensure Pep8:
