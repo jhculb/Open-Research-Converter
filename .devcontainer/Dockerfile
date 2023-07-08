@@ -11,6 +11,6 @@ ENV PYTHONFAULTHANDLER=1 \
 RUN python -m pip install --upgrade pip \
 	&& pip install "poetry==$POETRY_VERSION"
 
-COPY pyproject.toml poetry.lock ./
+COPY pyproject.toml ./
 
 RUN poetry install --only dev --no-root
