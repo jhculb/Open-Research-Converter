@@ -8,32 +8,40 @@ cache:
     - venv/
 
 stages:
-  - build
-  - lint
-  - test
-  - deploy
+  - Build
+  - Lint
+  - Test
+  - Sonarqube
+  - Deploy
 
-base:
-  stage: build
+Base:
+  stage: Build
   image: docker-private.gesis.intra/gesis/dc-python:1.0
   script:
     - /python/venv/bin/python -m poetry install --with dev
 
-PyLint:
-  stage: lint
-  extends: base
+Pylint:
+  stage: Lint
+  extends: Base
+  needs:
+    - Base
   script:
     - /python/venv/bin/python -m pylint ./src
 
 Ensure Pep8:
-  stage: lint
-  extends: base
+  stage: Lint
+  extends: Base
+  needs:
+    - Base
   script:
     - /python/venv/bin/python -m flake8 ./
 
-Test:
-  stage: test
-  extends: base
+Pytest and Coverage:
+  stage: Test
+  extends: Base
+  needs:
+    - pylint
+    - ensure-pep8
   script:
     - /python/venv/bin/python -m coverage run -m pytest ./tests
   coverage: '/TOTAL.*\s+(\d+\%)/'
@@ -46,8 +54,11 @@ Test:
         path: coverage.xml
 
 Typecheck:
-  stage: test
-  image: docker-private.gesis.intra/gesis/dc-nodejs:1.0
+  stage: Test
+  needs:
+    - pylint
+    - ensure-pep8
+  image: docker-private.gesis.intra/gesis/dc:42-install-npm
   before_script:
     - npm i -g pyright
     - npm i -g pyright-to-gitlab-ci
@@ -60,14 +71,43 @@ Typecheck:
     reports:
       codequality: report.json
 
-# deploy:
-#   stage: deploy
-#   script: echo "Define your deployment script!"
-#   environment: production
+sonarqube:
+  stage: Sonarqube
+  needs:
+   - Base
+  extends: Base
+  script: echo "todo - configure sonarqube deployment!"
+
+deploy-to-test-server:
+  stage: Deploy
+  extends: Base
+  when: manual
+  script: echo "Use this to deploy your project to a test server"
+
+deploy-to-prod-server:
+  stage: Deploy
+  needs:
+    - Sonarqube
+    - Pytest and Coverage
+    - Typecheck
+  environment: production
+  when: manual
+  script: echo "Define your deployment script!"
+
+publish-to-local-pypi:
+  stage: Deploy
+  needs:
+    - Sonarqube
+    - Pytest and Coverage
+    - Typecheck
+  environment: production
+  when: manual
+  script: echo "Define your deployment script!"
 
 publish:
-  stage: deploy
-  extends: base
+  stage: Deploy
+  extends: Base
+  when: manual
   script:
     - echo "This is the publishing stage"
     - /python/venv/bin/python -m poetry config repositories.gitlab ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi
