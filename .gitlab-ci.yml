@@ -25,13 +25,13 @@ PyLint:
   stage: lint
   extends: base
   script:
-    - python -m pylint ./src
+    - poetry run pylint ./src
 
 Ensure Pep8:
   stage: lint
   extends: base
   script:
-    - python -m flake8 ./
+    - poetry run flake8 ./
 
 Test:
   stage: test
