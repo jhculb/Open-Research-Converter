@@ -25,6 +25,7 @@ base:
 PyLint:
   stage: lint
   extends: base
+    - poetry config virtualenvs.create false
   script:
     - poetry show --latest
     - poetry run pylint ./src
@@ -32,12 +33,14 @@ PyLint:
 Ensure Pep8:
   stage: lint
   extends: base
+    - poetry config virtualenvs.create false
   script:
     - poetry run flake8 ./
 
 Test:
   stage: test
   extends: base
+    - poetry config virtualenvs.create false
   script:
     - poetry run coverage run -m pytest ./tests
   coverage: '/TOTAL.*\s+(\d+\%)/'

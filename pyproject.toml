@@ -95,7 +95,7 @@ venv = "env37"
 reportMissingImports = true
 reportMissingTypeStubs = false
 
-pythonVersion = "3.7"
+pythonVersion = "3.11"
 pythonPlatform = "Linux"
 
 executionEnvironments = [
