@@ -1,8 +1,6 @@
-
 variables:
   VERSION: "0.0-Alpha-Dev"
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
-
 
 cache:
   paths:
@@ -19,30 +17,26 @@ base:
   stage: build
   image: docker-private.gesis.intra/gesis/dc-python:1.0
   script:
-    - poetry config virtualenvs.create false
     - poetry install --with dev --no-root
+    - source `poetry env info --path`/bin/activate
 
 PyLint:
   stage: lint
   extends: base
-    - poetry config virtualenvs.create false
   script:
-    - poetry show --latest
-    - poetry run pylint ./src
+    - python -m pylint ./src
 
 Ensure Pep8:
   stage: lint
   extends: base
-    - poetry config virtualenvs.create false
   script:
-    - poetry run flake8 ./
+    - python -m flake8 ./
 
 Test:
   stage: test
   extends: base
-    - poetry config virtualenvs.create false
   script:
-    - poetry run coverage run -m pytest ./tests
+    - python -m coverage run -m pytest ./tests
   coverage: '/TOTAL.*\s+(\d+\%)/'
   artifacts:
     paths:
