@@ -1,11 +1,12 @@
 FROM mcr.microsoft.com/devcontainers/python:3 AS base
 
-# ENV NODE_VERSION 14.15.4
+ENV NODE_VERSION=18.x
+RUN curl -fsSL "https://deb.nodesource.com/setup_$NODE_VERSION" | bash - \
+	&& apt-get install -y nodejs
 
-RUN curl -fsSL https://deb.nodesource.com/setup_19.x | bash - &&\
-	apt-get install -y nodejs
+FROM base AS devcontainer_final
 
-ENV PYTHONFAULTHANDLER=1 \
+ENV	PYTHONFAULTHANDLER=1 \
 	PYTHONUNBUFFERED=1 \
 	PYTHONHASHSEED=random \
 	PIP_NO_CACHE_DIR=1 \
