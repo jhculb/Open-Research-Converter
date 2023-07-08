@@ -47,7 +47,7 @@ Test:
 
 Typecheck:
   stage: test
-  image: docker-private.gesis.intra/gesis/dc:42-install-npm
+  image: docker-private.gesis.intra/gesis/dc-nodejs:1.0
   before_script:
     - npm i -g pyright
     - npm i -g pyright-to-gitlab-ci
