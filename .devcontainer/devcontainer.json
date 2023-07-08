@@ -21,8 +21,8 @@
 				"ms-vsliveshare.vsliveshare",
 				"ryanluker.vscode-coverage-gutters",
 				"bungcip.better-toml",
-				// "GitHub.copilot",
 				"sonarsource.sonarlint-vscode"
+				// "GitHub.copilot",
 			],
 			"settings": {
 				"python.defaultInterpreterPath": "/usr/local/bin/python",
@@ -41,5 +41,5 @@
 			}
 		}
 	},
-	"postCreateCommand": "sudo chown -R vscode .git && pip install pre-commit==3.3.2 && pre-commit install-hooks"
+	"onCreateCommand": "sudo chown -R vscode .git && pip install pre-commit==3.3.2 && pre-commit install-hooks"
 }

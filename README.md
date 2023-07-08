@@ -33,8 +33,10 @@ The issues board found on the template project is authoratitive.
 * Add Makefile for common development commands
 * Add Template Dockerfile and Docker-compose
 ## Known Bugs / Issues
-* Occasionally when initialising a development container it may report an error
-	* Temporary Fix: This error disappears when the development container is rerun
+* ssh -T fails to authenticate git@git.gesis.org, even though ssh-add -L shows the key.
+	* The Host's Windows default ssh client must be v8.9 or above, to see the current version run `ssh -V`
+	* To update openssh, in powershell run `winget install "openssh beta"`
+	* Reboot the host
 ## Infrastructure & Integration
 * Configure local PyPI repository
 	1. Awaiting setup of Gitlab pypi repository
@@ -70,7 +72,10 @@ The project includes:
 	* A standardised development environment between developers
 	* Programmatic configuration of the development environment
 	* Quick teardown/reinstantiation of development environments
-	* Enforced code quality
+	* Enforced code quality checks
+
+## First Time Initialisation Runtime
+When running for the first time, due to docker downloading all containers from docker-hub and poetry installing all packages, it may take around 5 minutes to open the development container, and 10 minutes for everything to install. Please be patient and let it run uninterrupted, future initalisations will be faster.
 
 # Ideal/Intended Development Flow
 This assumes usage of VSCode and Devcontainer, though configuration of the desired tools can equally be done on a host machine or VM.
@@ -82,10 +87,25 @@ Dev containers allow for shared development baselines, to minimise the chance th
 		1. Enable CI/CD via the radio switch toggle found at: Settings - General - Visivility, project features, permissions - CICD
 	2. Clone repo to host machine
 	3. First time configuration on host machine: (Not required for second instantiation of a dev container)
-		2. Add SSH key to ssh-agent on host machine
+		1. Add SSH key to ssh-agent on host machine
 		2. Install dev-container extension on vscode
 			1. This should be prompted once the .devcontainer folder is found
 			1. dev-container may require installation of docker desktop (recommended) or an alternative docker host (such as podman)
+		3. Configure git on host machine to pass details onto
+			1. Ensure that git.name and git.email are set on host machine
+				1. If not please run the following commands replacing the placeholders with your details
+					1. `git config --global user.name "Your Name"`
+					2. `git config --global user.email "your.email@gesis.org"`
+			2. Add your SSH key to the local SSH agent
+				1. On Windows:
+					1. Run `ssh-add $HOME/.ssh/github_rsa` (or replace destination or key format if keys are stored outside the home directory, or if using a RSA key respectively)
+					2. If there is an error as the SSH agent is not running:
+						1. Ensure sure you're running poweshell as an Administrator
+						2. Run `Set-Service ssh-agent -StartupType Automatic`
+						2. Run `Start-Service ssh-agent`
+						2. Run `Get-Service ssh-agent`
+						2. Then rerun the `ssh-add ...` command as above
+			3. Further details (including Linux and MacOS startup details) can be found https://code.visualstudio.com/remote/advancedcontainers/sharing-git-credentials
 	5. Start Dev Container
 2. Configuration
 	1. Development environment configuration
