@@ -1,5 +1,5 @@
 variables:
-  VERSION: "0.0-Alpha-Dev"
+  VERSION: "0.1-Beta-Dev"
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
 
 cache:
@@ -13,11 +13,15 @@ stages:
   - Test
   - Sonarqube
   - Deploy
+  - Badges
 
 Base:
   stage: Build
   image: docker-private.gesis.intra/gesis/dc-python:1.0
   script:
+    - echo "Installing package on base image, including development packages (pytest, flake8, etc.)"
+    - /python/venv/bin/python -m pip install --upgrade setuptools wheel
+    - /python/venv/bin/python -m pip install "pyyaml (==6.0)"
     - /python/venv/bin/python -m poetry install --with dev
 
 Pylint:
@@ -26,6 +30,7 @@ Pylint:
   needs:
     - Base
   script:
+    - echo "Running PyLint"
     - /python/venv/bin/python -m pylint ./src
 
 Ensure Pep8:
@@ -34,6 +39,7 @@ Ensure Pep8:
   needs:
     - Base
   script:
+    - echo "Running Flake8"
     - /python/venv/bin/python -m flake8 ./
 
 Pytest and Coverage:
@@ -43,7 +49,9 @@ Pytest and Coverage:
     - Pylint
     - Ensure Pep8
   script:
+    - echo "Running Coverage with Pytest"
     - /python/venv/bin/python -m coverage run -m pytest ./tests
+    - echo "Uploading Coverage report to Gitlab"
   coverage: '/TOTAL.*\s+(\d+\%)/'
   artifacts:
     paths:
@@ -53,58 +61,58 @@ Pytest and Coverage:
         coverage_format: cobertura
         path: coverage.xml
 
+Bandit:
+  stage: Test
+  extends: Base
+  needs:
+    - Pylint
+    - Ensure Pep8
+  script:
+    - echo "Running Bandit"
+    - /python/venv/bin/python -m bandit -c pyproject.toml -r ./src/ --format txt > bandit.txt
+    - echo "Uploading Coverage report to Gitlab"
+  artifacts:
+    paths:
+      - bandit.txt
+    reports:
+      sast: bandit.txt
+
 Typecheck:
   stage: Test
   needs:
     - Pylint
     - Ensure Pep8
-  image: docker-private.gesis.intra/gesis/dc:42-install-npm
+  image: docker-private.gesis.intra/gesis/dc-nodejs:1.0
   before_script:
     - npm i -g pyright
     - npm i -g pyright-to-gitlab-ci
   script:
-   - pyright ./src --outputjson > report_raw.json
-   - pyright-to-gitlab-ci --src report_raw.json --output report.json --base_path .
+    - echo "Running Pyright"
+    - pyright ./src --outputjson > report_raw.json
+    - echo "Uploading output to Gitlab as artifact"
+    - pyright-to-gitlab-ci --src report_raw.json --output report.json --base_path .
   artifacts:
     paths:
       - report.json
     reports:
       codequality: report.json
 
-Sonarqube:
-  stage: Sonarqube
-  needs:
-   - Base
-  extends: Base
-  script: echo "todo - configure sonarqube deployment!"
-
-deploy-to-test-server:
+Deploy to Test Server:
   stage: Deploy
   extends: Base
   when: manual
   script: echo "Use this to deploy your project to a test server"
 
-deploy-to-prod-server:
+Deploy to Production Server:
   stage: Deploy
   needs:
-    - Sonarqube
     - Pytest and Coverage
     - Typecheck
   environment: production
   when: manual
   script: echo "Define your deployment script!"
 
-publish-to-local-pypi:
-  stage: Deploy
-  needs:
-    - Sonarqube
-    - Pytest and Coverage
-    - Typecheck
-  environment: production
-  when: manual
-  script: echo "Define your deployment script!"
-
-publish:
+Publish Package to Gitlab Registry:
   stage: Deploy
   extends: Base
   when: manual
@@ -116,3 +124,22 @@ publish:
     - echo "Build done ..."
     - /python/venv/bin/python -m poetry publish --repository gitlab -u gitlab-ci-token -p ${CI_JOB_TOKEN}
     - echo "Publishing done!"
+
+generate-badges:
+  stage: Build
+  image: docker-private.gesis.intra/gesis/dc-python:1.0
+  when: manual
+  script:
+    - echo "Installing anybadge"
+    - /python/venv/bin/python -m pip install anybadge
+    - echo "Creating output directory"
+    - mkdir ./badges/
+    - echo "Generating badges"
+    - /python/venv/bin/python generate_badges.py
+    - echo "Uploading badges to Gitlab"
+  artifacts:
+    paths:
+      - ./badges/python_version.svg
+      - ./badges/pre_commit_version.svg
+      - ./badges/poetry_version.svg
+      - ./badges/python_runner_image.svg

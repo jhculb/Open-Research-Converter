@@ -1,0 +1,10 @@
+version: '3.3'
+
+services:
+  demo_service:
+    build:
+      context: ./
+      dockerfile: ./src/py_project_template.Dockerfile
+      environment: ./src/environment/py_project_template.env
+
+# Please note that currently this will not run from inside the dev container.
