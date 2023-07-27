@@ -1,6 +1,9 @@
 # Python Project Template
+## Important
+* Poetry has replaced Flit and tox
 
-This project is a template for creating Python projects that follows the Python Standards declared in PEP 621. It uses a pyproject.yaml file to configure the project and Flit to simplify the build process and publish to PyPI. Flit simplifies the build and packaging process for Python projects by eliminating the need for separate setup.py and setup.cfg files. With Flit, you can manage all relevant configurations within the pyproject.toml file, streamlining development and promoting maintainability by centralizing project metadata, dependencies, and build specifications in one place.
+## Introduction
+This project is a template for creating Python projects that follows the Python Standards declared in PEP 621. It uses a pyproject.yaml file to configure the project and Poetry to simplify the build process and publish to PyPI. Poetry simplifies the build and packaging process for Python projects by eliminating the need for separate setup.py and setup.cfg files. With poetry, you can manage all relevant configurations within the pyproject.toml file, streamlining development and promoting maintainability by centralizing project metadata, dependencies, and build specifications in one place. You can also compare and share current versioning through the generated poetry.lock file.
 
 ## Project Organization
 
@@ -52,12 +55,16 @@ Flake8 is a code linter for Python that checks your code for style and syntax is
 
 The pyproject.toml file contains configurations for Flake8, such as the maximum line length, which errors to ignore, and which style guide to follow. By using Flake8, you can ensure that your code follows the recommended style guide and catch syntax errors before they cause problems.
 
-##### tox
-In our repository, we use Tox to automate testing and building our Python package across various environments and versions. Configured through the pyproject.toml file, Tox is set up with four testing environments: py, integration, spark, and all. Each environment targets specific test categories or runs all tests together, ensuring compatibility and functionality in different scenarios.
+##### poetry
+In this template, we use Poetry to manage package versions, dependency conflict, and publishing our package. Configured through the pyproject.toml file, Poetry is set up with global and group dependencies: global, dev and spark, other groups can be added at will. Each group in the .toml is a collection of packages and minimum and maximum versions, if required for packages not to conflict, these groups can be optional.
 
-The [tool.tox] section in the pyproject.toml file contains the Tox configuration details, including the legacy_tox_ini attribute. Our setup outlines the dependencies needed for each environment, as well as the test runner (e.g., pytest) and any associated commands. This ensures consistent test execution across all environments.
+The [build-system] section in the pyproject.toml file contains the poetry version and backend requirements, the [tool.poetry] section contains the minimum configuration details about the project, including the project name, version, authors, description, readme and packages. These can be complimented with [further details](https://python-poetry.org/docs/pyproject/) to further specify package details. The [tool.poetry.dependencies] section contains the dependencies for the package itself: to add to the dependencies of the project run `poetry install <package-name>`, to then install this locally run `poetry install`.
 
-Tox helps us efficiently automate testing and building processes, maintaining the reliability and functionality of our Python package across a wide range of environments. By identifying potential compatibility issues early in the development process, we improve the quality and usability of our package. Our Tox configuration streamlines the development workflow, promoting code quality and consistency throughout the project.
+The [tool.poetry.group.dev] section contains configuration options for the `dev` group, and the [tool.poetry.group.dev.dependencies] section contains the list of development dependencies. These are used in the development container, gitlab and locally. To add to this group run `poetry add <package-name> --group dev` then run `poetry install --only dev` to install the development dependencies. This applies also to the spark group and other groups you may wish to define, and can be run through changing `--only dev` to `--only <other-group>`.
+
+Poetry manages the exact versions installed through the poetry.lock file. This file should not be manually edited, and can be passed to other developers or included in the repository to ensure identical distributions.
+
+Poetry helps us efficiently manage packages and prevent dependency errors, automates building and maintains the reliability and functionality in our Python package across a wide range of environments and versions. By identifying potential compatibility issues  early in the development process, we improve the quality and usability of our package. Our Poetry configuration streamlines the development workflow, promoting code quality and consistency throughout the project.
 
 ### Development
 #### Devcontainer
@@ -72,18 +79,14 @@ When editing the contents of the .devcontainer folder, you'll need to rebuild fo
 You can also use a Dockerfile to automate dev container creation. In your Dockerfile, use FROM to designate the image, and the RUN instruction to install any software. You can use && to string together multiple commands. If you don't want to create a devcontainer.json by hand, you can select the Dev Containers: Add Dev Container Configuration Files... command from the Command Palette (F1) to add the needed files to your project as a starting point, which you can further customize for your needs.
 
 #### Setup
-This project includes three files in the .devcontainer and .vscode directories that enable you to use GitHub Codespaces or Docker and VSCode locally to set up an environment that includes all the necessary extensions and tools for Python development.
+This project includes three files in the .devcontainer and .vscode directories that enable you to use Docker and VSCode locally to set up an environment that includes all the necessary extensions and tools for Python development.
 
-The Dockerfile specifies the base image and dependencies needed for the development container. The Dockerfile installs the necessary dependencies for the development container, including Python 3 and flit, a tool used to build and publish Python packages. It sets an environment variable to indicate that flit should be installed globally. It then copies the pyproject.toml file into the container and creates an empty README.md file. It creates a directory src/python_package and installs only the development dependencies using flit. Finally, it removes unnecessary files, including the pyproject.toml, README.md, and src directory.
+The Dockerfile specifies the base image and dependencies needed for the development container. The Dockerfile installs the necessary dependencies for the development container, including Python 3 and flit, a tool used to build and publish Python packages. It sets an environment variable to indicate that flit should be installed globally. It then copies the pyproject.toml file into the container and creates an empty README.md file. It creates a directory src/py_project_template and installs only the development dependencies using flit. Finally, it removes unnecessary files, including the pyproject.toml, README.md, and src directory.
 
 The devcontainer.json file is a configuration file that defines the development container's settings, including the Docker image to use, any additional VSCode extensions to install, and whether or not to mount the project directory into the container. It uses the python-3-miniconda container as its base, which is provided by Microsoft, and also includes customizations for VSCode, such as recommended extensions for Python development and specific settings for those extensions. In addition to the above, the settings.json file also contains a handy command that can automatically install pre-commit hooks. These hooks can help ensure the quality of the code before it's committed to the repository, improving the overall codebase and making collaboration easier.
 
 The settings.json file is where we can customize various project-specific settings within VSCode. These settings can include auto-formatting options, auto-trimming of trailing whitespace, Git auto-fetching, and much more. By modifying this file, you can tailor the VSCode environment to your specific preferences and workflow. It also contains specific settings for Python, such as the default interpreter to use, the formatting provider, and whether to enable unittest or pytest. Additionally, it includes arguments for various tools such as Pylint, Black, Flake8, and Isort, which are specified in the pyproject.toml file.
 
 ## Getting Started
-
-To get started with this template, simply 'Use This Template' to create a new repository and start building your project within the `src` directory. Try to open the project in GitHub Codespace, and to run the unit tests using the VS Code Test extension.
-
-## Contributing
-
-This project welcomes contributions and suggestions. For details, visit the repository's [Contributor License Agreement (CLA)](https://cla.opensource.microsoft.com) and [Code of Conduct](https://opensource.microsoft.com/codeofconduct/) pages.
+To check: this is the case with
+To get started with this template, simply 'Use This Template' to create a new repository and start building your project within the `src` directory. One mayrun the unit tests using the VS Code Test extension.

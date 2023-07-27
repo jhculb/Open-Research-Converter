@@ -19,9 +19,21 @@
 				"ms-python.flake8",
 				"ms-python.black-formatter",
 				"ms-vsliveshare.vsliveshare",
+				"ms-vscode.makefile-tools",
 				"ryanluker.vscode-coverage-gutters",
-				"bungcip.better-toml",
-				"sonarsource.sonarlint-vscode"
+				"tamasfe.even-better-toml",
+				"sonarsource.sonarlint-vscode",
+				"ms-vscode.makefile-tools",
+				// Optional:
+				// "visualstudioexptteam.vscodeintellicode",
+				// "njpwerner.autodoc",
+				// "ms-toolsai.jupyter",
+				// "ms-toolsai.vscode-jupyter-cell-tags",
+				// "ms-toolsai.jupyter-renderers",
+				// "donjayamanne.python-environment-manager",
+				// "eamodio.gitlens",
+				// "aaron-bond.better-comments",
+				// "mikestead.dotenv"
 				// "GitHub.copilot",
 			],
 			"settings": {

@@ -24,3 +24,12 @@ def hello_goodbye():
     """Doc String."""
     hello_world(1)
     good_night()
+
+
+def main():
+    """Doc String."""
+    hello_goodbye()
+
+
+if __name__ == "__main__":
+    main()
