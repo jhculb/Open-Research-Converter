@@ -20,8 +20,6 @@ Base:
   image: docker-private.gesis.intra/gesis/dc-python:1.0
   script:
     - echo "Installing package on base image, including development packages (pytest, flake8, etc.)"
-    - /python/venv/bin/python -m pip install --upgrade setuptools wheel
-    - /python/venv/bin/python -m pip install "pyyaml (==6.0)"
     - /python/venv/bin/python -m poetry install --with dev
 
 Pylint:
