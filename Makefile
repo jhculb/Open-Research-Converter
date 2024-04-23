@@ -1,12 +1,18 @@
 all: code_quality lint test security_test
 
-code_quality: prerun_black prerun_precommit
+code_quality: format_ruff prerun_precommit
 
-lint: lint_flake8 lint_pylint
+lint: lint_ruff
 
 test: test_coverage
 
 security_test: bandit
+
+lint_ruff:
+	poetry run ruff check
+
+format_ruff:
+	poetry run ruff format
 
 lint_flake8:
 	poetry run flake8 ./src
