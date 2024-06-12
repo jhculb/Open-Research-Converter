@@ -1,6 +1,14 @@
 version: '3.3'
 
 services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "9999:80"
+    volumes:
+      - ./src/orc/frontend/html:/usr/share/nginx/html
+    restart: always
+
   demo_service:
     build:
       context: ./

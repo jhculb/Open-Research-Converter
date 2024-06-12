@@ -3,16 +3,19 @@ requires = ["poetry-core=1.5.1"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "py-project-template"
-version = "0.0.0"
-authors = ["John Culbert <john.culbert@gesis.org>"]
-maintainers = ["Alex Mühlbauer <alexander.muehlbauer@gesis.org>"]
-description = "A GESIS Template for Python modules"
+name = "Open Research Converter"
+version = "0.0.1"
+authors = ["Jack Culbert <jack.culbert@gesis.org>", "Nina Smirnova <nina.smirnova@gesis.org>", "Ahsan Shahid <ahsan.shahid@gesis.org>", "Philipp Mayr <philipp.mayr@gesis.org>"]
+maintainers = ["Jack Culbert <jack.culbert@gesis.org>"]
+description = ""
 readme = "README.md"
-packages = [{ include = "py_project_template", from = "src" }]
+packages = [{ include = "orc", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
+flask = "^3.0.3"
+psycopg = "^3.1.18"
+requests = "^2.31.0"
 
 [tool.poetry.group.dev]
 optional = true
@@ -91,6 +94,9 @@ skip-magic-trailing-comma = false
 
 # Like Black, automatically detect the appropriate line ending.
 line-ending = "auto"
+
+
+
 
 [tool.poetry.group.spark]
 optional = true
