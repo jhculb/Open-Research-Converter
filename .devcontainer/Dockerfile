@@ -1,6 +1,6 @@
 FROM mcr.microsoft.com/devcontainers/python:3 AS base
 
-ARG NODE_VERSION=18.x
+ARG NODE_VERSION=20.x
 RUN curl -fsSL "https://deb.nodesource.com/setup_$NODE_VERSION" | bash - \
 	&& apt-get install -y nodejs
 
