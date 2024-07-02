@@ -14,17 +14,14 @@
 				"ms-azuretools.vscode-docker",
 				"ms-python.python",
 				"ms-python.vscode-pylance",
-				"ms-python.pylint",
-				"ms-python.isort",
-				"ms-python.flake8",
-				"ms-python.black-formatter",
 				"ms-vsliveshare.vsliveshare",
 				"ms-vscode.makefile-tools",
+				"charliermarsh.ruff",
 				"ryanluker.vscode-coverage-gutters",
 				"tamasfe.even-better-toml",
 				"sonarsource.sonarlint-vscode",
-				"ms-vscode.makefile-tools",
-				// Optional:
+				"ms-vscode.makefile-tools"
+				// Optional suggestions:
 				// "visualstudioexptteam.vscodeintellicode",
 				// "njpwerner.autodoc",
 				// "ms-toolsai.jupyter",
@@ -37,19 +34,7 @@
 				// "GitHub.copilot",
 			],
 			"settings": {
-				"python.defaultInterpreterPath": "/usr/local/bin/python",
-				"black-formatter.path": [
-					"/usr/local/py-utils/bin/black"
-				],
-				"pylint.path": [
-					"/usr/local/py-utils/bin/pylint"
-				],
-				"flake8.path": [
-					"/usr/local/py-utils/bin/flake8"
-				],
-				"isort.path": [
-					"/usr/local/py-utils/bin/isort"
-				]
+				"python.defaultInterpreterPath": "/usr/local/bin/python"
 			}
 		}
 	},
