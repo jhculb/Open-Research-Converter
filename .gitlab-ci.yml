@@ -17,7 +17,7 @@ stages:
 
 Base:
   stage: Build
-  image: docker-private.gesis.intra/gesis/dc-python:1.1
+  image: docker-private.gesis.intra/gesis/dc-python:1-migrate-to-ruff
   script:
     - echo "Installing package on base image, including development packages"
     - /python/venv/bin/python -m poetry install --with dev
