@@ -17,7 +17,7 @@ stages:
 
 Base:
   stage: Build
-  image: docker-private.gesis.intra/gesis/dc-python:1.0
+  image: docker-private.gesis.intra/gesis/dc-python:1.0.Ruff
   script:
     - echo "Installing package on base image, including development packages"
     - /python/venv/bin/python -m poetry install --with dev
@@ -29,7 +29,7 @@ Lint:
     - Base
   script:
     - echo "Running Ruff's Linter"
-    - /python/venv/bin/python -m poetry run ruff check ./src
+    - /python/venv/bin/python -m ruff check ./src
 
 Pytest and Coverage:
   stage: Test
