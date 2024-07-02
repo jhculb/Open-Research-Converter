@@ -22,30 +22,20 @@ Base:
     - echo "Installing package on base image, including development packages (pytest, flake8, etc.)"
     - /python/venv/bin/python -m poetry install --with dev
 
-Pylint:
+Lint:
   stage: Lint
   extends: Base
   needs:
     - Base
   script:
-    - echo "Running PyLint"
-    - /python/venv/bin/python -m pylint ./src
-
-Ensure Pep8:
-  stage: Lint
-  extends: Base
-  needs:
-    - Base
-  script:
-    - echo "Running Flake8"
-    - /python/venv/bin/python -m flake8 ./
+    - echo "Running Ruff's Linter"
+    - /python/venv/bin/python -m ruff check ./src
 
 Pytest and Coverage:
   stage: Test
   extends: Base
   needs:
-    - Pylint
-    - Ensure Pep8
+    - Lint
   script:
     - echo "Running Coverage with Pytest"
     - /python/venv/bin/python -m coverage run -m pytest ./tests
@@ -63,8 +53,7 @@ Bandit:
   stage: Test
   extends: Base
   needs:
-    - Pylint
-    - Ensure Pep8
+    - Lint
   script:
     - echo "Running Bandit"
     - /python/venv/bin/python -m bandit -c pyproject.toml -r ./src/ --format txt > bandit.txt
@@ -78,8 +67,7 @@ Bandit:
 Typecheck:
   stage: Test
   needs:
-    - Pylint
-    - Ensure Pep8
+    - Lint
   image: docker-private.gesis.intra/gesis/dc-nodejs:1.0
   before_script:
     - npm i -g pyright
