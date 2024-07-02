@@ -13,7 +13,6 @@ packages = [{ include = "py_project_template", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-ruff = "^0.5.0"
 
 [tool.poetry.group.dev]
 optional = true
@@ -28,6 +27,7 @@ pytest = "7.3.0"
 shellcheck-py = "0.9.0.5"
 coverage = { extras = ["toml"], version = "^7.2.7" }
 anybadge = "^1.14.0"
+ruff = "^0.5.0"
 
 [tool.poetry.group.spark]
 optional = true
