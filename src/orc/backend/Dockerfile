@@ -6,11 +6,14 @@ RUN python -m pip install --upgrade pip \
 	&& pip install "poetry==$POETRY_VERSION"
 
 FROM project-base AS project-runner
+EXPOSE 80/tcp
+EXPOSE 443/tcp
+EXPOSE 8003/tcp
 
 WORKDIR /src/
 
-COPY ./src/py_project_template/ ./
+COPY ./src/orc/backend/ ./
 
 RUN poetry install --without dev
 
-CMD ["python", "py_project_template/hello_world.py"]
+ENTRYPOINT [ "./src/orc/backend/start_gunicorn_server.sh" ]

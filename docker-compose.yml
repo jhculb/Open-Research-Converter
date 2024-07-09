@@ -2,17 +2,43 @@ version: '3.3'
 
 services:
   nginx:
+    container_name: reverse-proxy
+    hostname: reverse
     image: nginx:latest
+    depends_on:
+      - frontend
+      - backend
     ports:
-      - "9999:80"
+      - "80:80"
+      - "443:443"
     volumes:
-      - ./src/orc/frontend/html:/usr/share/nginx/html
+      - nginx_data:/etc/nginx
+      - nginx_data:/etc/ssl/private
     restart: always
 
-  demo_service:
+  frontend:
+    container_name: reverse-proxy
     build:
       context: ./
-      dockerfile: ./src/py_project_template.Dockerfile
-      environment: ./src/environment/py_project_template.env
+      dockerfile: ./src/orc/frontend/Dockerfile
+      environment: ./src/environment/frontend/frontend.env
 
-# Please note that currently this will not run from inside the dev container.
+  backend:
+    container_name: orc-backend
+    build:
+      context: ./
+      dockerfile: ./src/orc/backend/Dockerfile
+      environment: ./src/environment/backend/backend.env
+    ports:
+      - "8003:8003:"
+      - "4431:443"
+    restart: always
+
+volumes:
+    nginx_data: {}
+
+
+
+
+2
+
