@@ -1,6 +1,8 @@
-from flask import Flask, request
-from .open_research_converter import OpenResearchConverter
+from __future__ import annotations
 
+from flask import Flask, request
+
+from .open_research_converter import OpenResearchConverter
 
 app = Flask(__name__)
 orc = OpenResearchConverter()

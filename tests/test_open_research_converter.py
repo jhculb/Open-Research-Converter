@@ -6,7 +6,9 @@
 
 from __future__ import annotations
 
-from orc.backend.open_research_converter import OpenResearchConverter
+
+def hello_world():
+    return "hello world"
 
 
 def hello_test():

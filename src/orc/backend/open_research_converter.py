@@ -1,5 +1,9 @@
-import pandas as pd
+from __future__ import annotations
+
 import uuid
+
+import pandas as pd
+
 # from validate_email import validate_email
 
 
@@ -51,7 +55,7 @@ class OpenResearchConverter:
             email_is_valid = self._parse_email(email)
         if data is not None:
             data_is_valid = self._parse_data(data)
-        return False
+        return uuid_is_valid & email_is_valid & data_is_valid
 
     def _parse_input_string(self, string: str) -> bool:
         correct = False

@@ -16,4 +16,4 @@ COPY ./src/orc/backend/ ./
 
 RUN poetry install --without dev
 
-ENTRYPOINT [ "./src/orc/backend/start_gunicorn_server.sh" ]
+ENTRYPOINT [ "gunicorn app:app -w 2 --threads 2 -b 0.0.0.0:8003" ]

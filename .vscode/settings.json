@@ -10,14 +10,7 @@
 	"[jsonc]": {
 		"editor.defaultFormatter": "vscode.json-language-features"
 	},
-	"[python]": {
-		"editor.defaultFormatter": "charliermarsh.ruff"
-	},
-	"python.defaultInterpreterPath": "/usr/local/bin/python",
-	"python.testing.unittestEnabled": false,
-	"python.testing.pytestEnabled": true,
 	"editor.rulers": [
 		120
 	],
-	"python.analysis.typeCheckingMode": "basic"
 }
