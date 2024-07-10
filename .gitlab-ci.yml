@@ -22,23 +22,15 @@ Base:
     - echo "Installing package on base image, including development packages (pytest, flake8, etc.)"
     - /python/venv/bin/python -m poetry install --with dev
 
-Pylint:
+Ruff:
   stage: Lint
   extends: Base
   needs:
     - Base
   script:
-    - echo "Running PyLint"
-    - /python/venv/bin/python -m pylint ./src
+    - echo "Running Ruff"
+    - /python/venv/bin/python -m ruff check ./src
 
-Ensure Pep8:
-  stage: Lint
-  extends: Base
-  needs:
-    - Base
-  script:
-    - echo "Running Flake8"
-    - /python/venv/bin/python -m flake8 ./
 
 Pytest and Coverage:
   stage: Test
