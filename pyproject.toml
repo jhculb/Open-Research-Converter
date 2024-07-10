@@ -22,16 +22,17 @@ pandas = "^2.2.2"
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-bandit = "1.7.5"
-check-manifest = "0.49"
-pytest-cov = "4.0.0"
+bandit = "^1.7.5"
+check-manifest = "^0.49"
+pytest-cov = "^4.0.0"
 pytest-mock = "<3.10.1"
 pytest-runner = "*"
-pytest = "7.3.0"
-shellcheck-py = "0.9.0.5"
+pytest = "^7.3.0"
+shellcheck-py = "^0.9.0.5"
 coverage = { extras = ["toml"], version = "^7.2.7" }
 anybadge = "^1.14.0"
-ruff = "^0.4.1"
+ruff = "^0.5.1"
+
 
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.
@@ -99,12 +100,6 @@ line-ending = "auto"
 
 
 
-
-[tool.poetry.group.spark]
-optional = true
-
-[tool.poetry.group.spark.dependencies]
-pyspark = "^3.0.0"
 
 [tool.bandit]
 exclude_dirs = ["build", "dist", "tests", "scripts"]
