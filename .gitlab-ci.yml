@@ -21,7 +21,6 @@ Base:
   script:
     - echo "Installing package on base image, including development packages (pytest, flake8, etc.)"
     - /python/venv/bin/python -m poetry install --with dev
-    - /python/venv/bin/python -m pip install ruff
 
 Ruff:
   stage: Lint
@@ -30,7 +29,7 @@ Ruff:
     - Base
   script:
     - echo "Running Ruff"
-    - /python/venv/bin/python -m ruff check ./src
+    - poetry run ruff check ./src
 
 
 Pytest and Coverage:
