@@ -16,11 +16,6 @@ def arrange_blank_orc():
 
 
 
-@pytest.fixture
-def arrange_blank_orc():
-    orc = OpenResearchConverter()
-    return orc
-
 def hello_world():
     return "hello world"
 
