@@ -22,6 +22,8 @@ Base:
     - echo "Installing package on base image, including development packages (pytest, flake8, etc.)"
     - /python/venv/bin/python -m poetry install --with dev
     - /python/venv/bin/python -m poetry config --list
+    - ls /builds/omino/OpenResearchConverter/.venv
+    - ls /root/.cache/pypoetry/virtualenvs
 
 Ruff:
   stage: Lint
