@@ -21,6 +21,7 @@ Base:
   script:
     - echo "Installing package on base image, including development packages (pytest, flake8, etc.)"
     - /python/venv/bin/python -m poetry install --with dev
+    - sudo apt install ruff
 
 Ruff:
   stage: Lint
