@@ -5,8 +5,8 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry]
 name = "Open Research Converter"
 version = "0.0.1"
-authors = ["Jack Culbert <jack.culbert@gesis.org>", "Nina Smirnova <nina.smirnova@gesis.org>", "Ahsan Shahid <ahsan.shahid@gesis.org>", "Philipp Mayr <philipp.mayr@gesis.org>"]
-maintainers = ["Jack Culbert <jack.culbert@gesis.org>"]
+authors = ["Jack Culbert <jack.culbert@gesis.org>", "Ahsan Shahid <ahsan.shahid@gesis.org>", "Philipp Mayr <philipp.mayr@gesis.org>"]
+maintainers = ["Jack Culbert <jack.culbert@gesis.org>", "Ahsan Shahid <ahsan.shahid@gesis.org>"]
 description = ""
 readme = "README.md"
 packages = [{ include = "orc", from = "src" }]
@@ -68,8 +68,8 @@ exclude = [
 line-length = 120
 indent-width = 4
 
-# Assume Python 3.8
-target-version = "py38"
+# Assume Python 3.12
+target-version = "py312"
 
 [tool.ruff.lint]
 # Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
