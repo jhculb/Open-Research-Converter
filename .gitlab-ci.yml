@@ -29,7 +29,7 @@ Ruff:
     - Base
   script:
     - echo "Running Ruff"
-    - /python/venv/bin/python -m poetry run ruff check ./src
+    - /python/venv/bin/python -m ruff check
 
 
 Pytest and Coverage:
