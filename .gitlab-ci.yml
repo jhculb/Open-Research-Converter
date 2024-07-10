@@ -40,7 +40,7 @@ Pytest and Coverage:
     - Ruff
   script:
     - echo "Running Coverage with Pytest"
-    - /python/venv/bin/python -m poetry run coverage run -m pytest ./tests
+    - /python/venv/bin/python -m coverage run -m pytest ./tests
     - echo "Uploading Coverage report to Gitlab"
   coverage: '/TOTAL.*\s+(\d+\%)/'
   artifacts:
