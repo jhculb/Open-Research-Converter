@@ -30,7 +30,7 @@ Ruff:
     - Base
   script:
     - echo "Running Ruff"
-    - /python/venv/bin/python -m ruff check ./src
+    - ruff check ./src
 
 
 Pytest and Coverage:
