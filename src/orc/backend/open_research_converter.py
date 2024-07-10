@@ -9,22 +9,22 @@ import pandas as pd
 
 class OpenResearchConverter:
     def __init__(self) -> None:
-        self.jobs = {}
+        self._jobs = {}
 
     def generate_new_job(self) -> tuple[dict, int]:
         new_uuid = uuid.uuid4().__str__()
-        self.jobs[new_uuid] = {}
-        self.jobs[new_uuid]["input_data"] = None
-        self.jobs[new_uuid]["output_data"] = None
-        self.jobs[new_uuid]["email"] = None
-        self.jobs[new_uuid]["status"] = None
-        self.jobs[new_uuid]["progress"] = None
+        self._jobs[new_uuid] = {}
+        self._jobs[new_uuid]["input_data"] = None
+        self._jobs[new_uuid]["output_data"] = None
+        self._jobs[new_uuid]["email"] = None
+        self._jobs[new_uuid]["status"] = None
+        self._jobs[new_uuid]["progress"] = None
         return {"job_id": new_uuid}, 201
 
     def get_status(self, uuid: str) -> tuple[dict, int]:
         self._parse_uuid(uuid=uuid)
-        if uuid in self.jobs.keys():
-            return {"job_id": uuid, "status": self.jobs[uuid]["status"], "progress": self.jobs[uuid]["progress"]}, 200
+        if uuid in self._jobs.keys():
+            return {"job_id": uuid, "status": self._jobs[uuid]["status"], "progress": self._jobs[uuid]["progress"]}, 200
         else:
             return {
                 "job_id": uuid,
@@ -36,7 +36,7 @@ class OpenResearchConverter:
         if isinstance(email, str):
             if isinstance(data, str):
                 try:
-                    self.jobs["uuid"]["input_data"] = pd.DataFrame(data.split(","))
+                    self._jobs["uuid"]["input_data"] = pd.DataFrame(data.split(","))
                     self.email = email
                     return {"job_id": uuid}, 202
                 except Exception as err:
@@ -81,7 +81,7 @@ class OpenResearchConverter:
         pass
 
     def _check_ready(self) -> bool:
-        if self.jobs["input_data"] is None:
+        if self._jobs["input_data"] is None:
             raise TypeError
         return True
 
@@ -89,22 +89,22 @@ class OpenResearchConverter:
         self._recieve_data(uuid, data, email)
         if self._check_ready():
             self._process(uuid)
-            return {"job_id": uuid, "status": self.jobs[uuid]["status"], "progress": self.jobs[uuid]["progress"]}, 201
+            return {"job_id": uuid, "status": self._jobs[uuid]["status"], "progress": self._jobs[uuid]["progress"]}, 201
         else:
-            return {"job_id": uuid, "status": self.jobs[uuid]["status"], "progress": self.jobs[uuid]["progress"]}, 400
+            return {"job_id": uuid, "status": self._jobs[uuid]["status"], "progress": self._jobs[uuid]["progress"]}, 400
 
     def _process(self, uuid):
         pass
 
     def return_data(self, uuid) -> tuple[dict, int]:
         self._parse_uuid(uuid=uuid)
-        if self.jobs[uuid]["status"] == "complete":
+        if self._jobs[uuid]["status"] == "complete":
             return {
                 "job_id": uuid,
-                "output_data": self.jobs[uuid]["output_data"],
+                "output_data": self._jobs[uuid]["output_data"],
             }, 200
         else:
             return {
                 "job_id": uuid,
-                "status": self.jobs[uuid]["status"],
+                "status": self._jobs[uuid]["status"],
             }, 204
