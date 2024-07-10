@@ -41,6 +41,7 @@ Pytest and Coverage:
     - Ruff
   script:
     - echo "Running Coverage with Pytest"
+    - pip3 install pytest coverage
     - coverage run -m pytest ./tests
     - echo "Uploading Coverage report to Gitlab"
   coverage: '/TOTAL.*\s+(\d+\%)/'
