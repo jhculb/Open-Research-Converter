@@ -1,29 +1,30 @@
-all: code_quality test security_test
+all: code_quality lint_and_fix test security
 
-code_quality: format_and_lint_ruff prerun_precommit
+all_no_fix: code_quality lint test security
+
+code_quality: prerun_ruff_formatter prerun_precommit
+
+lint:
+	poetry run ruff check ./src
+
+lint_and_fix:
+	poetry run ruff check --select I --fix ./src
 
 test: test_coverage
 
-security_test: bandit
+security: bandit
 
-format_and_lint_ruff:
-	poetry run ruff format
-	poetry run ruff check --fix
-
-lint_flake8:
-	poetry run flake8 ./src
-
-lint_pylint:
-	poetry run pylint "./src/"
-
-prerun_black:
-	poetry run black ./src
+prerun_ruff_formatter:
+	poetry run ruff format ./src
 
 prerun_precommit:
 	pre-commit run --all
 
 test_coverage:
 	poetry run coverage run -m pytest ./tests
+
+test_pytest:
+	poetry run pytest ./tests
 
 bandit:
 	poetry run bandit -c pyproject.toml -r ./src/

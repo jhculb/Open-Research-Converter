@@ -21,9 +21,11 @@ repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.5.1
     hooks:
-      - id: ruff
-        args: [ --fix,  --select, I]
       - id: ruff-format
+        types_or: [ python, pyi, jupyter ]
+      - id: ruff
+        types_or: [ python, pyi, jupyter ]
+        args: [ --fix, --select, I ]
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.31.0
@@ -32,7 +34,7 @@ repos:
         args: [--py37-plus]
 
   - repo: https://github.com/hadialqattan/pycln
-    rev: v1.2.5
+    rev: v2.4.0
     hooks:
       - id: pycln
         args: [--config=pyproject.toml]

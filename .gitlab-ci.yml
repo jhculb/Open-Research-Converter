@@ -17,28 +17,26 @@ stages:
 
 Base:
   stage: Build
-  image: docker-private.gesis.intra/gesis/dc-python:1.0
+  image: docker-private.gesis.intra/gesis/dc-python:1-migrate-to-ruff
   script:
-    - echo "Installing package on base image, including development packages (pytest, flake8, etc.)"
+    - echo "Installing package on base image, including development packages"
     - /python/venv/bin/python -m poetry install --with dev
     - source /builds/omino/OpenResearchConverter/.venv/bin/activate
 
-Ruff:
+Lint:
   stage: Lint
   extends: Base
   needs:
     - Base
   script:
-    - echo "Running Ruff"
-    - pip3 install ruff
-    - ruff check
-
+    - echo "Running Ruff's Linter"
+    - /python/venv/bin/python -m ruff check ./src
 
 Pytest and Coverage:
   stage: Test
   extends: Base
   needs:
-    - Ruff
+    - Lint
   script:
     - echo "Running Coverage with Pytest"
     - pip3 install pytest coverage
@@ -57,7 +55,7 @@ Bandit:
   stage: Test
   extends: Base
   needs:
-    - Ruff
+    - Lint
   script:
     - echo "Running Bandit"
     - /python/venv/bin/python -m bandit -c pyproject.toml -r ./src/ --format txt > bandit.txt
@@ -71,7 +69,7 @@ Bandit:
 Typecheck:
   stage: Test
   needs:
-    - Ruff
+    - Lint
   image: docker-private.gesis.intra/gesis/dc-nodejs:1.0
   before_script:
     - npm i -g pyright
