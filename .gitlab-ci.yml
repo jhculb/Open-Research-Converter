@@ -39,7 +39,7 @@ Pytest and Coverage:
     - Lint
   script:
     - echo "Running Coverage with Pytest"
-    - /python/venv/bin/python -m poetry install
+    - /python/venv/bin/python -m poetry install --with dev
     - /python/venv/bin/python -m poetry run coverage run -m pytest ./tests
     - echo "Uploading Coverage report to Gitlab"
   coverage: '/TOTAL.*\s+(\d+\%)/'
