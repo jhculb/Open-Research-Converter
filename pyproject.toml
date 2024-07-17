@@ -116,8 +116,6 @@ reportMissingTypeStubs = false
 pythonVersion = "3.11"
 pythonPlatform = "Linux"
 
-venv =
-venvpath =
 
 executionEnvironments = [{ root = "src" }]
 
