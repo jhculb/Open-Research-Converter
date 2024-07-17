@@ -1,12 +1,28 @@
 from __future__ import annotations
 
 from flask import Flask, request
+from flask_swagger import swagger
 
 from .open_research_converter import OpenResearchConverter
 
 app = Flask(__name__)
 orc = OpenResearchConverter()
+swagger = swagger(app)
 
+template = {
+    "swagger": "2.0",
+    "info": {
+        "title": "Flask Kafka API",
+        "description": "This API was developed using Python Flask, which provides an interface for producing and consuming messages with Apache Kafka topics via HTTP endpoints.",
+        "version": "1.0"
+}
+}
+app.config['SWAGGER'] = {
+    'title': 'Flask API',
+    'uiversion': 2,
+    'template': './resources/flasgger/swagger_ui.html'
+}
+swagger = swagger(app, template=template)
 
 @app.route("/", methods=["GET"])
 def hello_world():

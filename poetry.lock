@@ -319,6 +319,21 @@ async = ["asgiref (>=3.2)"]
 dotenv = ["python-dotenv"]
 
 [[package]]
+name = "flask-swagger"
+version = "0.2.14"
+description = "Extract swagger specs from your flask project"
+optional = false
+python-versions = "*"
+files = [
+    {file = "flask-swagger-0.2.14.tar.gz", hash = "sha256:b4085f5bc36df4c20b6548cd1413adc9cf35719b0f0695367cd542065145294d"},
+    {file = "flask_swagger-0.2.14-py2-none-any.whl", hash = "sha256:3caddb1311388eafc86f82f8e64ba386a5df6b84e5f16dfae19ca08173eba216"},
+]
+
+[package.dependencies]
+Flask = ">=0.10"
+PyYAML = ">=5.1"
+
+[[package]]
 name = "gitdb"
 version = "4.0.10"
 description = "Git Object Database"
@@ -1055,4 +1070,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "c6d2eb6d4004fa084f6fa75e9f4cb8f4fb88b0aef08a615148a9ce64e5357e4a"
+content-hash = "dfaec56914ae3b7c35c0f39f684a027d6025426628b27c6330c58d452dedc70a"
