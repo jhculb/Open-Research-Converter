@@ -79,7 +79,7 @@ Typecheck:
     - echo "Running Pyright"
     - ls -a
     - cat poetry.toml
-    - pyright -p ./pyproject.toml ./src --outputjson > report_raw.json
+    - pyright -v ./.venv -p ./pyproject.toml ./src --outputjson > report_raw.json
   after_script:
     - echo "Uploading output to Gitlab as artifact"
     - pyright-to-gitlab-ci --src report_raw.json --output report.json --base_path .
