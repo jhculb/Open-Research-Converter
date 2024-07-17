@@ -46,16 +46,19 @@ class OpenResearchConverter:
             return {"job_id": uuid}, 400
 
     def _parse_input_data(self, uuid=None, data=None, email=None):
-        uuid_is_valid = None
-        email_is_valid = None
-        data_is_valid = None
-        if uuid is not None:
+        uuid_is_valid = False
+        uuid_is_present = False if uuid is None else True
+        email_is_valid = False
+        email_is_present = False if email is None else True
+        data_is_valid = False
+        data_is_present = False if data is None else True
+        if uuid_is_present:
             uuid_is_valid = self._parse_uuid(uuid)
-        if email is not None:
+        if email_is_present:
             email_is_valid = self._parse_email(email)
-        if data is not None:
+        if data_is_present:
             data_is_valid = self._parse_data(data)
-        return uuid_is_valid & email_is_valid & data_is_valid
+        return uuid_is_valid and email_is_valid and data_is_valid
 
     def _parse_input_string(self, string: str) -> bool:
         correct = False
