@@ -39,6 +39,7 @@ install_locally:
 install_pyright:
 	python -m pip install --upgrade pip
 	pip install poetry==1.5.1
+	poetry config --local virtualenvs.in-project true
 	poetry install
 
 test_badges:

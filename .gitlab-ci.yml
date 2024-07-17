@@ -77,8 +77,7 @@ Typecheck:
     - make install_pyright
   script:
     - echo "Running Pyright"
-
-    - pyright ./src -v /root/.cache/pypoetry/virtualenvs --outputjson > report_raw.json
+    - pyright ./src --outputjson > report_raw.json
   after_script:
     - echo "Uploading output to Gitlab as artifact"
     - pyright-to-gitlab-ci --src report_raw.json --output report.json --base_path .

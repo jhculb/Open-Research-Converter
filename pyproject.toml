@@ -107,7 +107,7 @@ disable_warnings = ['no-data-collected']
 fail_under = 100
 
 [tool.pyright]
-include = ["src"]
+include = ["src", ".venv"]
 exclude = ["**/node_modules", "**/__pycache__"]
 
 reportMissingImports = true
@@ -115,6 +115,9 @@ reportMissingTypeStubs = false
 
 pythonVersion = "3.11"
 pythonPlatform = "Linux"
+
+venv =
+venvpath =
 
 executionEnvironments = [{ root = "src" }]
 
