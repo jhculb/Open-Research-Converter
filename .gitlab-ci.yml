@@ -77,6 +77,7 @@ Typecheck:
   script:
     - echo "Running Pyright"
     - pyright ./src --outputjson > report_raw.json
+  after_script:
     - echo "Uploading output to Gitlab as artifact"
     - pyright-to-gitlab-ci --src report_raw.json --output report.json --base_path .
   artifacts:
@@ -84,6 +85,7 @@ Typecheck:
       - report.json
     reports:
       codequality: report.json
+    expire_in: 1 week
 
 Deploy to Test Server:
   stage: Deploy
