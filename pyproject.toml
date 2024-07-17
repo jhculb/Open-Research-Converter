@@ -11,8 +11,6 @@ description = ""
 readme = "README.md"
 packages = [{ include = "orc", from = "src" }]
 
-[virtualenvs]
-in-project = true
 
 [tool.poetry.dependencies]
 python = "^3.11"
