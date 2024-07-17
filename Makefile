@@ -39,7 +39,7 @@ install_locally:
 install_pyright:
 	python -m pip install --upgrade pip
 	pip install poetry==1.5.1
-	poetry install --only dev --no-root
+	poetry install
 
 test_badges:
 	mkdir badges
