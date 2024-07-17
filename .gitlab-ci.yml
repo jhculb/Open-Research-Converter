@@ -74,7 +74,7 @@ Typecheck:
   before_script:
     - npm i -g pyright
     - npm i -g pyright-to-gitlab-ci
-    - make install_locally
+    - make install_pyright
   script:
     - echo "Running Pyright"
     - pyright ./src --outputjson > report_raw.json

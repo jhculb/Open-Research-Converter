@@ -36,6 +36,11 @@ install_locally:
 	pip install pre-commit==3.3.2
 	pre-commit install-hooks
 
+install_pyright:
+	python -m pip install --upgrade pip
+	pip install poetry==1.5.1
+	poetry install --only dev --no-root
+
 test_badges:
 	mkdir badges
 	python generate_badges.py
