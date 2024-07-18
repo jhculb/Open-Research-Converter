@@ -77,8 +77,7 @@ Typecheck:
     - make install_pyright
   script:
     - echo "Running Pyright"
-    - ls -a
-    - cat poetry.toml
+    - pwd
     - pyright -v ./.venv -p ./pyproject.toml ./src --outputjson > report_raw.json
   after_script:
     - echo "Uploading output to Gitlab as artifact"
