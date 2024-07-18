@@ -75,10 +75,8 @@ Typecheck:
     - npm i -g pyright
     - npm i -g pyright-to-gitlab-ci
     - make install_pyright
-    - ls .venv
-    - ls .venv/bin
   script:
-    - echo "Activating Poetry venv"
+    - echo "Activating Poetry virtual environment"
     - source .venv/bin/activate
     - echo "Running Pyright"
     - pyright ./src --outputjson > report_raw.json
