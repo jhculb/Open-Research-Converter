@@ -75,10 +75,13 @@ Typecheck:
     - npm i -g pyright
     - npm i -g pyright-to-gitlab-ci
     - make install_pyright
+    - ls .venv
+    - ls .venv/bin
   script:
+    - echo "Activating Poetry venv"
+    - source .venv/bin/activate
     - echo "Running Pyright"
-    - pwd
-    - pyright . --outputjson > report_raw.json
+    - pyright ./src --stats --dependencies --outputjson > report_raw.json
   after_script:
     - echo "Uploading output to Gitlab as artifact"
     - pyright-to-gitlab-ci --src report_raw.json --output report.json --base_path .

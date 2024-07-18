@@ -108,13 +108,12 @@ fail_under = 100
 
 [tool.pyright]
 include = ["src"]
-exclude = ["**/node_modules", "**/__pycache__", ".venv"]
+exclude = ["**/node_modules", "**/__pycache__"]
 
 reportMissingImports = true
 reportMissingTypeStubs = false
 
 pythonVersion = "3.11"
-pythonPlatform = "Linux"
 verboseOutput = true
 
 executionEnvironments = [{ root = "src" }]
