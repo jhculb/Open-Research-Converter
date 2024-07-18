@@ -78,7 +78,7 @@ Typecheck:
   script:
     - echo "Running Pyright"
     - pwd
-    - pyright -v /builds/omino/OpenResearchConverter/.venv -p ./pyproject.toml ./src --outputjson > report_raw.json
+    - pyright -v /builds/omino/OpenResearchConverter/.venv -p ./pyproject.toml . --outputjson > report_raw.json
   after_script:
     - echo "Uploading output to Gitlab as artifact"
     - pyright-to-gitlab-ci --src report_raw.json --output report.json --base_path .
