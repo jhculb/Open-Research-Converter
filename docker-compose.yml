@@ -15,13 +15,21 @@ services:
       - nginx_data:/etc/nginx
       - nginx_data:/etc/ssl/private
     restart: always
+    networks:
+      - frontend
 
   frontend:
-    container_name: reverse-proxy
+    container_name: frontend
     build:
       context: ./
       dockerfile: ./src/orc/frontend/Dockerfile
       environment: ./src/environment/frontend/frontend.env
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - frontend
+      - backend
 
   backend:
     container_name: orc-backend
@@ -30,9 +38,15 @@ services:
       dockerfile: ./src/orc/backend/Dockerfile
       environment: ./src/environment/backend/backend.env
     ports:
-      - "8003:8003:"
-      - "4431:443"
+      - "80:80"
+      - "443:443"
     restart: always
+    networks:
+      - backend
 
 volumes:
     nginx_data: {}
+
+networks:
+  frontend:
+  backend:
