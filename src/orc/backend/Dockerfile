@@ -12,7 +12,7 @@ EXPOSE 8003/tcp
 
 WORKDIR /src/
 
-COPY ./src/orc/backend/ ./
+COPY orc-backend .
 
 RUN poetry install --without dev
 
