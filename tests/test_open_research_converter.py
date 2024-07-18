@@ -15,7 +15,6 @@ def arrange_blank_orc():
     yield OpenResearchConverter()
 
 
-
 def hello_world():
     return "hello world"
 
@@ -63,8 +62,10 @@ def test_generate_new_job():
     assert "status" in orc._jobs[id]
     assert "progress" in orc._jobs[id]
 
+
 def test_process():
     pass
+
 
 def test_return_data():
     pass
