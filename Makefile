@@ -46,10 +46,12 @@ test_badges:
 	mkdir badges
 	python generate_badges.py
 
-react_frontend:
-#   install node.js and npm (for me the working versions are node=16.17.1 and npm=8.15.0)
-    go to directory: cd /src/orc/frontend/orc-demo
-    npm install     # to install required modules/packages before running
-    npm start       # to run a project
-    npm run build   # to create a production build
-
+start_fontend:
+	cd ./src/orc/frontend/orc-demo
+	npm start
+# react_frontend:
+# #   install node.js and npm (for me the working versions are node=16.17.1 and npm=8.15.0)
+#     go to directory: cd /src/orc/frontend/orc-demo
+#     npm install     # to install required modules/packages before running
+#     npm start       # to run a project
+#     npm run build   # to create a production build
