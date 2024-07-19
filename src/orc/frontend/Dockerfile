@@ -1,5 +1,8 @@
-FROM node:latest
-COPY orc-demo /orc-demo/
+FROM node:16.17.1
+EXPOSE 3000
 WORKDIR /orc-demo/
+COPY orc-demo/package.json orc-demo/package-lock.json /orc-demo/
 RUN npm install
-ENTRYPOINT [ "npm", "start" ]
+COPY orc-demo/public/ /orc-demo/public
+COPY orc-demo/src /orc-demo/src
+CMD [ "npm", "start" ]

@@ -6,10 +6,10 @@ tests
 .dockerignore
 .gitignore
 .gitlab-ci.yml
+docker-compose.yml
 .pre-commit-config.yaml
 .pypirc
 coverage.xml
 Frontend basic plan.png
 generate_badges.py
 Makefile
-README.md

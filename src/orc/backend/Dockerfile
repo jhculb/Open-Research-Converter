@@ -5,15 +5,18 @@ ARG POETRY_VERSION=1.5.1
 RUN python -m pip install --upgrade pip \
 	&& pip install "poetry==$POETRY_VERSION"
 
-FROM project-base AS project-runner
-EXPOSE 80/tcp
-EXPOSE 443/tcp
-EXPOSE 8003/tcp
+FROM project-base AS project-install
 
-WORKDIR /src/
+WORKDIR /app/
 
-COPY orc-backend .
+COPY pyproject.toml poetry.lock README.md /app/
+COPY src/orc/backend /app/src/orc/backend
 
 RUN poetry install --without dev
 
-ENTRYPOINT [ "gunicorn app:app -w 2 --threads 2 -b 0.0.0.0:8003" ]
+FROM project-install AS project-runner
+
+EXPOSE 8002
+WORKDIR /app/src/orc/backend/orc-backend
+
+ENTRYPOINT [ "poetry", "run gunicorn", "app:app", "-b", "0.0.0.0:8002" ]
