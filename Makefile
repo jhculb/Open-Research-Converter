@@ -1,33 +1,30 @@
-all: code_quality lint test security_test
+all: code_quality lint_and_fix test security
 
-code_quality: format_ruff prerun_precommit
+all_no_fix: code_quality lint test security
 
-lint: lint_ruff
+code_quality: prerun_ruff_formatter prerun_precommit
+
+lint:
+	poetry run ruff check ./src
+
+lint_and_fix:
+	poetry run ruff check --select I --fix ./src
 
 test: test_coverage
 
-security_test: bandit
+security: bandit
 
-lint_ruff:
-	poetry run ruff check
-
-format_ruff:
-	poetry run ruff format
-
-lint_flake8:
-	poetry run flake8 ./src
-
-lint_pylint:
-	poetry run pylint "./src/"
-
-prerun_black:
-	poetry run black ./src
+prerun_ruff_formatter:
+	poetry run ruff format ./src
 
 prerun_precommit:
 	pre-commit run --all
 
 test_coverage:
 	poetry run coverage run -m pytest ./tests
+
+test_pytest:
+	poetry run pytest ./tests
 
 bandit:
 	poetry run bandit -c pyproject.toml -r ./src/
@@ -39,14 +36,34 @@ install_locally:
 	pip install pre-commit==3.3.2
 	pre-commit install-hooks
 
+install_pyright:
+	python -m pip install --upgrade pip
+	pip install poetry==1.5.1
+	poetry config --local virtualenvs.in-project true
+	poetry install
+
+run:
+	docker-compose down && docker-compose up --build -d
+
+view_container_logs_backend:
+	docker logs --tail 50 --follow --timestamps orc-backend
+
+view_container_logs_frontend:
+	docker logs --tail 50 --follow --timestamps orc-frontend
+
+view_container_logs_reverse_proxy:
+	docker logs --tail 50 --follow --timestamps reverse-proxy
+
+view_running_containers:
+	docker ps
+
 test_badges:
 	mkdir badges
 	python generate_badges.py
 
-react_frontend:
-#   install node.js and npm (for me the working versions are node=16.17.1 and npm=8.15.0)
-    go to directory: cd /src/orc/frontend/orc-demo
-    npm install     # to install required modules/packages before running
-    npm start       # to run a project
-    npm run build   # to create a production build
-
+# react_frontend:
+# #   install node.js and npm (for me the working versions are node=16.17.1 and npm=8.15.0)
+#     go to directory: cd /src/orc/frontend/orc-demo
+#     npm install     # to install required modules/packages before running
+#     npm start       # to run a project
+#     npm run build   # to create a production build

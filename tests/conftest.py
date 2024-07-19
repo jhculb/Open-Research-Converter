@@ -10,7 +10,6 @@ In VSCode, Code Coverage is recorded in config.xml. Delete this file to reset re
 
 from __future__ import annotations
 
-
 import pytest
 from _pytest.nodes import Item
 

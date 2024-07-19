@@ -18,11 +18,14 @@ repos:
       - id: requirements-txt-fixer
       - id: trailing-whitespace
 
-  - repo: https://github.com/PyCQA/isort
-    rev: 5.12.0
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.5.1
     hooks:
-      - id: isort
-        args: ["-a", "from __future__ import annotations"]
+      - id: ruff-format
+        types_or: [ python, pyi, jupyter ]
+      - id: ruff
+        types_or: [ python, pyi, jupyter ]
+        args: [ --fix, --select, I ]
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.31.0
@@ -31,7 +34,7 @@ repos:
         args: [--py37-plus]
 
   - repo: https://github.com/hadialqattan/pycln
-    rev: v1.2.5
+    rev: v2.4.0
     hooks:
       - id: pycln
         args: [--config=pyproject.toml]
@@ -41,6 +44,11 @@ repos:
     rev: v2.1.0
     hooks:
       - id: codespell
+        exclude: >
+            (?x)^(
+                .*\.json|
+                .*\.pyc
+            )$
 
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.9.0
