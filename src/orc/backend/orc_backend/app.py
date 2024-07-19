@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import logging
+
 from flask import Flask, request
 
 from .open_research_converter import OpenResearchConverter
 
 app = Flask(__name__)
 orc = OpenResearchConverter()
+logger = logging.getLogger(__name__)
 
 
 @app.route("/", methods=["GET"])

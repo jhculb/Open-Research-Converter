@@ -32,7 +32,7 @@ bandit:
 install_locally:
 	python -m pip install --upgrade pip
 	pip install poetry==1.5.1
-	poetry install --no-root
+	poetry install --with dev --no-root
 	pip install pre-commit==3.3.2
 	pre-commit install-hooks
 

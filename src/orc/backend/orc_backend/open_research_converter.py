@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import re
 import uuid
+from typing import List
 
 import pandas as pd
-
-# from validate_email import validate_email
+from orc.backend.orc_backend.app import logger
 
 
 class OpenResearchConverter:
@@ -23,7 +23,7 @@ class OpenResearchConverter:
         return {"job_id": new_uuid}, 201
 
     def get_status(self, uuid: str) -> tuple[dict, int]:
-        self._parse_uuid(uuid=uuid)
+        self._validate_uuid(uuid=uuid)
         if uuid in self._jobs.keys():
             return {"job_id": uuid, "status": self._jobs[uuid]["status"], "progress": self._jobs[uuid]["progress"]}, 200
         else:
@@ -31,22 +31,20 @@ class OpenResearchConverter:
                 "job_id": uuid,
             }, 400
 
-    def _recieve_data(self, uuid, data: str, email: str) -> tuple[dict, int]:
-        self._parse_uuid(uuid=uuid)
-
-        if isinstance(email, str):
-            if isinstance(data, str):
-                try:
-                    self._jobs["uuid"]["input_data"] = pd.DataFrame(data.split(","))
-                    self.email = email
-                    return {"job_id": uuid}, 202
-                except Exception as err:
-                    print(err)  # this may be a log file
-                    return {"job_id": uuid}, 400
+    def _recieve_data(self, uuid, data: list[str], email: str) -> tuple[dict, int]:
+        if self._validate_input_data(uuid, data, email):
+            try:
+                self._jobs[uuid]["input_data"] = pd.DataFrame(data)
+                self._jobs[uuid]["email"] = email
+                self._jobs[uuid]["status"] = "Ready"
+                return {"job_id": uuid, "status": self._jobs[uuid]["status"]}, 202
+            except Exception as err:
+                logger.error(err)
+                return {"job_id": uuid}, 400
         else:
             return {"job_id": uuid}, 400
 
-    def _parse_input_data(self, uuid=None, data=None, email=None):
+    def _validate_input_data(self, uuid=None, data=None, email=None) -> bool:
         uuid_is_valid = False
         uuid_is_present = False if uuid is None else True
         email_is_valid = False
@@ -54,42 +52,47 @@ class OpenResearchConverter:
         data_is_valid = False
         data_is_present = False if data is None else True
         if uuid_is_present:
-            uuid_is_valid = self._parse_uuid(uuid)
+            uuid_is_valid = self._validate_uuid(uuid)
         if email_is_present:
-            email_is_valid = self._parse_email(email)
+            email_is_valid = self._validate_email(uuid, email)
         if data_is_present:
-            data_is_valid = self._parse_data(data)
+            data_is_valid = self._validate_data(uuid, data)
         return uuid_is_valid and email_is_valid and data_is_valid
 
-    def _parse_input_string(self, string: str) -> bool:
-        correct = False
-        return correct
+    def _validate_uuid(self, uuid: str) -> bool:
+        try:
+            assert isinstance(uuid, str)
+        except AssertionError as err:
+            logger.error()
+            logger.error(err)
+            return False
+        try:
+            assert uuid in self._jobs.keys()
+        except AssertionError as err:
+            logger.error("uuid not in Jobs")
+            logger.error(err)
+            return False
+        return True
 
-    def _parse_uuid(self, uuid):
-        pass
+    def _validate_email(self, uuid: str, email: str) -> bool:
+        try:
+            assert isinstance(email, str)
+        except AssertionError as err:
+            logger.error(f"email not string for uuid {uuid}")
+            logger.error(err)
+            return False
+        return True
 
-    def _parse_email(self, email):
-        # is_valid = validate_email(
-        #     email_address=email,
-        #     check_regex=True,
-        #     check_mx=True,
-        #     from_address="my@from.addr.ess",
-        #     helo_host="my.host.name",
-        #     smtp_timeout=10,
-        #     dns_timeout=10,
-        #     use_blacklist=True,
-        # )
-        pass
-
-    def _parse_data(self, data: list) -> bool:
-        if not isinstance(data, list):
-            raise TypeError("Data passed was not a list")
-        else:
-            list(map(lambda x: isinstance(x, str), data))
+    def _validate_data(self, uuid: str, data: list[str]) -> bool:
         # Assumes list of strings containing dois
         doi_regex_str = r"^10.\d{4,9}\/[-._;()/:A-Z0-9]+$"
-        regex = re.compile(doi_regex_str)
-        return len(list(filter(regex.match, data))) == len(data)
+        try:
+            regex = re.compile(doi_regex_str)
+            return len(list(filter(regex.match, data))) == len(data)
+        except TypeError as err:
+            logger.error(f"Incorrect type passed to _validate_data - validation failed for uuid {uuid}")
+            logger.error(err)
+            return False
 
     def _check_ready(self) -> bool:
         if self._jobs["input_data"] is None:
@@ -108,7 +111,7 @@ class OpenResearchConverter:
         pass
 
     def return_data(self, uuid) -> tuple[dict, int]:
-        self._parse_uuid(uuid=uuid)
+        self._validate_uuid(uuid=uuid)
         if self._jobs[uuid]["status"] == "complete":
             return {
                 "job_id": uuid,
