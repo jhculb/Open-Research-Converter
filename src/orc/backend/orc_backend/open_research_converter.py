@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import uuid
 
 import pandas as pd
@@ -80,8 +81,15 @@ class OpenResearchConverter:
         # )
         pass
 
-    def _parse_data(self, data):
-        pass
+    def _parse_data(self, data: list) -> bool:
+        if not isinstance(data, list):
+            raise TypeError("Data passed was not a list")
+        else:
+            list(map(lambda x: isinstance(x, str), data))
+        # Assumes list of strings containing dois
+        doi_regex_str = r"^10.\d{4,9}\/[-._;()/:A-Z0-9]+$"
+        regex = re.compile(doi_regex_str)
+        return len(list(filter(regex.match, data))) == len(data)
 
     def _check_ready(self) -> bool:
         if self._jobs["input_data"] is None:

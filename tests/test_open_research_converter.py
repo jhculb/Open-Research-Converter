@@ -63,6 +63,17 @@ def test_generate_new_job():
     assert "progress" in orc._jobs[id]
 
 
+def test_parse_data():
+    orc = OpenResearchConverter()
+    valid_doi_list = ["10.48550/ARXIV.2406.15154"]
+    assert orc._parse_data(valid_doi_list)
+    valid_doi_list = ["10.48550/ARXIV.2406.15154", "10.5281/ZENODO.10997451", "10.5281/ZENODO.10777334"]
+    assert orc._parse_data(valid_doi_list)
+    invalid_doi_list = ["as"]
+    assert not orc._parse_data(invalid_doi_list)
+    invalid_doi_list = [1]
+
+
 def test_process():
     pass
 
