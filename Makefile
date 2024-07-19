@@ -42,13 +42,25 @@ install_pyright:
 	poetry config --local virtualenvs.in-project true
 	poetry install
 
+run:
+	docker-compose down && docker-compose up --build -d
+
+view_container_logs_backend:
+	docker logs --tail 50 --follow --timestamps orc-backend
+
+view_container_logs_frontend:
+	docker logs --tail 50 --follow --timestamps orc-frontend
+
+view_container_logs_reverse_proxy:
+	docker logs --tail 50 --follow --timestamps reverse-proxy
+
+view_running_containers:
+	docker ps
+
 test_badges:
 	mkdir badges
 	python generate_badges.py
 
-start_fontend:
-	cd ./src/orc/frontend/orc-demo
-	npm start
 # react_frontend:
 # #   install node.js and npm (for me the working versions are node=16.17.1 and npm=8.15.0)
 #     go to directory: cd /src/orc/frontend/orc-demo
