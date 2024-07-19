@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+import logging
 import re
 import uuid
-from typing import List
 
 import pandas as pd
-from orc.backend.orc_backend.app import logger
+
+logger = logging.getLogger(__name__)
 
 
 class OpenResearchConverter:
@@ -61,14 +62,16 @@ class OpenResearchConverter:
 
     def _validate_uuid(self, uuid: str) -> bool:
         try:
-            assert isinstance(uuid, str)
+            if not isinstance(uuid, str):
+                raise AssertionError("uuid must be a string")
         except AssertionError as err:
-            logger.error()
+            logger.error("uuid passed to _validate_uuid was not a string")
             logger.error(err)
             return False
         try:
-            assert uuid in self._jobs.keys()
-        except AssertionError as err:
+            if uuid in self._jobs.keys():
+                raise KeyError(f"uuid {uuid} not in job keys")
+        except KeyError as err:
             logger.error("uuid not in Jobs")
             logger.error(err)
             return False
@@ -76,7 +79,8 @@ class OpenResearchConverter:
 
     def _validate_email(self, uuid: str, email: str) -> bool:
         try:
-            assert isinstance(email, str)
+            if not isinstance(email, str):
+                raise AssertionError("email passed to _validate_email must be a string")
         except AssertionError as err:
             logger.error(f"email not string for uuid {uuid}")
             logger.error(err)

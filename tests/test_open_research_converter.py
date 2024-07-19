@@ -6,6 +6,8 @@
 
 from __future__ import annotations
 
+from uuid import uuid4
+
 import pytest
 from orc.backend.orc_backend.open_research_converter import OpenResearchConverter
 
@@ -52,26 +54,26 @@ def test_generate_new_job():
     assert code == 201
     assert isinstance(content, dict)
     assert "job_id" in content
-    id = content["job_id"]
-    assert isinstance(id, str)
-    assert id in orc._jobs
-    assert isinstance(orc._jobs[id], dict)
-    assert "input_data" in orc._jobs[id]
-    assert "output_data" in orc._jobs[id]
-    assert "email" in orc._jobs[id]
-    assert "status" in orc._jobs[id]
-    assert "progress" in orc._jobs[id]
+    identifier = content["job_id"]
+    assert isinstance(identifier, str)
+    assert identifier in orc._jobs
+    assert isinstance(orc._jobs[identifier], dict)
+    assert "input_data" in orc._jobs[identifier]
+    assert "output_data" in orc._jobs[identifier]
+    assert "email" in orc._jobs[identifier]
+    assert "status" in orc._jobs[identifier]
+    assert "progress" in orc._jobs[identifier]
 
 
-def test_parse_data():
+def test_validate_data():
     orc = OpenResearchConverter()
+    identifier = uuid4().__str__()
     valid_doi_list = ["10.48550/ARXIV.2406.15154"]
-    assert orc._parse_data(valid_doi_list)
+    assert orc._validate_data(identifier, valid_doi_list)
     valid_doi_list = ["10.48550/ARXIV.2406.15154", "10.5281/ZENODO.10997451", "10.5281/ZENODO.10777334"]
-    assert orc._parse_data(valid_doi_list)
+    assert orc._validate_data(identifier, valid_doi_list)
     invalid_doi_list = ["as"]
-    assert not orc._parse_data(invalid_doi_list)
-    invalid_doi_list = [1]
+    assert not orc._validate_data(identifier, invalid_doi_list)
 
 
 def test_process():
