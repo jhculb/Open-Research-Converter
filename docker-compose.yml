@@ -2,16 +2,13 @@ services:
   nginx:
     container_name: reverse-proxy
     hostname: reverse
-    image: nginx:latest
+    build:
+      context: ./src/orc/nginx
     depends_on:
       - frontend
       - backend
     ports:
       - "80:80"
-      - "443:443"
-    volumes:
-      - nginx_data:/etc/nginx
-      - nginx_data:/etc/ssl/private
     restart: always
   #   networks:
   #     - frontend
