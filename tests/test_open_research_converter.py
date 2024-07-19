@@ -7,7 +7,7 @@
 from __future__ import annotations
 
 import pytest
-from orc.backend.open_research_converter import OpenResearchConverter
+from orc.backend.orc_backend.open_research_converter import OpenResearchConverter
 
 
 @pytest.fixture

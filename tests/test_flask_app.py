@@ -6,7 +6,7 @@
 
 from __future__ import annotations
 
-from orc.backend.app import hello_world
+from orc.backend.orc_backend.app import hello_world
 
 
 def hello_test():
