@@ -83,6 +83,7 @@ Typecheck:
   after_script:
     - echo "Uploading output to Gitlab as artifact"
     - pyright-to-gitlab-ci --src report_raw.json --output report.json --base_path .
+    - python -m json.tool report.json
   artifacts:
     paths:
       - report.json
