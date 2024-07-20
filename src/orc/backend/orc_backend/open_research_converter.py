@@ -47,16 +47,13 @@ class OpenResearchConverter:
 
     def _validate_input_data(self, uuid=None, data=None, email=None) -> bool:
         uuid_is_valid = False
-        uuid_is_present = False if uuid is None else True
         email_is_valid = False
-        email_is_present = False if email is None else True
         data_is_valid = False
-        data_is_present = False if data is None else True
-        if uuid_is_present:
+        if uuid is not None:
             uuid_is_valid = self._validate_uuid(uuid)
-        if email_is_present:
+        if email is not None:
             email_is_valid = self._validate_email(uuid, email)
-        if data_is_present:
+        if data is not None:
             data_is_valid = self._validate_data(uuid, data)
         return uuid_is_valid and email_is_valid and data_is_valid
 
