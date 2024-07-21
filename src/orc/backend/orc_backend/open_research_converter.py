@@ -45,7 +45,7 @@ class OpenResearchConverter:
         else:
             return {"job_id": uuid}, 400
 
-    def _validate_input_data(self, uuid: str = None, data: list = None, email: str = None) -> bool:
+    def _validate_input_data(self, uuid: str | None = None, data: list | None = None, email: str | None = None) -> bool:
         uuid_is_valid = False
         email_is_valid = False
         data_is_valid = False
