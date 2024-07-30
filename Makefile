@@ -21,7 +21,7 @@ prerun_precommit:
 	pre-commit run --all
 
 test_coverage:
-	poetry run coverage run -m pytest ./tests
+	poetry run coverage run -m pytest --capture=tee-sys ./tests
 
 test_pytest:
 	poetry run pytest --capture=tee-sys ./tests
