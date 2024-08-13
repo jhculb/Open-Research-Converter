@@ -4,7 +4,6 @@ import asyncio
 import re
 import uuid
 
-import pandas as pd
 from orc.backend.orc_backend.requester import openalex_requester
 
 
@@ -134,8 +133,16 @@ class OpenResearchConverter(openalex_requester):
             print("READY TO GO")
             try:
                 await self._process(job_id)
-            except:
+            except asyncio.CancelledError as err:
                 self._jobs[job_id]["progress"] = "failed"
+                self._logger.error(err)
+                return {
+                    "job_id": job_id,
+                    "status": self._jobs[job_id]["progress"],
+                }, 500
+            except asyncio.TimeoutError as err:
+                self._jobs[job_id]["progress"] = "failed"
+                self._logger.error(err)
                 return {
                     "job_id": job_id,
                     "status": self._jobs[job_id]["progress"],
