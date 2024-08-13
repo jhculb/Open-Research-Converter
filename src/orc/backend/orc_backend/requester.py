@@ -6,7 +6,7 @@ import typing
 from functools import wraps
 
 import requests
-from httpx import AsyncClient
+from httpx import AsyncClient, Response
 
 HEALTHCHECK_ADDR = "https://api.openalex.org/?mailto=jack.culbert@gesis.org"
 HEALTH_CHECK_RESPONSE = {"documentation_url": "https://openalex.org/rest-api", "msg": "Don't panic", "version": "0.0.1"}
@@ -50,7 +50,7 @@ class RateLimitedClient(AsyncClient):
         wait.add_done_callback(wait_cb)
 
     @wraps(AsyncClient.send)
-    async def send(self, *args, **kwargs):
+    async def send(self, *args, **kwargs) -> Response:
         await self.semaphore.acquire()
         send = asyncio.create_task(super().send(*args, **kwargs))
         self._schedule_semaphore_release()
@@ -115,7 +115,7 @@ class openalex_requester:
             return None
 
     async def _request(self, chunked_data: str, job_id: str, chunklen: int, pos: int) -> list[str]:
-        self._logger.info(f"sending request {pos} for job {job_id}", flush=True)
+        self._logger.info(f"sending request {pos} for job {job_id}")
         async with AsyncClient() as client:
             response = await client.get(
                 f'https://api.openalex.org/works?filter=doi:{chunked_data}&per-page={chunklen}&mailto={self._jobs[job_id]["email"]}'
