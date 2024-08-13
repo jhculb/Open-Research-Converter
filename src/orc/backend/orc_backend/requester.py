@@ -2,8 +2,8 @@ import asyncio
 import datetime as dt
 import itertools
 import logging
-import typing
 from functools import wraps
+from typing import Any, Coroutine, Generator
 
 import requests
 from httpx import AsyncClient, Response
@@ -49,12 +49,15 @@ class RateLimitedClient(AsyncClient):
 
         wait.add_done_callback(wait_cb)
 
-    @wraps(AsyncClient.send)
-    async def send(self, *args, **kwargs) -> Response:
+    async def send(self, *args, **kwargs) -> asyncio.Task:
         await self.semaphore.acquire()
-        send = asyncio.create_task(super().send(*args, **kwargs))
+        response = asyncio.create_task(self._send(*args, **kwargs))
         self._schedule_semaphore_release()
-        return await send
+        return response
+
+    @wraps(AsyncClient.send)
+    async def _send(self, *args, **kwargs) -> Coroutine[Any, Any, Response]:
+        return super().send(*args, **kwargs)
 
 
 class openalex_requester:
@@ -98,9 +101,7 @@ class openalex_requester:
         self._jobs[job_id]["output_data"] = output
         self._jobs[job_id]["status"] = "complete"
 
-    def _chunk_input_data(
-        self, job_id: str, chunksize: int = 50
-    ) -> typing.Generator[tuple[str, int], None, None] | None:
+    def _chunk_input_data(self, job_id: str, chunksize: int = 50) -> Generator[tuple[str, int], None, None] | None:
         if not isinstance(chunksize, int):
             self._logger.error("Non-int passed as chunk")
             return None
