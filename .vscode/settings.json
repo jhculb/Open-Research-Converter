@@ -16,4 +16,5 @@
 	"editor.rulers": [
 		120
 	],
+	"python.analysis.typeCheckingMode": "basic",
 }

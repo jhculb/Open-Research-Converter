@@ -4,9 +4,16 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "Open Research Converter"
-version = "0.0.1"
-authors = ["Jack Culbert <jack.culbert@gesis.org>", "Ahsan Shahid <ahsan.shahid@gesis.org>", "Philipp Mayr <philipp.mayr@gesis.org>"]
-maintainers = ["Jack Culbert <jack.culbert@gesis.org>", "Ahsan Shahid <ahsan.shahid@gesis.org>"]
+version = "0.0.2"
+authors = [
+    "Jack Culbert <jack.culbert@gesis.org>",
+    "Ahsan Shahid <ahsan.shahid@gesis.org>",
+    "Philipp Mayr <philipp.mayr@gesis.org>",
+]
+maintainers = [
+    "Jack Culbert <jack.culbert@gesis.org>",
+    "Ahsan Shahid <ahsan.shahid@gesis.org>",
+]
 description = ""
 readme = "README.md"
 packages = [{ include = "orc", from = "src" }]
@@ -14,11 +21,12 @@ packages = [{ include = "orc", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-flask = "^3.0.3"
 psycopg = "^3.1.18"
-requests = "^2.31.0"
 pandas = "^2.2.2"
 gunicorn = "^22.0.0"
+flask = { extras = ["async"], version = "^3.0.3" }
+httpx = "^0.27.0"
+requests = "^2.32.3"
 
 [tool.poetry.group.dev]
 optional = true

@@ -28,25 +28,21 @@ def generate_new_job():
     return orc.generate_new_job()
 
 
-def send_data():
-    return
-
-
 @app.route("/start_processing", methods=["POST"])
-def start_processing():
-    uuid = request.form["job_id"]
+async def start_processing():
+    job_id = request.form["job_id"]
     text = request.form["input_data"]
     email = request.form["email"]
-    return orc.process(uuid, text, email)
+    return await orc.process(job_id, text, email)
 
 
 @app.route("/get_status", methods=["POST"])
 def get_status():
-    uuid = request.form["job_id"]
-    return orc.get_status(uuid)
+    job_id = request.form["job_id"]
+    return orc.get_status(job_id)
 
 
-@app.route("/recieve_data", methods=["POST"])
-def recieve_data():
-    uuid = request.form["job_id"]
-    return orc.return_data(uuid)
+@app.route("/get_data", methods=["GET"])
+def send_data():
+    job_id = request.form["job_id"]
+    return orc.return_data(job_id)
