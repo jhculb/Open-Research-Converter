@@ -2,11 +2,10 @@ import asyncio
 import datetime as dt
 import itertools
 import logging
-from functools import wraps
-from typing import Any, Coroutine, Generator
+from typing import Generator
 
 import requests
-from httpx import AsyncClient, Response
+from httpx import AsyncClient
 
 HEALTHCHECK_ADDR = "https://api.openalex.org/?mailto=jack.culbert@gesis.org"
 HEALTH_CHECK_RESPONSE = {"documentation_url": "https://openalex.org/rest-api", "msg": "Don't panic", "version": "0.0.1"}

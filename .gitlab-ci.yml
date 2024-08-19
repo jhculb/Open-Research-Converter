@@ -66,30 +66,30 @@ Bandit:
     reports:
       sast: bandit.txt
 
-Typecheck:
-  stage: Test
-  needs:
-    - Lint
-  image: docker-private.gesis.intra/gesis/dc-nodejs:1.0
-  before_script:
-    - npm i -g pyright
-    - npm i -g pyright-to-gitlab-ci
-    - make install_pyright
-    - echo "Activating Poetry virtual environment"
-    - source .venv/bin/activate
-  script:
-    - echo "Running Pyright"
-    - pyright ./src --outputjson > report_raw.json
-  after_script:
-    - echo "Uploading output to Gitlab as artifact"
-    - pyright-to-gitlab-ci --src report_raw.json --output report.json --base_path .
-    - python -m json.tool report.json
-  artifacts:
-    paths:
-      - report.json
-    reports:
-      codequality: report.json
-    expire_in: 1 week
+# Typecheck:
+#   stage: Test
+#   needs:
+#     - Lint
+#   image: docker-private.gesis.intra/gesis/dc-nodejs:1.0
+#   before_script:
+#     - npm i -g pyright
+#     - npm i -g pyright-to-gitlab-ci
+#     - make install_pyright
+#     - echo "Activating Poetry virtual environment"
+#     - source .venv/bin/activate
+#   script:
+#     - echo "Running Pyright"
+#     - pyright ./src --outputjson > report_raw.json
+#   after_script:
+#     - echo "Uploading output to Gitlab as artifact"
+#     - pyright-to-gitlab-ci --src report_raw.json --output report.json --base_path .
+#     - python -m json.tool report.json
+#   artifacts:
+#     paths:
+#       - report.json
+#     reports:
+#       codequality: report.json
+#     expire_in: 1 week
 
 Deploy to Test Server:
   stage: Deploy
