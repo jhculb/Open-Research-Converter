@@ -38,11 +38,11 @@ function App() {
     //---- function called on Download Result button press
     const getResult = () => {
         //---- endpoint receiving the GET request upon the button press
-        let domain = 'https://demo-outcite.gesis.org:443/users/_search';
-        let params = '?q=_id:0bc9160f0359aeb3e2b766e9cc4a33bc';
+        let domain = 'http://localhost/api/new';
+        let params = '';
         let url = domain + params;
 
-        fetch(url, { method: 'GET'})
+        fetch(url, { method: 'GET' })
             .then(response => response.json())
             .then(result => {
                 setResult(JSON.stringify(result));
@@ -70,11 +70,11 @@ function App() {
     //---- function called on Submit button press
     const onSubmit = () => {
         //---- endpoint receiving the GET request upon the button press
-        let domain = 'https://demo-outcite.gesis.org:443/users/_search';
-        let params = '?q=_id:0bc9160f0359aeb3e2b766e9cc4a33bc';
+        let domain = 'http://localhost/api/new';
+        let params = '';
         let url = domain + params;
 
-        fetch(url, { method: 'GET'})
+        fetch(url, { method: 'GET' })
             .then(response => response.json())
             .then(result => {
                 setText(JSON.stringify(result));
@@ -100,33 +100,33 @@ function App() {
     }
 
     return (
-    <div className="container">
-        <div className="row header">
-            <Header title="Open Research Converter - Demo"/>
-        </div>
-        <div className="row">
-            <div className="col-6">
-                <TextBox customClass={email===""?"":(validEmail?"custom-valid-focus":"custom-invalid-focus")} title={"Email"} rows={1} placeholder={'Enter your email address!'} value={email} type="email" onChange={handleEmailChange}/>
+        <div className="container">
+            <div className="row header">
+                <Header title="Open Research Converter - Demo" />
             </div>
-            <div className="col-6 upload-border mt-1 mb-2">
-                <UploadFile/>
-            </div>
-            <div className="col-6">
-                <TextBox title={"Text Box"} rows={7} placeholder={'Enter or paste your comma separated strings here!'} value={text} onChange={handleTextChange}/>
-                <div className="d-flex justify-content-end mt-2">
-                    <button type="button" className="btn btn-secondary" onClick={() => onSubmit()}>Submit</button>
+            <div className="row">
+                <div className="col-6">
+                    <TextBox customClass={email === "" ? "" : (validEmail ? "custom-valid-focus" : "custom-invalid-focus")} title={"Email"} rows={1} placeholder={'Enter your email address!'} value={email} type="email" onChange={handleEmailChange} />
+                </div>
+                <div className="col-6 upload-border mt-1 mb-2">
+                    <UploadFile />
+                </div>
+                <div className="col-6">
+                    <TextBox title={"Text Box"} rows={7} placeholder={'Enter or paste your comma separated strings here!'} value={text} onChange={handleTextChange} />
+                    <div className="d-flex justify-content-end mt-2">
+                        <button type="button" className="btn btn-secondary" onClick={() => onSubmit()}>Submit</button>
+                    </div>
+                </div>
+                <div className="col-6">
+                    <TextBox title={"Text Box"} rows={7} placeholder={'Here are the first N results returned!'} value={result} readOnly={true} />
+                    {/*onChange={handleResultChange}*/}
+                    <div className="d-flex justify-content-end mt-2">
+                        <button type="button" className="btn btn-secondary" onClick={() => getResult()}>Download Result</button>
+                    </div>
                 </div>
             </div>
-            <div className="col-6">
-                <TextBox title={"Text Box"} rows={7} placeholder={'Here are the first N results returned!'} value={result} readOnly={true}/>
-                {/*onChange={handleResultChange}*/}
-                <div className="d-flex justify-content-end mt-2">
-                    <button type="button" className="btn btn-secondary" onClick={() => getResult()}>Download Result</button>
-                </div>
-            </div>
         </div>
-    </div>
-  );
+    );
 }
 
 export default App;
