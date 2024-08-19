@@ -101,7 +101,6 @@ Deploy to Production Server:
   stage: Deploy
   needs:
     - Pytest and Coverage
-    - Typecheck
   environment: production
   when: manual
   script: echo "Define your deployment script!"
