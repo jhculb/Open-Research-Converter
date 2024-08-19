@@ -47,7 +47,9 @@ repos:
         exclude: >
             (?x)^(
                 .*\.json|
-                .*\.pyc
+                .*\.pyc|
+                .*\.list|
+                .*\fixture*
             )$
 
   - repo: https://github.com/pre-commit/pygrep-hooks

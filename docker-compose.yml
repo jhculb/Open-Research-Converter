@@ -10,21 +10,16 @@ services:
     ports:
       - "80:80"
     restart: always
-  #   networks:
-  #     - frontend
+    networks:
+      - combined
 
   frontend:
     container_name: orc-frontend
     hostname: frontend
     build:
       context: ./src/orc/frontend/
-    ports:
-      - "3000:3000"
-    tty: true
-    stdin_open: true
-    # networks:
-    #   - frontend
-    #   - backend
+    networks:
+      - combined
 
   backend:
     container_name: orc-backend
@@ -32,14 +27,11 @@ services:
     build:
       context: ./
       dockerfile: ./src/orc/backend/Dockerfile
-    ports:
-      - "8002:8002"
-    # networks:
-    #   - backend
+    networks:
+      - combined
 
 volumes:
-  nginx_data:
-    {}
-    # networks:
-    #   frontend:
-    #   backend:
+  nginx_data: {}
+
+networks:
+  combined:
