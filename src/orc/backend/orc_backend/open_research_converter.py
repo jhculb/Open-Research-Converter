@@ -96,7 +96,8 @@ class OpenResearchConverter(openalex_requester):
     def _validate_data(self, job_id: str, data: list[str]) -> bool:
         # Assumes list of strings containing dois
         print(f"validating data for job {job_id}")
-        doi_regex_str = r"10.\d{4,9}\/[-._;()/:A-Z0-9]+"
+        print(f"type(data): {type(data)}")
+        doi_regex_str = r"10.\d{4,9}\/[-._;()/:A-Za-z0-9]+"
         doi_regex = re.compile(doi_regex_str)
         https_regex_str = r"^https:\/\/doi\.org\/"
         with_regex = re.compile(https_regex_str)

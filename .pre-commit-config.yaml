@@ -49,7 +49,8 @@ repos:
                 .*\.json|
                 .*\.pyc|
                 .*\.list|
-                .*\fixture*
+                .*\fixture*|
+                tests/test_open_research_converter.py
             )$
 
   - repo: https://github.com/pre-commit/pygrep-hooks

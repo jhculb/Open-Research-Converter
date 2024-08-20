@@ -16,20 +16,20 @@ def hello_world():
                 </head>
                 <body>
                     <h3>ORC API using Flask</h3>
-                    <a href="http://localhost:5000/api?value=2">sample request</a>
                 </body>
                 """
     return description
+    # <a href="http://localhost:5000/api?value=2">sample request</a>
 
 
-@app.route("/new", methods=["GET"])
-def generate_new_job():
-    return orc.generate_new_job()
+@app.route("/healthcheck", methods=["GET"])
+async def healthcheck():
+    return await orc.health_check()
 
 
 @app.route("/start_processing", methods=["POST"])
 async def start_processing():
-    job_id = request.form["job_id"]
+    job_id = orc.generate_new_job()
     text = request.form["input_data"]
     email = request.form["email"]
     return await orc.process(job_id, text, email)

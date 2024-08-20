@@ -66,22 +66,21 @@ class openalex_requester:
         self._jobs = {}
         self._client = RateLimitedClient(1, 9)
 
-    def health_check(self) -> bool:
-        return True
+    async def health_check(self) -> tuple:
         try:
-            response = self._session.get(HEALTHCHECK_ADDR)
+            response = await self._client.get(HEALTHCHECK_ADDR)
             if response.json() != HEALTH_CHECK_RESPONSE:
                 self._logger.error("Health check failed - response not as expected")
-                return False
+                return {"healthy": False, "error": "unknown"}, 200
         except requests.ConnectionError as conn_err:
             self._logger.error("Health check failed - Connection error")
             self._logger.error(conn_err)
-            return False
+            return {"healthy": False, "error": conn_err.__str__}, 200
         except requests.JSONDecodeError as decode_err:
             self._logger.error("Health check failed - JSON decode error")
             self._logger.error(decode_err)
-            return False
-        return True
+            return {"healthy": False, "error": decode_err.__str__}, 200
+        return {"healthy": True, "error": False}, 418
 
     async def _process(self, job_id: str):
         self._jobs[job_id]["status"] = "processing"
