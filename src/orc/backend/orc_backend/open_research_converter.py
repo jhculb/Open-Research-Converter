@@ -11,7 +11,7 @@ class OpenResearchConverter(openalex_requester):
     def __init__(self) -> None:
         super().__init__()
 
-    def generate_new_job(self) -> tuple[dict[str, str], int]:
+    def generate_new_job(self) -> str:
         new_job_id = uuid.uuid4().__str__()
         self._jobs[new_job_id] = {}
         self._jobs[new_job_id]["input_data"] = None
@@ -21,7 +21,7 @@ class OpenResearchConverter(openalex_requester):
         self._jobs[new_job_id]["status"] = "initialised"
         self._jobs[new_job_id]["progress"] = 0
         self._jobs[new_job_id]["task_group"] = None
-        return {"job_id": new_job_id}, 201
+        return new_job_id
 
     def get_status(self, job_id: str) -> tuple[dict[str, str | int], int]:
         if self._validate_uuid(job_id=job_id):
