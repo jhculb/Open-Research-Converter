@@ -10,11 +10,14 @@ FROM project-base AS project-install
 WORKDIR /app/
 
 COPY pyproject.toml poetry.lock README.md /app/
+
+RUN poetry install --without dev --no-root
+
+FROM project-install AS project-runner
+
 COPY src/orc/backend /app/src/orc/backend
 
 RUN poetry install --without dev
-
-FROM project-install AS project-runner
 
 WORKDIR /app/src/orc/backend/orc_backend
 

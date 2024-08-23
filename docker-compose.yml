@@ -12,6 +12,8 @@ services:
     restart: always
     networks:
       - combined
+    volumes:
+      - ./logs/nginx:/var/log/nginx
 
   frontend:
     container_name: orc-frontend
@@ -20,6 +22,8 @@ services:
       context: ./src/orc/frontend/
     networks:
       - combined
+      # volumes:
+      # - ./logs/frontend:/var/log/nginx
 
   backend:
     container_name: orc-backend
@@ -29,9 +33,8 @@ services:
       dockerfile: ./src/orc/backend/Dockerfile
     networks:
       - combined
-
-volumes:
-  nginx_data: {}
+    volumes:
+      - ./logs/backend:/app/logs
 
 networks:
   combined:
