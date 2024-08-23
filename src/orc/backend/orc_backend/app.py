@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from flask import CORS, Flask, cross_origin, request
+from flask import CORS, Flask, cross_origin, jsonify, request
 from flask_swagger import swagger
 from orc.backend.orc_backend.open_research_converter import OpenResearchConverter
 
@@ -44,7 +44,9 @@ def hello_world():
 @app.route("/healthcheck", methods=["GET"])
 @cross_origin()
 async def healthcheck():
-    return await orc.health_check()
+    response = jsonify(await orc.health_check())
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 
 @app.route("/start_processing", methods=["POST"])
@@ -54,18 +56,24 @@ async def start_processing():
     job_id = orc.generate_new_job()
     text = json_data["input_data"]
     email = json_data["email"]
-    return await orc.process(job_id, text, email)
+    response = jsonify(await orc.process(job_id, text, email))
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 
 @app.route("/get_status", methods=["POST"])
 @cross_origin()
 def get_status():
     job_id = request.form["job_id"]
-    return orc.get_status(job_id)
+    response = jsonify(orc.get_status(job_id))
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 
 @app.route("/get_data", methods=["GET"])
 @cross_origin()
 def send_data():
     job_id = request.form["job_id"]
-    return orc.return_data(job_id)
+    response = jsonify(orc.return_data(job_id))
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
