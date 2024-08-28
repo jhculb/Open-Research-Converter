@@ -6,39 +6,31 @@
 
 from __future__ import annotations
 
-from orc.backend.orc_backend.app import hello_world
+import pytest
+from flask import current_app
+from orc.backend.orc_backend.app import app, hello_world
 
 
-def hello_test():
-    """
-    This defines the expected usage, which can then be used in various test cases.
-    Pytest will not execute this code directly, since the function does not contain the suffex "test"
-    """
-    hello_world()
+@pytest.fixture
+def client():
+    with app.test_client() as client:
+        with app.app_context():
+            assert current_app.config == ["production"]
+        yield client
 
 
-def test_hello(unit_test_mocks: None):
-    """
-    This is a simple test, which can use a mock to override online functionality.
-    unit_test_mocks: Fixture located in conftest.py, implicitly imported via pytest.
-    """
-    hello_test()
+def test_index_page(client):
+    response = client.get("/")
+    assert response.status_code == 200
+    assert b"ORC API using Flask" in response.data
 
 
-def test_init_hello():
-    """
-    This test is marked implicitly as an integration test because the name contains "_init_"
-    https://docs.pytest.org/en/6.2.x/example/markers.html#automatically-adding-markers-based-on-test-names
-    """
-    hello_test()
-
-
-def test_generate_new_job():
+def test_generate_new_job(client):
     pass
     # return orc.generate_new_job()
 
 
-def test_send_data():
+def test_send_data(client):
     pass
     # uuid = request.form["job_id"]
     # text = request.form["input_data"]
@@ -46,19 +38,19 @@ def test_send_data():
     # return orc.recieve_data(uuid, text, email)
 
 
-def test_start_processing():
+def test_start_processing(client):
     pass
     # uuid = request.form["job_id"]
     # return orc.process(uuid)
 
 
-def test_get_status():
+def test_get_status(client):
     pass
     # uuid = request.form["job_id"]
     # return orc.get_status(uuid)
 
 
-def test_recieve_data():
+def test_recieve_data(client):
     pass
     # uuid = request.form["job_id"]
     # return orc.return_data(uuid)
