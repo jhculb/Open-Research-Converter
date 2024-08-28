@@ -31,14 +31,14 @@ bandit:
 
 install_locally:
 	python -m pip install --upgrade pip
-	pip install poetry==1.5.1
+	pip install poetry==1.8.3
 	poetry install --with dev --no-root
 	pip install pre-commit==3.3.2
 	pre-commit install-hooks
 
 install_pyright:
 	python -m pip install --upgrade pip
-	pip install poetry==1.5.1
+	pip install poetry==1.8.3
 	poetry config --local virtualenvs.in-project true
 	poetry install
 
