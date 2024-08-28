@@ -1,7 +1,10 @@
 from __future__ import annotations
 
-from flask import CORS, Flask, cross_origin, jsonify, request
-from flask_swagger import swagger
+import logging
+from pathlib import Path
+
+from flask import Flask, jsonify, request
+from flask_cors import CORS, cross_origin
 from orc.backend.orc_backend.open_research_converter import OpenResearchConverter
 
 # from https://stackoverflow.com/questions/67741946/how-to-validate-fields-raw-in-flask-marshmallow?rq=1
@@ -9,20 +12,7 @@ from orc.backend.orc_backend.open_research_converter import OpenResearchConverte
 app = Flask(__name__)
 orc = OpenResearchConverter()
 cors = CORS(app)
-app.config["CORS_HEADERS"] = "Content-Type"
-swagger = swagger(app)
-
-
-template = {
-    "swagger": "2.0",
-    "info": {
-        "title": "Flask Kafka API",
-        "description": "This API was developed using Python Flask, which provides an interface for producing and consuming messages with Apache Kafka topics via HTTP endpoints.",
-        "version": "1.0",
-    },
-}
-app.config["SWAGGER"] = {"title": "Flask API", "uiversion": 2, "template": "./resources/flasgger/swagger_ui.html"}
-swagger = swagger(app, template=template)
+LOGGING_FOLDER_LOCATION = Path("/app/logs")
 
 
 @app.route("/", methods=["GET"])
@@ -56,7 +46,7 @@ async def start_processing():
     job_id = orc.generate_new_job()
     text = json_data["input_data"]
     email = json_data["email"]
-    response = jsonify(await orc.process(job_id, text, email))
+    response = await orc.process(job_id, text, email)
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 

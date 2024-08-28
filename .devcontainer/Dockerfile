@@ -7,7 +7,7 @@ RUN curl -fsSL "https://deb.nodesource.com/setup_$NODE_VERSION" | bash - \
 
 FROM base AS devcontainer-final
 
-ARG POETRY_VERSION=1.5.1
+ARG POETRY_VERSION=1.8.3
 ENV	PYTHONFAULTHANDLER=1 \
 	PYTHONUNBUFFERED=1 \
 	PYTHONHASHSEED=random \
