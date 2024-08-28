@@ -9,25 +9,27 @@ import pytest
 from orc.backend.orc_backend.open_research_converter import OpenResearchConverter
 
 
+# TODO add longer doi list test case
 @pytest.mark.parametrize(
     ["valid_doi_list", "valid_output"],
     [
         [
             ["10.48550/ARXIV.2406.15154", "10.5281/ZENODO.10997451", "10.5281/ZENODO.10777334"],
-            ["10.48550/ARXIV.2406.15154|10.5281/ZENODO.10997451|10.5281/ZENODO.10777334"],
+            [["10.48550/ARXIV.2406.15154", "10.5281/ZENODO.10997451", "10.5281/ZENODO.10777334"]],
         ],
         [
             ["10.48550/ARXIV.2406.15154"],
-            ["10.48550/ARXIV.2406.15154"],
+            [["10.48550/ARXIV.2406.15154"]],
         ],
     ],
 )
 def test_chunk_input_data(valid_doi_list, valid_output):
     orc = OpenResearchConverter()
-    response, _ = orc.generate_new_job()
-    job_id = response["job_id"]
+    job_id = orc.generate_new_job()
     orc._jobs[job_id]["input_data"] = valid_doi_list
-    results = list(orc._chunk_input_data(job_id))
+    response = orc._chunk_input_data(job_id)
+    assert response is not None
+    results = list(response)
     for i, pos in enumerate(results):
         result, chunksize = pos
         assert result == valid_output[i]
@@ -41,8 +43,7 @@ def test_chunk_input_data(valid_doi_list, valid_output):
 def test_chunk_input_data_invalid_chunksize(invalid_chunksize):
     valid_doi_list = ["10.48550/ARXIV.2406.15154", "10.5281/ZENODO.10997451", "10.5281/ZENODO.10777334"]
     orc = OpenResearchConverter()
-    response, _ = orc.generate_new_job()
-    job_id = response["job_id"]
+    job_id = orc.generate_new_job()
     orc._jobs[job_id]["input_data"] = valid_doi_list
     result = orc._chunk_input_data(job_id, invalid_chunksize)
     assert result is not None
@@ -54,17 +55,28 @@ def test_chunk_input_data_invalid_chunksize(invalid_chunksize):
     ["chunk_data", "chunk_len", "email", "expected_ids"],
     [
         [
-            "https://doi.org/10.48550/ARXIV.2406.15154",
+            ["https://doi.org/10.48550/ARXIV.2406.15154"],
             1,
             "jack.culbert+orc@gesis.org",
             ["https://openalex.org/W4399991117"],
-        ]
+        ],
+        [
+            ["https://doi.org/10.48550/ARXIV.2406.15154", "https://doi.org/10.5281/zenodo.6936227"],
+            2,
+            "jack.culbert+orc@gesis.org",
+            ["https://openalex.org/W4399991117", "https://openalex.org/W4288680697"],
+        ],
+        [
+            ["https://doi.org/10.5281/zenodo.6936227", "https://doi.org/10.48550/ARXIV.2406.15154"],
+            2,
+            "jack.culbert+orc@gesis.org",
+            ["https://openalex.org/W4288680697", "https://openalex.org/W4399991117"],
+        ],
     ],
 )
 def test_request(chunk_data, chunk_len, email, expected_ids):
     orc = OpenResearchConverter()
-    jobid_req, _ = orc.generate_new_job()
-    job_id = jobid_req["job_id"]
+    job_id = orc.generate_new_job()
     orc._jobs[job_id]["email"] = email
-    returned_ids = asyncio.run(orc._request(chunk_data, job_id, chunk_len, 0))
-    assert returned_ids == expected_ids
+    asyncio.run(orc._request(chunk_data, job_id, chunk_len, 0))
+    assert orc._jobs[job_id]["responses"][0] == expected_ids  # TODO Fix the bodge with chunk_len-1

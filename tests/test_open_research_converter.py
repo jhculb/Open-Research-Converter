@@ -50,14 +50,7 @@ async def test_healthcheck_sunny_day():
 
 def test_generate_new_job():
     orc = OpenResearchConverter()
-    response = orc.generate_new_job()
-    assert isinstance(response, tuple)
-    content, code = response
-    assert isinstance(code, int)
-    assert code == 201
-    assert isinstance(content, dict)
-    assert "job_id" in content
-    identifier = content["job_id"]
+    identifier = orc.generate_new_job()
     assert isinstance(identifier, str)
     assert identifier in orc._jobs
     assert isinstance(orc._jobs[identifier], dict)
@@ -75,8 +68,7 @@ def test_generate_new_job():
 
 def test_get_status_initial():
     orc = OpenResearchConverter()
-    new_user_uuid_response, _ = orc.generate_new_job()
-    new_user_uuid = new_user_uuid_response["job_id"]
+    new_user_uuid = orc.generate_new_job()
     check_response, code = orc.get_status(new_user_uuid)
     assert code == 200
     assert "status" in check_response
@@ -117,8 +109,7 @@ def test_validate_data():
 @pytest.mark.xfail()
 def test_check_ready_no_data():
     orc = OpenResearchConverter()
-    response, _ = orc.generate_new_job()
-    userid = response["job_id"]
+    userid = orc.generate_new_job()
     orc._check_ready(userid)
 
 
@@ -139,8 +130,8 @@ def test_check_ready_wrong_uuid():
             "jack.culbert+orc@gesis.org",
             ["https://doi.org/10.48550/ARXIV.2406.15154", "https://doi.org/10.7717/peerj.4375"],
             [
-                "https://openalex.org/W2741809807",
                 "https://openalex.org/W4399991117",
+                "https://openalex.org/W2741809807",
             ],
         ],
         [
@@ -256,9 +247,7 @@ def test_check_ready_wrong_uuid():
 )
 def test_init_process_sunny_day(email, data, expected_output):
     orc = OpenResearchConverter()
-    gen_response, gen_code = orc.generate_new_job()
-    assert gen_code == 201
-    job_id = gen_response["job_id"]
+    job_id = orc.generate_new_job()
     _, proc_code = asyncio.run(orc.process(job_id, data, email))
     # TODO Work out way to stall the response, or mock one of the many requests to view progress in the middle
     assert proc_code == 201

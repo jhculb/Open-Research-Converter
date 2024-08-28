@@ -12,6 +12,10 @@ lint_and_fix:
 
 test: test_coverage
 
+test_v: test_coverage_v
+
+test_vv: test_coverage_vv
+
 security: bandit
 
 prerun_ruff_formatter:
@@ -22,6 +26,12 @@ prerun_precommit:
 
 test_coverage:
 	poetry run coverage run -m pytest --capture=tee-sys ./tests
+
+test_coverage_v:
+	poetry run coverage run -m pytest -v --capture=tee-sys ./tests
+
+test_coverage_vv:
+	poetry run coverage run -m pytest -vv --capture=tee-sys ./tests
 
 test_pytest:
 	poetry run pytest --capture=tee-sys ./tests

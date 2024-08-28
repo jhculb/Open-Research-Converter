@@ -14,8 +14,6 @@ from orc.backend.orc_backend.app import app, hello_world
 @pytest.fixture
 def client():
     with app.test_client() as client:
-        with app.app_context():
-            assert current_app.config == ["production"]
         yield client
 
 

@@ -15,6 +15,7 @@ class OpenResearchConverter(openalex_requester):
         new_job_id = uuid.uuid4().__str__()
         self._jobs[new_job_id] = {}
         self._jobs[new_job_id]["input_data"] = None
+        self._jobs[new_job_id]["responses"] = {}
         self._jobs[new_job_id]["output_data"] = None
         self._jobs[new_job_id]["lock"] = asyncio.Lock()
         self._jobs[new_job_id]["email"] = None
