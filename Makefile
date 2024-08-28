@@ -12,6 +12,10 @@ lint_and_fix:
 
 test: test_coverage
 
+test_v: test_coverage_v
+
+test_vv: test_coverage_vv
+
 security: bandit
 
 prerun_ruff_formatter:
@@ -23,6 +27,12 @@ prerun_precommit:
 test_coverage:
 	poetry run coverage run -m pytest --capture=tee-sys ./tests
 
+test_coverage_v:
+	poetry run coverage run -m pytest -v --capture=tee-sys ./tests
+
+test_coverage_vv:
+	poetry run coverage run -m pytest -vv --capture=tee-sys ./tests
+
 test_pytest:
 	poetry run pytest --capture=tee-sys ./tests
 
@@ -31,14 +41,14 @@ bandit:
 
 install_locally:
 	python -m pip install --upgrade pip
-	pip install poetry==1.5.1
+	pip install poetry==1.8.3
 	poetry install --with dev --no-root
 	pip install pre-commit==3.3.2
 	pre-commit install-hooks
 
 install_pyright:
 	python -m pip install --upgrade pip
-	pip install poetry==1.5.1
+	pip install poetry==1.8.3
 	poetry config --local virtualenvs.in-project true
 	poetry install
 

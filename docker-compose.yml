@@ -1,7 +1,7 @@
 services:
   nginx:
     container_name: reverse-proxy
-    hostname: reverse
+    hostname: rp
     build:
       context: ./src/orc/nginx
     depends_on:
@@ -10,16 +10,20 @@ services:
     ports:
       - "80:80"
     restart: always
-    networks:
-      - combined
+    volumes:
+      - ./logs/nginx:/var/log/nginx
+    environment:
+      - TZ=Europe/Berlin
 
   frontend:
     container_name: orc-frontend
     hostname: frontend
     build:
       context: ./src/orc/frontend/
-    networks:
-      - combined
+      # volumes:
+      # - ./logs/frontend:/var/log/nginx
+    environment:
+      - TZ=Europe/Berlin
 
   backend:
     container_name: orc-backend
@@ -27,11 +31,7 @@ services:
     build:
       context: ./
       dockerfile: ./src/orc/backend/Dockerfile
-    networks:
-      - combined
-
-volumes:
-  nginx_data: {}
-
-networks:
-  combined:
+    volumes:
+      - ./logs/backend:/app/logs
+    environment:
+      - TZ=Europe/Berlin

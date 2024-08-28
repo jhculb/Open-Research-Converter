@@ -38,7 +38,7 @@ function App() {
     //---- function called on Download Result button press
     const getResult = () => {
         //---- endpoint receiving the GET request upon the button press
-        let domain = 'http://localhost/api/new';
+        let domain = 'http://localhost/api/start_processing';
         let params = '';
         let url = domain + params;
 
@@ -70,7 +70,7 @@ function App() {
     //---- function called on Submit button press
     const onSubmit = () => {
         //---- endpoint receiving the GET request upon the button press
-        let domain = 'http://localhost/api/new';
+        let domain = 'http://localhost/api/start_processing';
         let params = '';
         let url = domain + params;
 

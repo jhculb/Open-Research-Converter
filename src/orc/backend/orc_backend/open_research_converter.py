@@ -11,17 +11,18 @@ class OpenResearchConverter(openalex_requester):
     def __init__(self) -> None:
         super().__init__()
 
-    def generate_new_job(self) -> tuple[dict[str, str], int]:
+    def generate_new_job(self) -> str:
         new_job_id = uuid.uuid4().__str__()
         self._jobs[new_job_id] = {}
         self._jobs[new_job_id]["input_data"] = None
+        self._jobs[new_job_id]["responses"] = {}
         self._jobs[new_job_id]["output_data"] = None
         self._jobs[new_job_id]["lock"] = asyncio.Lock()
         self._jobs[new_job_id]["email"] = None
         self._jobs[new_job_id]["status"] = "initialised"
         self._jobs[new_job_id]["progress"] = 0
         self._jobs[new_job_id]["task_group"] = None
-        return {"job_id": new_job_id}, 201
+        return new_job_id
 
     def get_status(self, job_id: str) -> tuple[dict[str, str | int], int]:
         if self._validate_uuid(job_id=job_id):
@@ -96,7 +97,8 @@ class OpenResearchConverter(openalex_requester):
     def _validate_data(self, job_id: str, data: list[str]) -> bool:
         # Assumes list of strings containing dois
         print(f"validating data for job {job_id}")
-        doi_regex_str = r"10.\d{4,9}\/[-._;()/:A-Z0-9]+"
+        print(f"type(data): {type(data)}")
+        doi_regex_str = r"10.\d{4,9}\/[-._;()/:A-Za-z0-9]+"
         doi_regex = re.compile(doi_regex_str)
         https_regex_str = r"^https:\/\/doi\.org\/"
         with_regex = re.compile(https_regex_str)

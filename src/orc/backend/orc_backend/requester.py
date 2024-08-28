@@ -64,24 +64,24 @@ class openalex_requester:
         logging.basicConfig(level=logging.DEBUG)
         self._logger = logging.getLogger(__name__)
         self._jobs = {}
+        self._rate_limit_interval = 1
         self._client = RateLimitedClient(1, 9)
 
-    def health_check(self) -> bool:
-        return True
+    async def health_check(self) -> tuple:
         try:
-            response = self._session.get(HEALTHCHECK_ADDR)
+            response = await self._client.get(HEALTHCHECK_ADDR)
             if response.json() != HEALTH_CHECK_RESPONSE:
                 self._logger.error("Health check failed - response not as expected")
-                return False
+                return {"healthy": False, "error": "unknown"}, 200
         except requests.ConnectionError as conn_err:
             self._logger.error("Health check failed - Connection error")
             self._logger.error(conn_err)
-            return False
+            return {"healthy": False, "error": conn_err.__str__}, 200
         except requests.JSONDecodeError as decode_err:
             self._logger.error("Health check failed - JSON decode error")
             self._logger.error(decode_err)
-            return False
-        return True
+            return {"healthy": False, "error": decode_err.__str__}, 200
+        return {"healthy": True, "error": False}, 418
 
     async def _process(self, job_id: str):
         self._jobs[job_id]["status"] = "processing"
@@ -91,41 +91,44 @@ class openalex_requester:
             chunked_data = list(chunked_data)
             async with asyncio.TaskGroup() as tg:
                 for pos, (chunks, chunklen) in enumerate(chunked_data):
+                    print(pos, chunklen, chunks)
                     self._jobs[job_id]["_tasklist"].append(tg.create_task(self._request(chunks, job_id, chunklen, pos)))
                     self._logger.debug(f"Request task added for chunk {pos}")
+            results = [self._jobs[job_id]["responses"][pos_iter] for pos_iter in range(0, len(chunked_data))]
+            print("RESULTS")
+            print(results)
         else:
             self._logger.error(f"Chunking failed in process for {job_id}, returning False")
-        results = [task.result() for task in self._jobs[job_id]["_tasklist"]]
         output = list(itertools.chain.from_iterable(results))
         self._jobs[job_id]["output_data"] = output
         self._jobs[job_id]["status"] = "complete"
 
-    def _chunk_input_data(self, job_id: str, chunksize: int = 50) -> Generator[tuple[str, int], None, None] | None:
+    def _chunk_input_data(
+        self, job_id: str, chunksize: int = 50
+    ) -> Generator[tuple[list[str], int], None, None] | None:
         if not isinstance(chunksize, int):
             self._logger.error("Non-int passed as chunk")
             return None
         if 0 < chunksize and chunksize < 51:
             for i in range(0, len(self._jobs[job_id]["input_data"]), chunksize):
                 yield (
-                    "|".join(self._jobs[job_id]["input_data"][i : i + chunksize]),
+                    self._jobs[job_id]["input_data"][i : i + chunksize],
                     len(self._jobs[job_id]["input_data"][i : i + chunksize]),
                 )
         else:
             self._logger.error("Chunksize parameter was outside range [1,50]")
             return None
 
-    async def _request(self, chunked_data: str, job_id: str, chunklen: int, pos: int) -> list[str]:
+    async def _request(self, chunked_data: list[str], job_id: str, chunklen: int, pos: int) -> None:
         self._logger.info(f"sending request {pos} for job {job_id}")
-        async with AsyncClient() as client:
-            response = await client.get(
-                f'https://api.openalex.org/works?filter=doi:{chunked_data}&per-page={chunklen}&mailto={self._jobs[job_id]["email"]}'
-            )
-        # TODO: add functionality for searching the title && Year && Surname / All authors
-        ids = [work["id"] for work in response.json()["results"]]
-        async with self._jobs[job_id]["lock"]:
-            if self._jobs[job_id]["output_data"] is None:
-                self._jobs[job_id]["output_data"] = ids
-            else:
-                self._jobs[job_id]["output_data"].extend(ids)
+        formatted_chunk = "|".join(chunked_data)
+        response = await self._client.get(
+            f'https://api.openalex.org/works?filter=doi:{formatted_chunk}&per-page={chunklen}&mailto={self._jobs[job_id]["email"]}&select=id,doi'
+        )
+        # TODO: add Nina Request functionality for searching the title && Year && Surname / All authors
+        shuffled_ids = [work["id"] for work in response.json()["results"]]
+        dois = [work["doi"] for work in response.json()["results"]]
+        positions = [list(map(str.lower, chunked_data)).index(doi) for doi in dois]
+        ids = [x for _, x in sorted(zip(positions, shuffled_ids, strict=True), key=lambda pair: pair[0])]
+        self._jobs[job_id]["responses"][pos] = ids
         self._jobs[job_id]["progress"] += chunklen
-        return ids
