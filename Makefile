@@ -55,6 +55,9 @@ install_pyright:
 run:
 	docker-compose down && docker-compose up --build -d
 
+rebuild:
+	git pull && docker-compose down && docker-compose up --build -d
+
 view_container_logs_backend:
 	docker logs --tail 50 --follow --timestamps orc-backend
 
