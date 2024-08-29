@@ -117,9 +117,9 @@ Deploy to Production Server:
   script:
   - ssh $SSH_USER@$ORC_DEMO_IP_ADDRESS "cd /orc/OpenResearchConverter && make redeploy"
   when: manual
-  only:
-  - dev
-  - main
+  # only:
+  # - dev
+  # - main
 
 Publish Package to Gitlab Registry:
   stage: Deploy
