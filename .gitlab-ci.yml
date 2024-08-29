@@ -91,37 +91,38 @@ Bandit:
 #       codequality: report.json
 #     expire_in: 1 week
 
-Deploy to Test Server:
-  stage: Deploy
-  extends: Base
-  when: manual
-  script: echo "Use this to deploy your project to a test server"
-
 Deploy to Production Server:
   stage: Deploy
+  image: alpine:latest
+  environment: production
   needs:
     - Pytest and Coverage
-  environment: production
-  when: manual
-  script: echo "Define your deployment script!"
-
-Publish Package to Gitlab Registry:
-  stage: Deploy
-  extends: Base
-  when: manual
+    - Bandit
+  before_script:
+  - 'command -v ssh-agent >/dev/null || ( apk add --update openssh openssl)'
+  - eval $(ssh-agent -s)
+  - echo "$SSH_PRIVATE_KEY_ORC_DEMO" | tr -d '\r' > private.key.enc
+  - openssl enc -d -a -A -in private.key.enc -out private.key
+  - echo "" >> private.key
+  - chmod 400 private.key
+  - ssh-add private.key
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
+  - ssh-keyscan $ORC_DEMO_IP_ADDRESS >> ~/.ssh/known_hosts
+  - chmod 644 ~/.ssh/known_hosts
   script:
-    - echo "This is the publishing stage"
-    - /python/venv/bin/python -m poetry config repositories.gitlab ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi
-    - echo "Repository gitlab configured ..."
-    - /python/venv/bin/python -m poetry build
-    - echo "Build done ..."
-    - /python/venv/bin/python -m poetry publish --repository gitlab -u gitlab-ci-token -p ${CI_JOB_TOKEN}
-    - echo "Publishing done!"
+  - ssh $SSH_USER@$ORC_DEMO_IP_ADDRESS "cd /orc/OpenResearchConverter; bash .update.sh; docker-compose down; docker-compose up --build -d"
+  after_script:
+  - rm private.key.enc private.key
+  only:
+  - dev
 
 generate-badges:
   stage: Build
   image: docker-private.gesis.intra/gesis/dc-python:1.0
-  when: manual
+  only:
+    - main
+    - dev
   script:
     - echo "Installing anybadge"
     - /python/venv/bin/python -m pip install anybadge
