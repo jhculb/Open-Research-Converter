@@ -107,12 +107,11 @@ Deploy to Production Server:
     - Pytest and Coverage
     - Bandit
   before_script:
-  - 'command -v ssh-agent >/dev/null || ( apk add --update openssh openssl)'
+  - 'command -v ssh-agent >/dev/null || ( apk add --update openssh)'
   - eval $(ssh-agent -s)
-  - echo "$SSH_PRIVATE_KEY_ORC_DEMO" | tr -d '\r' > private.key.enc
-  - openssl enc -d -a -A -in private.key.enc -out private.key
-  - chmod 600 private.key
-  - ssh-add private.key
+  - echo "$SSH_PRIVATE_KEY_ORC_DEMO" | base64 -d > id_ed25519
+  - chmod 600 id_ed25519
+  - ssh-add id_ed25519
   - mkdir -p ~/.ssh
   - chmod 700 ~/.ssh
   - ssh-keyscan $ORC_DEMO_IP_ADDRESS >> ~/.ssh/known_hosts
@@ -121,7 +120,7 @@ Deploy to Production Server:
   - ssh $SSH_USER@$ORC_DEMO_IP_ADDRESS "cd /orc/OpenResearchConverter && make redeploy"
   - ssh $SSH_USER@$ORC_DEMO_IP_ADDRESS "echo 'This words' > test.txt"
   after_script:
-  - rm private.key private.key.enc
+  - rm id_ed25519
   when: manual
   # only:
   # - dev
