@@ -112,17 +112,16 @@ Deploy to Production Server:
   - echo "$SSH_PRIVATE_KEY_ORC_DEMO" | tr -d '\r' > private.key.enc
   - openssl enc -d -a -A -in private.key.enc -out private.key
   - echo "" >> private.key
-  - chmod 600 private.key
+  - chmod 400 private.key
   - ssh-add private.key
   - mkdir -p ~/.ssh
   - chmod 700 ~/.ssh
   - ssh-keyscan $ORC_DEMO_IP_ADDRESS >> ~/.ssh/known_hosts
   - chmod 644 ~/.ssh/known_hosts
   script:
-  - ssh $SSH_USER@$ORC_DEMO_IP_ADDRESS "cd /orc/OpenResearchConverter && make redeploy"
-  - ssh $SSH_USER@$ORC_DEMO_IP_ADDRESS "echo 'This words' > test.txt"
+  - ssh $SSH_USER@$ORC_DEMO_IP_ADDRESS "cd /orc/OpenResearchConverter; git pull && docker-compose down && docker-compose up --build -d"
   after_script:
-  - rm id_ed25519
+  - rm private.key.enc private.key
   # when: manual
   # only:
   # - dev
