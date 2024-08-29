@@ -109,9 +109,8 @@ Deploy to Production Server:
   before_script:
   - 'command -v ssh-agent >/dev/null || ( apk add --update openssh)'
   - eval $(ssh-agent -s)
-  - echo "$SSH_PRIVATE_KEY_ORC_DEMO" | base64 -d | tr -d '\r' > id_ed25519
-  - chmod 600 id_ed25519
-  - ssh-add id_ed25519
+  - chmod 400 "$SSH_PRIVATE_KEY_ORC_DEMO"
+  - ssh-add "$SSH_PRIVATE_KEY_ORC_DEMO"
   - mkdir -p ~/.ssh
   - chmod 700 ~/.ssh
   - ssh-keyscan $ORC_DEMO_IP_ADDRESS >> ~/.ssh/known_hosts
@@ -119,8 +118,6 @@ Deploy to Production Server:
   script:
   - ssh $SSH_USER@$ORC_DEMO_IP_ADDRESS "cd /orc/OpenResearchConverter && make redeploy"
   - ssh $SSH_USER@$ORC_DEMO_IP_ADDRESS "echo 'This words' > test.txt"
-  after_script:
-  - rm id_ed25519
   when: manual
   # only:
   # - dev
