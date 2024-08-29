@@ -107,7 +107,7 @@ Deploy to Production Server:
     - Pytest and Coverage
     - Bandit
   before_script:
-  - 'command -v ssh-agent >/dev/null || ( apk add --update openssh )'
+  - 'command -v ssh-agent >/dev/null || ( apk add --update openssh openssl)'
   - eval $(ssh-agent -s)
   - echo "$SSH_PRIVATE_KEY_ORC_DEMO_32" | tr -d '\r' > private.key.base32
   - openssl enc -d -base32 -in private.key.base32 -out private.key
