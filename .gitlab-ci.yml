@@ -91,14 +91,6 @@ Bandit:
 #       codequality: report.json
 #     expire_in: 1 week
 
-Deploy to Test Server:
-  stage: Deploy
-  needs:
-    - Pytest and Coverage
-  extends: Base
-  when: manual
-  script: echo "Use this to deploy your project to a test server"
-
 Deploy to Production Server:
   stage: Deploy
   image: alpine:latest
@@ -125,24 +117,12 @@ Deploy to Production Server:
   only:
   - dev
 
-
-Publish Package to Gitlab Registry:
-  stage: Deploy
-  extends: Base
-  when: manual
-  script:
-    - echo "This is the publishing stage"
-    - /python/venv/bin/python -m poetry config repositories.gitlab ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi
-    - echo "Repository gitlab configured ..."
-    - /python/venv/bin/python -m poetry build
-    - echo "Build done ..."
-    - /python/venv/bin/python -m poetry publish --repository gitlab -u gitlab-ci-token -p ${CI_JOB_TOKEN}
-    - echo "Publishing done!"
-
 generate-badges:
   stage: Build
   image: docker-private.gesis.intra/gesis/dc-python:1.0
-  when: manual
+  only:
+    - main
+    - dev
   script:
     - echo "Installing anybadge"
     - /python/venv/bin/python -m pip install anybadge
