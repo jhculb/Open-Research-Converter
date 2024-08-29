@@ -9,7 +9,6 @@ from orc.backend.orc_backend.open_research_converter import OpenResearchConverte
 # from https://stackoverflow.com/questions/67741946/how-to-validate-fields-raw-in-flask-marshmallow?rq=1
 
 app = Flask(__name__)
-orc = OpenResearchConverter()
 cors = CORS(app)
 
 gunicorn_error_logger = logging.getLogger("gunicorn.error")
