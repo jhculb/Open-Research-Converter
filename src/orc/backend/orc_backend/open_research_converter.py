@@ -14,16 +14,16 @@ class OpenResearchConverter(openalex_requester):
         self._logger = log
         atexit.register(self._cleanup)
         self._task_registry = set()
+        self._event_loop = asyncio.new_event_loop()
 
     def _create_task(self, func, *args, **kwargs) -> None:
-        task_var = asyncio.create_task(func(*args, **kwargs))
+        task_var = self._event_loop.create_task(func(*args, **kwargs))
         self._task_registry.add(task_var)
         task_var.add_done_callback(lambda task: self._task_registry.remove(task))
 
     def _cleanup(self) -> None:
         self._logger.info("Running Cleanup")
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(self._gather_tasks_in_registry())
+        self._event_loop.run_until_complete(self._gather_tasks_in_registry())
 
     async def _gather_tasks_in_registry(self) -> None:
         await asyncio.gather(*self._task_registry)
@@ -153,7 +153,7 @@ class OpenResearchConverter(openalex_requester):
         self._logger.info(f"orc: data received {job_id}")
         if self._check_ready(job_id):
             self._logger.info(f"orc: {job_id} data was suitable, creating task")
-            self._create_task(self._process, job_id)
+            asyncio.run(self._process(job_id))
             return {
                 "job_id": job_id,
                 "status": self._jobs[job_id]["status"],

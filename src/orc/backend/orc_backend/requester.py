@@ -91,12 +91,10 @@ class openalex_requester:
             chunked_data = list(chunked_data)
             async with asyncio.TaskGroup() as tg:
                 for pos, (chunks, chunklen) in enumerate(chunked_data):
-                    print(pos, chunklen, chunks)
                     self._jobs[job_id]["_tasklist"].append(tg.create_task(self._request(chunks, job_id, chunklen, pos)))
-                    self._logger.debug(f"Request task added for chunk {pos}")
+                    self._logger.debug(f"Request task added for chunk {pos} of {job_id}")
             results = [self._jobs[job_id]["responses"][pos_iter] for pos_iter in range(0, len(chunked_data))]
-            print("RESULTS")
-            print(results)
+            self._logger.info(f"results completed for {job_id}")
         else:
             self._logger.error(f"Chunking failed in process for {job_id}, returning False")
         output = list(itertools.chain.from_iterable(results))

@@ -52,31 +52,33 @@ def start_processing():
     text = json_data["input_data"]
     email = json_data["email"]
     log.debug(f"start_processing input: job_id: {job_id}, text:{text}, email: {email}")
-    response = jsonify(orc.process(job_id, text, email))
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    log.debug(f"start_processing response: {response}")
-    return response
-
-
-@app.route("/get_status", methods=["POST"])
-@cross_origin()
-def get_status():
-    log.debug("app.py: get_status called")
-    job_id = request.form["job_id"]
-    log.debug(f"get_status job_id: {job_id}")
-    response = jsonify(orc.get_status(job_id))
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    log.debug(f"get_status response: {response}")
-    return response
-
-
-@app.route("/get_data", methods=["GET"])
-@cross_origin()
-def send_data():
-    log.debug("app.py: get_data called")
-    job_id = request.form["job_id"]
-    log.debug(f"get_data job_id: {job_id}")
+    orc.process(job_id, text, email)
+    log.debug(f"finished processing {job_id}")
     response = jsonify(orc.return_data(job_id))
     response.headers.add("Access-Control-Allow-Origin", "*")
     log.debug(f"get_data response: {response}")
     return response
+
+
+# @app.route("/get_status", methods=["POST"])
+# @cross_origin()
+# def get_status():
+#     log.debug("app.py: get_status called")
+#     job_id = request.form["job_id"]
+#     log.debug(f"get_status job_id: {job_id}")
+#     response = jsonify(orc.get_status(job_id))
+#     response.headers.add("Access-Control-Allow-Origin", "*")
+#     log.debug(f"get_status response: {response}")
+#     return response
+
+
+# @app.route("/get_data", methods=["GET"])
+# @cross_origin()
+# def send_data():
+#     log.debug("app.py: get_data called")
+#     job_id = request.form["job_id"]
+#     log.debug(f"get_data job_id: {job_id}")
+#     response = jsonify(orc.return_data(job_id))
+#     response.headers.add("Access-Control-Allow-Origin", "*")
+#     log.debug(f"get_data response: {response}")
+#     return response
