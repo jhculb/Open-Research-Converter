@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pathlib import Path
+import logging
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
@@ -9,7 +9,6 @@ from orc.backend.orc_backend.open_research_converter import OpenResearchConverte
 # from https://stackoverflow.com/questions/67741946/how-to-validate-fields-raw-in-flask-marshmallow?rq=1
 
 app = Flask(__name__)
-orc = OpenResearchConverter()
 cors = CORS(app)
 
 gunicorn_error_logger = logging.getLogger("gunicorn.error")
@@ -46,14 +45,14 @@ async def healthcheck():
 
 @app.route("/start_processing", methods=["POST"])
 @cross_origin()
-async def start_processing():
+def start_processing():
     log.debug("app.py: start_processing called")
     json_data = request.get_json()
     job_id = orc.generate_new_job()
     text = json_data["input_data"]
     email = json_data["email"]
     log.debug(f"start_processing input: job_id: {job_id}, text:{text}, email: {email}")
-    response = await orc.process(job_id, text, email)
+    response = jsonify(orc.process(job_id, text, email))
     response.headers.add("Access-Control-Allow-Origin", "*")
     log.debug(f"start_processing response: {response}")
     return response

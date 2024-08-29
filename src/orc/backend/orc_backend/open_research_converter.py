@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-import logging
+import atexit
 import re
 import uuid
 
@@ -12,6 +12,21 @@ class OpenResearchConverter(openalex_requester):
     def __init__(self, log) -> None:
         super().__init__()
         self._logger = log
+        atexit.register(self._cleanup)
+        self._task_registry = set()
+
+    def _create_task(self, func, *args, **kwargs) -> None:
+        task_var = asyncio.create_task(func(*args, **kwargs))
+        self._task_registry.add(task_var)
+        task_var.add_done_callback(lambda task: self._task_registry.remove(task))
+
+    def _cleanup(self) -> None:
+        self._logger.info("Running Cleanup")
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self._gather_tasks_in_registry())
+
+    async def _gather_tasks_in_registry(self) -> None:
+        await asyncio.gather(*self._task_registry)
 
     def generate_new_job(self) -> str:
         new_job_id = uuid.uuid4().__str__()
@@ -132,32 +147,20 @@ class OpenResearchConverter(openalex_requester):
             return True
         return False
 
-    async def process(self, job_id, data, email) -> tuple[dict, int]:
+    def process(self, job_id, data, email) -> tuple[dict, int]:
+        self._logger.info(f"orc: processing {job_id}")
         self._recieve_data(job_id, data, email)
+        self._logger.info(f"orc: data received {job_id}")
         if self._check_ready(job_id):
-            print("READY TO GO")
-            try:
-                await self._process(job_id)
-            except asyncio.CancelledError as err:
-                self._jobs[job_id]["progress"] = "failed"
-                self._logger.error(err)
-                return {
-                    "job_id": job_id,
-                    "status": self._jobs[job_id]["progress"],
-                }, 500
-            except asyncio.TimeoutError as err:
-                self._jobs[job_id]["progress"] = "failed"
-                self._logger.error(err)
-                return {
-                    "job_id": job_id,
-                    "status": self._jobs[job_id]["progress"],
-                }, 500
+            self._logger.info(f"orc: {job_id} data was suitable, creating task")
+            self._create_task(self._process, job_id)
             return {
                 "job_id": job_id,
                 "status": self._jobs[job_id]["status"],
                 "progress": self._jobs[job_id]["progress"],
             }, 201
         else:
+            self._logger.error(f"orc: {job_id} data was not suitable")
             print("NOT READY TO GO")
             return {
                 "job_id": job_id,

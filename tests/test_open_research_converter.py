@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from time import sleep
 from uuid import uuid4
 
@@ -10,6 +11,11 @@ import pytest
 from orc.backend.orc_backend.open_research_converter import OpenResearchConverter
 
 from tests.fixtures.fixture_orc_dois import fixture_priem_culbert_dois
+
+
+@pytest.fixture(name="log")
+def create_logger():
+    logging.basicConfig()
 
 
 def hello_world():
@@ -41,9 +47,9 @@ def test_init_hello():
 
 
 @pytest.mark.asyncio
-async def test_healthcheck_sunny_day():
-    orc = OpenResearchConverter()
-    response, code = await orc.health_check()
+def test_healthcheck_sunny_day():
+    orc = OpenResearchConverter(log)
+    response, code = orc.health_check()
     assert code == 418
     assert response == {"healthy": True, "error": False}
 
