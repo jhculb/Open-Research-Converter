@@ -107,12 +107,13 @@ Deploy to Production Server:
     - Pytest and Coverage
     - Bandit
   before_script:
-  - 'command -v ssh-agent >/dev/null || ( apk add --update openssh)'
+  - 'command -v ssh-agent >/dev/null || ( apk add --update openssh openssl)'
   - eval $(ssh-agent -s)
   - echo "$TEST_VARIABLE"
-  - echo "$SSH_PRIVATE_KEY_ORC_DEMO" | tr -d '\r' | base64 -d > id_ed25519
-  - chmod 600 id_ed25519
-  - ssh-add id_ed25519
+  - echo "$SSH_PRIVATE_KEY_ORC_DEMO" | tr -d '\r' > private.key.enc
+  - openssl enc -d -a -A -in private.key.enc -out private.key
+  - chmod 600 private.key
+  - ssh-add private.key
   - mkdir -p ~/.ssh
   - chmod 700 ~/.ssh
   - ssh-keyscan $ORC_DEMO_IP_ADDRESS >> ~/.ssh/known_hosts
