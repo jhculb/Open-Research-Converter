@@ -31,11 +31,12 @@ def hello_world():
 
 
 @app.route("/healthcheck", methods=["GET"])
-@cross_origin()
+# @cross_origin()
 async def healthcheck():
-    response = jsonify(await orc.health_check())
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
+#     response = jsonify(await orc.health_check())
+#     response.headers.add("Access-Control-Allow-Origin", "*")
+#     return response
+    return await orc.health_check()
 
 
 @app.route("/start_processing", methods=["POST"])

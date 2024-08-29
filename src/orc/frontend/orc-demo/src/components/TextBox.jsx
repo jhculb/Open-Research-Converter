@@ -1,6 +1,6 @@
 const TextBox = ({ customClass="", title="Text Box", rows=10, placeholder="Paste your text here...", value, type="text", readOnly, onChange }) => {
     return (
-        <div className="mt-2">
+        <div>
             {/*<h1 className="mb-4">{title}</h1>*/}
             {type==="email"?(
                 <input
