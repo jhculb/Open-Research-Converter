@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 import re
 import uuid
 
@@ -8,11 +9,13 @@ from orc.backend.orc_backend.requester import openalex_requester
 
 
 class OpenResearchConverter(openalex_requester):
-    def __init__(self) -> None:
+    def __init__(self, log) -> None:
         super().__init__()
+        self._logger = log
 
     def generate_new_job(self) -> str:
         new_job_id = uuid.uuid4().__str__()
+        self._logger.debug(f"orc.py: new job created with id: {new_job_id}")
         self._jobs[new_job_id] = {}
         self._jobs[new_job_id]["input_data"] = None
         self._jobs[new_job_id]["responses"] = {}
