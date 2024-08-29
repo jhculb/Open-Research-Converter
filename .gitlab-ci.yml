@@ -109,11 +109,11 @@ Deploy to Production Server:
   before_script:
   - 'command -v ssh-agent >/dev/null || ( apk add --update openssh openssl)'
   - eval $(ssh-agent -s)
-  - echo "$SSH_PRIVATE_KEY_ORC_DEMO" | tr -d '\r' > private.key.enc
-  - openssl enc -d -a -A -in private.key.enc -out private.key
+  - echo "$SSH_PRIVATE_KEY_ORC_DEMO" | tr -d '\r' | openssl enc -d -a -A -out private.key
+  - echo "" >> private.key
   - chmod 600 private.key
   - ssh-add private.key
-  - rm private.key.enc private.key
+  - rm private.key
   - mkdir -p ~/.ssh
   - chmod 700 ~/.ssh
   - ssh-keyscan $ORC_DEMO_IP_ADDRESS >> ~/.ssh/known_hosts
