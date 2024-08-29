@@ -124,8 +124,8 @@ Deploy to Production Server:
   after_script:
   - rm private.key.enc private.key
   when: manual
-  only:
-  - dev
+  # only:
+  # - dev
 
 
 Publish Package to Gitlab Registry:
