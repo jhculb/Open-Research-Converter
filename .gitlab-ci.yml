@@ -109,10 +109,11 @@ Deploy to Production Server:
   before_script:
   - 'command -v ssh-agent >/dev/null || ( apk add --update openssh)'
   - eval $(ssh-agent -s)
-  - chmod 400 "$SSH_PRIVATE_KEY_ORC_DEMO"
-  - ssh-add "$SSH_PRIVATE_KEY_ORC_DEMO"
   - mkdir -p ~/.ssh
   - chmod 700 ~/.ssh
+  - cp "$SSH_PRIVATE_KEY_ORC_DEMO" ~/.ssh/id_ed25519
+  - chmod 400 id_ed25519
+  - ssh-add id_ed25519
   - ssh-keyscan $ORC_DEMO_IP_ADDRESS >> ~/.ssh/known_hosts
   - chmod 644 ~/.ssh/known_hosts
   script:
