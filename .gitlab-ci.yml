@@ -112,6 +112,7 @@ Deploy to Production Server:
   - echo "$TEST_VARIABLE"
   - echo "$SSH_PRIVATE_KEY_ORC_DEMO" | tr -d '\r' > private.key.enc
   - openssl enc -d -a -A -in private.key.enc -out private.key
+  - echo "" >> private.key
   - chmod 600 private.key
   - ssh-add private.key
   - mkdir -p ~/.ssh
