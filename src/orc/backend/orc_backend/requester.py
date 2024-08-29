@@ -48,16 +48,6 @@ class RateLimitedClient(AsyncClient):
 
         wait.add_done_callback(wait_cb)
 
-    # async def send(self, *args, **kwargs) -> asyncio.Task:
-    #     await self.semaphore.acquire()
-    #     response = asyncio.create_task(self._send(*args, **kwargs))
-    #     self._schedule_semaphore_release()
-    #     return response
-
-    # @wraps(AsyncClient.send)
-    # async def _send(self, *args, **kwargs) -> Coroutine[Any, Any, Response]:
-    #     return super().send(*args, **kwargs)
-
 
 class openalex_requester:
     def __init__(self) -> None:

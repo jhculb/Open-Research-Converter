@@ -12,21 +12,6 @@ class OpenResearchConverter(openalex_requester):
     def __init__(self, log) -> None:
         super().__init__()
         self._logger = log
-        atexit.register(self._cleanup)
-        self._task_registry = set()
-        self._event_loop = asyncio.new_event_loop()
-
-    def _create_task(self, func, *args, **kwargs) -> None:
-        task_var = self._event_loop.create_task(func(*args, **kwargs))
-        self._task_registry.add(task_var)
-        task_var.add_done_callback(lambda task: self._task_registry.remove(task))
-
-    def _cleanup(self) -> None:
-        self._logger.info("Running Cleanup")
-        self._event_loop.run_until_complete(self._gather_tasks_in_registry())
-
-    async def _gather_tasks_in_registry(self) -> None:
-        await asyncio.gather(*self._task_registry)
 
     def generate_new_job(self) -> str:
         new_job_id = uuid.uuid4().__str__()
@@ -42,18 +27,6 @@ class OpenResearchConverter(openalex_requester):
         self._jobs[new_job_id]["task_group"] = None
         return new_job_id
 
-    def get_status(self, job_id: str) -> tuple[dict[str, str | int], int]:
-        if self._validate_uuid(job_id=job_id):
-            return {
-                "job_id": job_id,
-                "status": self._jobs[job_id]["status"],
-                "progress": self._jobs[job_id]["progress"],
-            }, 200
-        else:
-            return {
-                "job_id": job_id,
-            }, 400
-
     def _recieve_data(self, job_id: str, data: list[str], email: str):
         if isinstance(data, str):
             data = data.split(",")
@@ -63,10 +36,9 @@ class OpenResearchConverter(openalex_requester):
                 self._jobs[job_id]["email"] = email
                 self._jobs[job_id]["status"] = "ready"
             except Exception as err:
-                print(err)
                 self._logger.error(err)
         else:
-            print("DEBUG: _validate_input_data failed")
+            self._logger.error("DEBUG: _validate_input_data failed")
 
     def _validate_input_data(self, job_id: str, data: list[str], email: str) -> bool:
         job_id_is_valid = False
@@ -74,15 +46,15 @@ class OpenResearchConverter(openalex_requester):
         data_is_valid = False
         if job_id is not None:
             job_id_is_valid = self._validate_uuid(job_id)
-            print(f"job:{job_id_is_valid}")
+            self._logger.debug(f"job:{job_id_is_valid}")
         if email is not None:
             email_is_valid = self._validate_email(job_id, email)
-            print(f"email:{email_is_valid}")
+            self._logger.debug(f"email:{email_is_valid}")
         if data is not None:
             data_is_valid = self._validate_data(job_id, data)
         else:
             data_is_valid = False
-        print(f"data:{data_is_valid}")
+        self._logger.debug(f"data:{data_is_valid}")
         return job_id_is_valid and email_is_valid and data_is_valid
 
     def _validate_uuid(self, job_id: str) -> bool:
@@ -114,30 +86,23 @@ class OpenResearchConverter(openalex_requester):
 
     def _validate_data(self, job_id: str, data: list[str]) -> bool:
         # Assumes list of strings containing dois
-        print(f"validating data for job {job_id}")
-        print(f"type(data): {type(data)}")
+        self._logger.debug(f"validating data for job {job_id}")
         doi_regex_str = r"10.\d{4,9}\/[-._;()/:A-Za-z0-9]+"
         doi_regex = re.compile(doi_regex_str)
         https_regex_str = r"^https:\/\/doi\.org\/"
         with_regex = re.compile(https_regex_str)
         try:
-            print(data)
             ret_val = len(list(filter(doi_regex.search, data))) == len(data)
             if not ret_val:
                 for pos, potential_doi in enumerate(data):
                     if not bool(with_regex.match(potential_doi)):
                         data[pos] = "https://doi.org/" + potential_doi
-                print("DATA ADJUSTED")
-                print(data)
                 ret_val = len(list(filter(doi_regex.search, data))) == len(data)
-                print(list(filter(doi_regex.search, data)))
-                print(f"RET VAL NOW {ret_val}")
-            print(f"return value for validating data {ret_val}")
+            self._logger.debug(f"return value for validating data {ret_val}")
             return ret_val
         except TypeError as err:
             self._logger.error(f"Incorrect type passed to _validate_data - validation failed for uuid {job_id}")
             self._logger.error(err)
-            print(err)
             return False
 
     def _check_ready(self, job_id: str) -> bool:
@@ -147,26 +112,13 @@ class OpenResearchConverter(openalex_requester):
             return True
         return False
 
-    def process(self, job_id, data, email) -> tuple[dict, int]:
+    def process(self, job_id, data, email) -> None:
         self._logger.info(f"orc: processing {job_id}")
         self._recieve_data(job_id, data, email)
         self._logger.info(f"orc: data received {job_id}")
         if self._check_ready(job_id):
             self._logger.info(f"orc: {job_id} data was suitable, creating task")
             asyncio.run(self._process(job_id))
-            return {
-                "job_id": job_id,
-                "status": self._jobs[job_id]["status"],
-                "progress": self._jobs[job_id]["progress"],
-            }, 201
-        else:
-            self._logger.error(f"orc: {job_id} data was not suitable")
-            print("NOT READY TO GO")
-            return {
-                "job_id": job_id,
-                "status": self._jobs[job_id]["status"],
-                "progress": self._jobs[job_id]["progress"],
-            }, 400
 
     def return_data(self, job_id) -> tuple[dict, int]:
         self._validate_uuid(job_id=job_id)
