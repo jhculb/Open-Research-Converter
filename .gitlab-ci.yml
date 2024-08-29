@@ -109,6 +109,7 @@ Deploy to Production Server:
   before_script:
   - 'command -v ssh-agent >/dev/null || ( apk add --update openssh)'
   - eval $(ssh-agent -s)
+  - echo "$TEST_VARIABLE"
   - echo "$SSH_PRIVATE_KEY_ORC_DEMO" | tr -d '\r' | base64 -d > id_ed25519
   - chmod 600 id_ed25519
   - ssh-add id_ed25519
@@ -121,7 +122,7 @@ Deploy to Production Server:
   - ssh $SSH_USER@$ORC_DEMO_IP_ADDRESS "echo 'This words' > test.txt"
   after_script:
   - rm id_ed25519
-  when: manual
+  # when: manual
   # only:
   # - dev
   # - main
