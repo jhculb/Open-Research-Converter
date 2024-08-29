@@ -1,7 +1,7 @@
 services:
   nginx:
     container_name: reverse-proxy
-    hostname: rp
+    hostname: reverse
     build:
       context: ./src/orc/nginx
     depends_on:

@@ -3,10 +3,31 @@
 from __future__ import annotations
 
 import asyncio
+import logging
+import queue
+from logging.handlers import QueueHandler
+from pathlib import Path
 from uuid import uuid4
 
 import pytest
 from orc.backend.orc_backend.open_research_converter import OpenResearchConverter
+
+LOGGING_FOLDER_LOCATION = Path(__file__).parent / "logs"
+LOGGING_FOLDER_LOCATION.mkdir(exist_ok=True)
+
+
+@pytest.fixture(name="log")
+def create_logger():
+    logging.basicConfig(
+        level=logging.DEBUG,
+        filename=LOGGING_FOLDER_LOCATION / "test_requester.log",
+        filemode="w",
+    )
+    log_queue = queue.Queue()
+    queue_handler = QueueHandler(log_queue)
+    root_logger = logging.getLogger()
+    root_logger.addHandler(queue_handler)
+    return root_logger
 
 
 # TODO add longer doi list test case
@@ -23,8 +44,8 @@ from orc.backend.orc_backend.open_research_converter import OpenResearchConverte
         ],
     ],
 )
-def test_chunk_input_data(valid_doi_list, valid_output):
-    orc = OpenResearchConverter()
+def test_chunk_input_data(log, valid_doi_list, valid_output):
+    orc = OpenResearchConverter(log)
     job_id = orc.generate_new_job()
     orc._jobs[job_id]["input_data"] = valid_doi_list
     response = orc._chunk_input_data(job_id)
@@ -40,9 +61,9 @@ def test_chunk_input_data(valid_doi_list, valid_output):
     "invalid_chunksize",
     [0, -1, 0.3, 51, 5555],
 )
-def test_chunk_input_data_invalid_chunksize(invalid_chunksize):
+def test_chunk_input_data_invalid_chunksize(log, invalid_chunksize):
     valid_doi_list = ["10.48550/ARXIV.2406.15154", "10.5281/ZENODO.10997451", "10.5281/ZENODO.10777334"]
-    orc = OpenResearchConverter()
+    orc = OpenResearchConverter(log)
     job_id = orc.generate_new_job()
     orc._jobs[job_id]["input_data"] = valid_doi_list
     result = orc._chunk_input_data(job_id, invalid_chunksize)
@@ -74,8 +95,8 @@ def test_chunk_input_data_invalid_chunksize(invalid_chunksize):
         ],
     ],
 )
-def test_request(chunk_data, chunk_len, email, expected_ids):
-    orc = OpenResearchConverter()
+def test_request(log, chunk_data, chunk_len, email, expected_ids):
+    orc = OpenResearchConverter(log)
     job_id = orc.generate_new_job()
     orc._jobs[job_id]["email"] = email
     asyncio.run(orc._request(chunk_data, job_id, chunk_len, 0))
