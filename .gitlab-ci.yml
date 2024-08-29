@@ -119,6 +119,9 @@ Deploy to Production Server:
   script:
   - ssh $SSH_USER@$ORC_DEMO_IP_ADDRESS "cd /orc/OpenResearchConverter && make redeploy"
   - ssh $SSH_USER@$ORC_DEMO_IP_ADDRESS "echo 'This words' > test.txt"
+  artifacts:
+    paths:
+    - $LOCALDIR
   when: manual
   # only:
   # - dev
