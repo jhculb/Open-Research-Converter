@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import logging
-import queue
-from logging.handlers import QueueHandler
 from pathlib import Path
 
 from flask import Flask, jsonify, request
@@ -15,24 +13,18 @@ app = Flask(__name__)
 orc = OpenResearchConverter()
 cors = CORS(app)
 
-LOGGING_FOLDER_LOCATION = Path(__file__).parents[4] / "logs" / "backend"
+gunicorn_error_logger = logging.getLogger("gunicorn.error")
+app.logger.handlers.extend(gunicorn_error_logger.handlers)
+app.logger.setLevel(logging.DEBUG)
+app.logger.debug("this will show in the log")
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    filename=LOGGING_FOLDER_LOCATION / "orc.log",
-    filemode="w",
-)
-log_queue = queue.Queue()
-queue_handler = QueueHandler(log_queue)
-root_logger = logging.getLogger()
-root_logger.addHandler(queue_handler)
-
-log = logging.getLogger(__name__)
+log = app.logger
 
 
 @app.route("/", methods=["GET"])
 @cross_origin()
 def hello_world():
+    log.debug("API root page called")
     description = """
                 <!DOCTYPE html>
                 <head>
@@ -47,13 +39,9 @@ def hello_world():
 
 
 @app.route("/healthcheck", methods=["GET"])
-@cross_origin()
 async def healthcheck():
-    response = jsonify(await orc.health_check())
     log.debug("healthcheck called")
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    log.debug(f"healthcheck response: {response}")
-    return response
+    return await orc.health_check()
 
 
 @app.route("/start_processing", methods=["POST"])
