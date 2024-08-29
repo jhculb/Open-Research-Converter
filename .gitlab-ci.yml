@@ -93,17 +93,33 @@ Bandit:
 
 Deploy to Test Server:
   stage: Deploy
+  needs:
+    - Pytest and Coverage
   extends: Base
   when: manual
   script: echo "Use this to deploy your project to a test server"
 
 Deploy to Production Server:
   stage: Deploy
+  image: alpine:latest
+  environment: production
   needs:
     - Pytest and Coverage
-  environment: production
+    - Bandit
+  before_script:
+  - 'command -v ssh-agent >/dev/null || ( apk add --update openssh )'
+  - eval $(ssh-agent -s)
+  - echo "$SSH_PRIVATE_KEY_ORC_DEMO_32" | tr -d '\r' | ssh-add -
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
+  - ssh-keyscan $ORC_DEMO_IP_ADDRESS >> ~/.ssh/known_hosts
+  - chmod 644 ~/.ssh/known_hosts
+  script:
+  - ssh $SSH_USER@$ORC_DEMO_IP_ADDRESS "cd /orc/OpenResearchConverter && make redeploy"
   when: manual
-  script: echo "Define your deployment script!"
+  only:
+  - dev
+  - main
 
 Publish Package to Gitlab Registry:
   stage: Deploy

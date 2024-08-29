@@ -55,7 +55,7 @@ install_pyright:
 run:
 	docker-compose down && docker-compose up --build -d
 
-rebuild:
+redeploy:
 	git pull && docker-compose down && docker-compose up --build -d
 
 view_container_logs_backend:
