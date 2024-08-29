@@ -119,8 +119,8 @@ Deploy to Production Server:
   - ssh-keyscan $ORC_DEMO_IP_ADDRESS >> ~/.ssh/known_hosts
   - chmod 644 ~/.ssh/known_hosts
   script:
-  - ssh $SSH_USER@$ORC_DEMO_IP_ADDRESS "echo 'I'm in.'"
-  - ssh $SSH_USER@$ORC_DEMO_IP_ADDRESS "cd /orc/OpenResearchConverter; git pull && docker-compose down && docker-compose up --build -d"
+  - ssh $SSH_USER@$ORC_DEMO_IP_ADDRESS "echo 'Im in.'"
+  - ssh $SSH_USER@$ORC_DEMO_IP_ADDRESS "cd /orc/OpenResearchConverter; make redeploy"
   after_script:
   - rm private.key.enc private.key
   # when: manual
