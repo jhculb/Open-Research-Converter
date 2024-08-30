@@ -36,6 +36,9 @@
 /*    transform: rotate(360deg);*/
 /*  }*/
 /*}*/
+.header-border{
+    border-bottom: lightgray solid 3px;
+}
 
 .upload-border{
     border: 1px solid lightgray;
