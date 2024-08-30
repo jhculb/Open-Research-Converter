@@ -27,7 +27,8 @@ def hello_world():
     description = """
                 <!DOCTYPE html>
                 <head>
-                <title>API Landing</title>
+                <title>ORC-API</title>
+                <meta name="robots" content="noindex" />
                 </head>
                 <body>
                     <h3>ORC API using Flask</h3>
