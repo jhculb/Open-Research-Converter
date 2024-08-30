@@ -12,11 +12,11 @@ class Header extends Component {
             {/*<h1 className="col-10 mt-2 d-flex justify-content-center">*/}
             {/*    {this.props.title}*/}
             {/*</h1>*/}
-            <h1 className="col-12 d-flex justify-content-center">
+            <h1 className="col-12 d-flex justify-content-center" onClick={()=>window.open(this.props.href, "_self")}>
                 {this.props.title}
             </h1>
             <div className="col-12 d-flex justify-content-center">
-                <img className='img-header' src={orc_logo} alt="orc" onClick={()=>window.open("http://localhost/", "_self")}/>
+                <img className='img-header' src={orc_logo} alt="orc" onClick={()=>window.open(this.props.href, "_self")}/>
             </div>
         </>;
     }

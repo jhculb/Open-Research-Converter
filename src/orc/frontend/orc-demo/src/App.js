@@ -40,7 +40,8 @@ function App() {
     //---- function called on Download Result button press
     const getResult = () => {
         //---- endpoint receiving the GET request upon the button press
-        let domain = 'http://localhost/api/healthcheck';
+        let domain = 'http://orc-demo.gesis.org/api/healthcheck';
+        // let domain = 'http://localhost/api/healthcheck';
         let params = '';
         let url = domain + params;
 
@@ -67,7 +68,8 @@ function App() {
     //---- function called on Submit button press
     const onSubmit = () => {
         //---- endpoint receiving the GET request upon the button press
-        let url = 'http://localhost/api/start_processing';
+        let url = 'http://orc-demo.gesis.org/api/start_processing';
+        // let url = 'http://localhost/api/start_processing';
         let data ={"email": email, "input_data": text}
         fetch(url, {
             method: 'POST',
@@ -91,7 +93,18 @@ function App() {
                 return response.json();  // Assuming the response is JSON
             })
             .then(result => {
-                setText(JSON.stringify(result));
+                let outputData = result[0]["output_data"];
+                // setResult(JSON.stringify(result, null, 2));
+                setjobId(result[0]["job_id"])
+                if(outputData.length){
+                    let formattedText = outputData
+                        .slice(0, 50)  // Take only the first 50 items
+                        .map((item, index) => `${index + 1}. ${item}`)  // Create a numbered list
+                        .join('\n');  // Join with new line characters for display in textarea
+                    setResult(formattedText);
+
+                }
+                // setResult(JSON.stringify(result[0]["output_data"], null, 2));
                 console.log('Submit button pressed: ', result);
             })
             .catch(error => console.log('Submit button error', error));
@@ -100,7 +113,7 @@ function App() {
     return (
         <div className="container">
             <div className="row header">
-                <Header title="Open Research Converter" />
+                <Header title="Open Research Converter" href="http://orc-demo.gesis.org/" />
             </div>
             <div className="row">
                 <div className="col-6 mt-2">
@@ -117,7 +130,7 @@ function App() {
                     </div>
                 </div>
                 <div className="col-6 mt-2">
-                    <TextBox title={"Result Box"} rows={7} placeholder={'Here are the first N results returned!'} value={result} readOnly={true} />
+                    <TextBox title={"Result Box"} rows={7} placeholder={'Here are the first 50 DOIs returned, download data for complete result!'} value={result} type="list" readOnly={true} />
                     {/*onChange={handleResultChange}*/}
                     <div className="d-flex justify-content-end mt-2">
                         <button type="button" className="btn btn-secondary" onClick={() => getResult()}>Download Result</button>
