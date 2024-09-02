@@ -36,6 +36,9 @@
 /*    transform: rotate(360deg);*/
 /*  }*/
 /*}*/
+.header-border{
+    border-bottom: lightgray solid 3px;
+}
 
 .upload-border{
     border: 1px solid lightgray;
@@ -44,6 +47,10 @@
 
 .email-border{
     border: 1px solid red;
+}
+
+.footer-border{
+    border-top: lightgray solid 3px;
 }
 
 /* Custom focus styling */
@@ -56,4 +63,16 @@
     border-color: red !important; /* Custom border color */
     box-shadow: 0 0 5px red !important; /* Custom shadow */
     outline: none !important; /* Remove default outline */
+}
+
+.btn-color {
+    background-color: #2596be;
+    color: white;
+    border: none;
+}
+
+.btn-color:hover {
+    background-color: #2596be;
+    color: black;
+    border: none;
 }

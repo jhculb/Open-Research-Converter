@@ -13,7 +13,7 @@ const TextBox = ({ customClass="", title="Text Box", rows=10, placeholder="Paste
                 />
             ):(
                 <textarea
-                    className={"form-control mb-4 " + customClass + " "}
+                    className={"form-control mb-2 " + customClass + " "}
                     rows={rows}
                     placeholder={placeholder}
                     value={value}
