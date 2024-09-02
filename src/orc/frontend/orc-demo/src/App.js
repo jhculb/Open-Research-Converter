@@ -6,6 +6,7 @@ import Header from './components/Header';
 import TextBox from './components/TextBox';
 import UploadFile from "./components/UploadFile";
 import CsvFileReader from './components/CsvFileReader';
+import Footer from './components/Footer';
 
 function App() {
     const [email, setEmail] = useState('');
@@ -111,7 +112,7 @@ function App() {
 
     return (
         <div className="container">
-            <div className="row header-border">
+            <div className="row header-border mb-4 mt-2">
                 <Header title="Open Research Converter" href="http://orc-demo.gesis.org/" />
             </div>
             <div className="row">
@@ -138,8 +139,8 @@ function App() {
                             value={text}
                             onChange={handleTextChange}
                         />
-                        <div className="d-flex justify-content-end">
-                            <button type="button" className="btn btn-secondary" onClick={() => onSubmit()}>Submit</button>
+                        <div className="d-flex justify-content-center">
+                            <button type="button" className="btn btn-color" onClick={() => onSubmit()}>Submit</button>
                         </div>
                     </div>
                 </div>
@@ -147,15 +148,18 @@ function App() {
                     <TextBox
                         title={"Result Box"}
                         rows={20}
-                        placeholder={'Here are the first 50 results returned!'}
+                        placeholder={'Here are the first 50 results returned. Download the file for complete results!'}
                         value={result}
                         readOnly={true}
                         style={{height: '100%'}}
                     />
-                    <div className="d-flex justify-content-end mb-1">
-                        <button type="button" className="btn btn-secondary" onClick={() => getResult()}>Download Result</button>
+                    <div className="d-flex justify-content-center mb-1">
+                        <button type="button" className="btn btn-color" onClick={() => getResult()}>Download Result</button>
                     </div>
                 </div>
+            </div>
+            <div className="row mt-5">
+                <Footer></Footer>
             </div>
         </div>
     );
