@@ -4,7 +4,7 @@ import './App.css';
 import './components/styles/Header.sass'
 import Header from './components/Header';
 import TextBox from './components/TextBox';
-import UploadFile from "./components/UploadFile";
+// import UploadFile from "./components/UploadFile";
 import CsvFileReader from './components/CsvFileReader';
 import Footer from './components/Footer';
 
@@ -89,6 +89,7 @@ function App() {
                 let outputData = result[0]["output_data"];
                 setjobId(result[0]["job_id"]);
                 setResult(result);
+                // setText('');
                 if(outputData.length){
                     setIsDownloadDisabled(false);
                     let formattedText = outputData
@@ -98,7 +99,7 @@ function App() {
                     setLimitedResult(formattedText);
                 }
                 // setResult(JSON.stringify(result[0]["output_data"], null, 2));
-                console.log('Submit button pressed: ', result);
+                // console.log('Submit button pressed: ', result);
             })
             .catch(error => console.log('Submit button error', error));
             // .finally(() => {
@@ -170,60 +171,3 @@ function App() {
 }
 
 export default App;
-
-
-// <div className="container">
-//     <div className="row header-border">
-//         <Header title="Open Research Converter" href="http://orc-demo.gesis.org/" />
-//     </div>
-//     <div className="row">
-//         <div className="col-6 mt-2">
-//             <TextBox customClass={email === "" ? "" : (validEmail ? "custom-valid-focus" : "custom-invalid-focus")} title={"Email"} rows={1} placeholder={'Enter your email address!'} value={email} type="email" onChange={handleEmailChange} />
-//         </div>
-//         <div className="col-6 mt-2 upload-border">
-//             <CsvFileReader className="mt-1" setText={setText}/>
-//             {/*<UploadFile />*/}
-//         </div>
-//         <div className="col-6 mt-2">
-//             <TextBox title={"Input Box"} rows={7} placeholder={'DOIs from selected CSV file are displayed here! (OR) Enter comma separated DOIs!'} value={text} onChange={handleTextChange} />
-//             <div className="d-flex justify-content-end mt-2">
-//                 <button type="button" className="btn btn-secondary" onClick={() => onSubmit()}>Submit</button>
-//             </div>
-//         </div>
-//         <div className="col-6 mt-2">
-//             <TextBox title={"Result Box"} rows={7} placeholder={'Here are the first 50 DOIs returned, download data for complete result!'} value={result} type="list" readOnly={true} />
-//             {/*onChange={handleResultChange}*/}
-//             <div className="d-flex justify-content-end mt-2">
-//                 <button type="button" className="btn btn-secondary" onClick={() => getResult()}>Download Result</button>
-//             </div>
-//         </div>
-//     </div>
-// </div>
-
-
-// const getResult = () => {
-//     //---- endpoint receiving the GET request upon the button press
-//     let domain = 'http://orc-demo.gesis.org/api/healthcheck';
-//     // let domain = 'http://localhost/api/healthcheck';
-//     let params = '';
-//     let url = domain + params;
-//
-//     fetch(url, { method: 'GET' })
-//         .then((response) => {
-//             if (!response.ok) {
-//                 // Read the response as text to capture HTML or error message
-//                 return response.text().then((text) => {
-//                     // Log the HTML/error message
-//                     console.error('Error response body:', text);
-//                     // Optionally, throw an error or return a custom object
-//                     throw new Error('Network response was not ok');
-//                 });
-//             }
-//             return response.json();  // Assuming the response is JSON
-//         })
-//         .then(result => {
-//             setResult(JSON.stringify(result));
-//             console.log('Download Result button pressed: ', result);
-//         })
-//         .catch(error => console.log('Download Result button', error));
-// }
