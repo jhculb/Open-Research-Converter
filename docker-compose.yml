@@ -9,11 +9,18 @@ services:
       - backend
     ports:
       - "80:80"
+      - "443:443"
     restart: always
     volumes:
-      - ./logs/nginx:/var/log/nginx
+      - ./logs/nginx:/var/log/nginx:ro
+      - ./src/orc/nginx/certbot:/var/www/certbot/:ro
     environment:
       - TZ=Europe/Berlin
+
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./src/orc/nginx/certbot:/var/www/certbot/:rw
 
   frontend:
     container_name: orc-frontend
@@ -24,6 +31,7 @@ services:
       # - ./logs/frontend:/var/log/nginx
     environment:
       - TZ=Europe/Berlin
+    restart: always
 
   backend:
     container_name: orc-backend
@@ -35,3 +43,4 @@ services:
       - ./logs/backend:/app/logs
     environment:
       - TZ=Europe/Berlin
+    restart: always
