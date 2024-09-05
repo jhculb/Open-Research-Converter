@@ -2,6 +2,8 @@ FROM python:3.9.19 AS project-base
 
 ARG POETRY_VERSION=1.5.1
 
+ENV GUNIORN_NUM_WORKERS=4
+
 RUN python -m pip install --upgrade pip \
 	&& pip install "poetry==$POETRY_VERSION"
 
