@@ -17,6 +17,10 @@ function App() {
     const [jobId, setjobId] = useState('');
     const [isDownloadDisabled, setIsDownloadDisabled] = useState(true);
     // const [isLoading, setIsLoading] = useState(false);
+    let apiUrl = process.env.REACT_APP_Development_URL;
+    if (process.env.REACT_APP_ENV === "production") {
+        apiUrl = process.env.REACT_APP_Production_URL;
+    }
 
     const handleTextChange = (event) => {
         setText(event.target.value);
@@ -62,8 +66,8 @@ function App() {
 
     //---- function called on Submit button press
     const onSubmit = () => {
-        // let url = 'http://orc-demo.gesis.org/api/start_processing';
-        let url = 'http://localhost/api/start_processing';
+        // let url = 'https://orc-demo.gesis.org/api/start_processing';
+        let url = apiUrl + '/api/start_processing';
         let data ={"email": email, "input_data": text};
         // setIsLoading(true);
         fetch(url, {
