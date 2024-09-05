@@ -25,6 +25,7 @@ services:
     volumes:
       - ./src/orc/nginx/certbot/www/:/var/www/certbot/:rw
       - ./src/orc/nginx/certbot/conf/:/etc/letsencrypt/:rw
+      - ./logs/certbot/:/var/log/letsencrypt/:rw
 
   frontend:
     container_name: orc-frontend
