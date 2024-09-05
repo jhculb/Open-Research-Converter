@@ -80,3 +80,9 @@ test_badges:
 #     npm install     # to install required modules/packages before running
 #     npm start       # to run a project
 #     npm run build   # to create a production build
+
+certificates_dry_run:
+	docker compose run --rm  certbot certonly --webroot --webroot-path /var/www/certbot/ --dry-run -d orc-demo.gesis.org
+
+certificates_create_and_load:
+	docker compose run --rm  certbot certonly --webroot --webroot-path /var/www/certbot/ -d orc-demo.gesis.org
