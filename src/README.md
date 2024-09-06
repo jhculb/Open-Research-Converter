@@ -1,1 +1,1 @@
-This directory stores each Python Package.
+This directory stores each container in the app.

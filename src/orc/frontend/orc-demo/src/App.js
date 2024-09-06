@@ -17,9 +17,9 @@ function App() {
     const [jobId, setjobId] = useState('');
     const [isDownloadDisabled, setIsDownloadDisabled] = useState(true);
     // const [isLoading, setIsLoading] = useState(false);
-    let apiUrl = process.env.REACT_APP_Development_URL;
+    let apiUrl = process.env.REACT_APP_DEV_URL;
     if (process.env.REACT_APP_ENV === "production") {
-        apiUrl = process.env.REACT_APP_Production_URL;
+        apiUrl = process.env.REACT_APP_PROD_URL;
     }
 
     const handleTextChange = (event) => {
@@ -68,7 +68,7 @@ function App() {
     const onSubmit = () => {
         // let url = 'https://orc-demo.gesis.org/api/start_processing';
         let url = apiUrl + '/api/start_processing';
-        let data ={"email": email, "input_data": text};
+        let data = { "email": email, "input_data": text };
         // setIsLoading(true);
         fetch(url, {
             method: 'POST',
@@ -76,7 +76,7 @@ function App() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
-            })
+        })
             .then((response) => {
                 if (!response.ok) {
                     // Read the response as text to capture HTML or error message
@@ -94,7 +94,7 @@ function App() {
                 setjobId(result[0]["job_id"]);
                 setResult(result);
                 // setText('');
-                if(outputData.length){
+                if (outputData.length) {
                     setIsDownloadDisabled(false);
                     let formattedText = outputData
                         .slice(0, 50)  // Take only the first 50 items
@@ -106,9 +106,9 @@ function App() {
                 // console.log('Submit button pressed: ', result);
             })
             .catch(error => console.log('Submit button error', error));
-            // .finally(() => {
-            //     setIsLoading(false);  // Stop loading
-            // });
+        // .finally(() => {
+        //     setIsLoading(false);  // Stop loading
+        // });
     }
 
     return (
@@ -130,7 +130,7 @@ function App() {
                         />
                     </div>
                     <div className="mt-2 flex-grow-0 upload-border">
-                        <CsvFileReader className="m-1" setText={setText}/>
+                        <CsvFileReader className="m-1" setText={setText} />
                     </div>
                     <div className="mt-2 flex-grow-1">
                         <TextBox
@@ -159,7 +159,7 @@ function App() {
                         placeholder={'Only first 50 results will be displayed here. Download the file for complete results!'}
                         value={limitedResult}
                         readOnly={true}
-                        style={{height: '100%'}}
+                        style={{ height: '100%' }}
                     />
                     <div className="d-flex justify-content-center mb-1">
                         <button type="button" className="btn btn-color" onClick={() => downloadResult()}>Download Result</button>
