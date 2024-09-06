@@ -32,10 +32,9 @@ services:
     hostname: frontend
     build:
       context: ./src/orc/frontend/
-      additional_contexts:
-        - js_env_file=./src/env/
     volumes:
       - ./logs/frontend/:/var/log/:rw
+      - ./src/env/js.env:/orc-demo/.env:ro
     restart: always
     env_file:
       - ./src/env/frontend.env
