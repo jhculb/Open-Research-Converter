@@ -21,6 +21,7 @@ function App() {
     if (process.env.REACT_APP_ENV === "production") {
         apiUrl = process.env.REACT_APP_PROD_URL;
     }
+    console.log("API URL:", apiUrl);
 
     const handleTextChange = (event) => {
         setText(event.target.value);
@@ -68,7 +69,7 @@ function App() {
     const onSubmit = () => {
         // let url = 'https://orc-demo.gesis.org/api/start_processing';
         let url = apiUrl + '/api/start_processing';
-        let data = { "email": email, "input_data": text };
+        let data ={"email": email, "input_data": text};
         // setIsLoading(true);
         fetch(url, {
             method: 'POST',
@@ -76,7 +77,7 @@ function App() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
-        })
+            })
             .then((response) => {
                 if (!response.ok) {
                     // Read the response as text to capture HTML or error message
@@ -94,7 +95,7 @@ function App() {
                 setjobId(result[0]["job_id"]);
                 setResult(result);
                 // setText('');
-                if (outputData.length) {
+                if(outputData.length){
                     setIsDownloadDisabled(false);
                     let formattedText = outputData
                         .slice(0, 50)  // Take only the first 50 items
@@ -106,11 +107,11 @@ function App() {
                 // console.log('Submit button pressed: ', result);
             })
             .catch(error => console.log('Submit button error', error));
-        // .finally(() => {
-        //     setIsLoading(false);  // Stop loading
-        // });
+            // .finally(() => {
+            //     setIsLoading(false);  // Stop loading
+            // });
     }
-
+    console.log(validEmail);
     return (
         <div className="container">
             <div className="row header-border mb-4 mt-2">
@@ -142,7 +143,7 @@ function App() {
                         />
                         <div className="d-flex justify-content-center">
                             <button type="button" className="btn btn-color" onClick={() => onSubmit()}>Submit</button>
-                            {/*<button type="button" className={`btn ${!text ? 'btn-disabled' : 'btn-color'}`} disabled={!text} onClick={() => onSubmit()}>Submit</button>*/}
+                            {/*<button type="button" className={`btn ${!(text && validEmail) ? 'btn-disabled' : 'btn-color'}`} disabled={!(text && validEmail)} onClick={() => onSubmit()}>Submit</button>*/}
                         </div>
                     </div>
                 </div>
@@ -167,7 +168,7 @@ function App() {
                     </div>
                 </div>
             </div>
-            <div className="row mt-5">
+            <div className="row mt-4">
                 <Footer></Footer>
             </div>
         </div>
