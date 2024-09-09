@@ -17,6 +17,11 @@ function App() {
     const [jobId, setjobId] = useState('');
     const [isDownloadDisabled, setIsDownloadDisabled] = useState(true);
     // const [isLoading, setIsLoading] = useState(false);
+    let apiUrl = process.env.REACT_APP_DEV_URL;
+    if (process.env.REACT_APP_ENV === "production") {
+        apiUrl = process.env.REACT_APP_PROD_URL;
+    }
+    console.log("API URL:", apiUrl);
 
     const handleTextChange = (event) => {
         setText(event.target.value);
@@ -62,8 +67,8 @@ function App() {
 
     //---- function called on Submit button press
     const onSubmit = () => {
-        // let url = 'http://orc-demo.gesis.org/api/start_processing';
-        let url = 'http://localhost/api/start_processing';
+        // let url = 'https://orc-demo.gesis.org/api/start_processing';
+        let url = apiUrl + '/api/start_processing';
         let data ={"email": email, "input_data": text};
         // setIsLoading(true);
         fetch(url, {
@@ -106,7 +111,7 @@ function App() {
             //     setIsLoading(false);  // Stop loading
             // });
     }
-
+    console.log(validEmail);
     return (
         <div className="container">
             <div className="row header-border mb-4 mt-2">
@@ -126,7 +131,7 @@ function App() {
                         />
                     </div>
                     <div className="mt-2 flex-grow-0 upload-border">
-                        <CsvFileReader className="m-1" setText={setText}/>
+                        <CsvFileReader className="m-1" setText={setText} />
                     </div>
                     <div className="mt-2 flex-grow-1">
                         <TextBox
@@ -138,7 +143,7 @@ function App() {
                         />
                         <div className="d-flex justify-content-center">
                             <button type="button" className="btn btn-color" onClick={() => onSubmit()}>Submit</button>
-                            {/*<button type="button" className={`btn ${!text ? 'btn-disabled' : 'btn-color'}`} disabled={!text} onClick={() => onSubmit()}>Submit</button>*/}
+                            {/*<button type="button" className={`btn ${!(text && validEmail) ? 'btn-disabled' : 'btn-color'}`} disabled={!(text && validEmail)} onClick={() => onSubmit()}>Submit</button>*/}
                         </div>
                     </div>
                 </div>
@@ -155,7 +160,7 @@ function App() {
                         placeholder={'Only first 50 results will be displayed here. Download the file for complete results!'}
                         value={limitedResult}
                         readOnly={true}
-                        style={{height: '100%'}}
+                        style={{ height: '100%' }}
                     />
                     <div className="d-flex justify-content-center mb-1">
                         <button type="button" className="btn btn-color" onClick={() => downloadResult()}>Download Result</button>
@@ -163,7 +168,7 @@ function App() {
                     </div>
                 </div>
             </div>
-            <div className="row mt-5">
+            <div className="row mt-4">
                 <Footer></Footer>
             </div>
         </div>

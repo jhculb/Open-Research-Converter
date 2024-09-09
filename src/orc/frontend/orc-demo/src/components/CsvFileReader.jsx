@@ -3,11 +3,10 @@ import Papa from 'papaparse';
 import './styles/CsvFileReader.sass'
 
 function CsvFileReader({ setText, className }) {
-    const [csvData, setCsvData] = useState([]);
     const [fileName, setFileName] = useState(''); // Holds the name of the selected file
     const [error, setError] = useState('');
     // Set your file size limit here (in bytes)
-    const FILE_SIZE_LIMIT = 20 * 1024 * 1024; // 20 MB
+    const FILE_SIZE_LIMIT = 1 * 1024 * 1024; // 1 MB
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
@@ -28,16 +27,13 @@ function CsvFileReader({ setText, className }) {
                     header: true, // Set this to true if the CSV file has a header row
                     skipEmptyLines: true, // Skip empty lines
                     complete: (result) => {
-                        // setCsvData(result.data); // Save the parsed data to state
                         // Extract the DOIs from the parsed data
-                        const dois = result.data.map((row) => row.dois);
+                        let dois = result.data.map((row) => row.dois);
                         // Join them into a single comma-separated string
-                        setCsvData(dois.join(','));
-                        // setText(dois.join(','));
+                        setText(dois.join(','));
                     },
                 });
             };
-
             // Read the file as text
             reader.readAsText(file);
             event.target.value = ''; // Reset the input value to allow re-uploading the same file
@@ -46,9 +42,8 @@ function CsvFileReader({ setText, className }) {
 
     return (
         <div className={className}>
-            <input type="file" accept=".csv"
-                   onChange={handleFileChange}
-            />
+            <input type="file" accept=".csv" onChange={handleFileChange}/>
+            {/*<p style={{ color: 'green' }}>File size must be less than 1 MB.</p>*/}
             {/*{fileName && <p style={{ color: 'gray' }}>{fileName}</p>}*/}
             {error && <p style={{ color: 'red' }}>{error}</p>}
             {/*'Choose a CSV file having single column containing DOIs.'*/}

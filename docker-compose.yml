@@ -2,8 +2,12 @@ services:
   nginx:
     container_name: reverse-proxy
     hostname: reverse
+    env_file:
+      - ./src/env/nginx.env
     build:
       context: ./src/orc/nginx
+      args:
+        - NGINX_CONF=local
     depends_on:
       - frontend
       - backend
@@ -15,10 +19,6 @@ services:
       - ./logs/nginx/:/var/log/nginx/:rw
       - ./src/orc/nginx/certbot/www/:/var/www/certbot/:ro
       - ./src/orc/nginx/certbot/conf/:/etc/nginx/ssl/:ro
-    environment:
-      - TZ=Europe/Berlin
-    env_file:
-      - ./src/env/nginx.env
 
   certbot:
     image: certbot/certbot:latest
@@ -32,11 +32,12 @@ services:
     hostname: frontend
     build:
       context: ./src/orc/frontend/
-      # volumes:
-      # - ./logs/frontend:/var/log/nginx
-    environment:
-      - TZ=Europe/Berlin
+    volumes:
+      - ./logs/frontend/:/var/log/:rw
+      - ./src/env/js.env:/orc-demo/.env:ro
     restart: always
+    env_file:
+      - ./src/env/frontend.env
 
   backend:
     container_name: orc-backend
@@ -46,8 +47,6 @@ services:
       dockerfile: ./src/orc/backend/Dockerfile
     volumes:
       - ./logs/backend:/app/logs:rw
-    environment:
-      - TZ=Europe/Berlin
     restart: always
     env_file:
       - ./src/env/backend.env
