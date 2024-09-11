@@ -7,7 +7,7 @@ services:
     build:
       context: ./src/orc/nginx
       args:
-        - NGINX_CONF=local
+        - NGINX_CONF=$LOCAL_OR_PRODUCTION
     depends_on:
       - frontend
       - backend
