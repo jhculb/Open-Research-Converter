@@ -1,7 +1,6 @@
-FROM python:3.9.19 AS project-base
+FROM python:3.11.10 AS project-base
 
-ARG POETRY_VERSION=1.5.1
-
+ARG POETRY_VERSION=1.8.3
 
 RUN python -m pip install --upgrade pip \
 	&& pip install "poetry==$POETRY_VERSION"
@@ -24,6 +23,4 @@ WORKDIR /app/src/orc/backend/orc_backend
 
 EXPOSE 8001
 
-ENV GUNIORN_NUM_WORKERS=4
-
-ENTRYPOINT [ "poetry", "run", "gunicorn", "app:app", "-w", "$GUNIORN_NUM_WORKERS", "-b", "0.0.0.0:8001", "--access-logfile", "/app/logs/gunicorn_access.log", "--error-logfile", "/app/logs/gunicorn_error.log", "--log-level", "debug"]
+ENTRYPOINT [ "poetry", "run", "gunicorn", "app:app", "-b", "0.0.0.0:8001", "--access-logfile", "/app/logs/gunicorn_access.log", "--error-logfile", "/app/logs/gunicorn_error.log", "--log-level", "debug"]
