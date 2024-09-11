@@ -52,12 +52,12 @@ def start_processing():
     job_id = orc.generate_new_job()
     text = json_data["input_data"]
     email = json_data["email"]
-    log.debug(f"start_processing input: job_id: {job_id}, text:{text}, email: {email}")
+    log.debug(f"app.py: start_processing input: job_id: {job_id}, text:{text}, email: {email}")
     orc.process(job_id, text, email)
-    log.debug(f"finished processing {job_id}")
+    log.debug(f"app.py: finished processing {job_id}")
     response = jsonify(orc.return_data(job_id))
     response.headers.add("Access-Control-Allow-Origin", "*")
-    log.debug(f"get_data response: {response}")
+    log.debug(f"app.py: get_data response: {response}")
     return response
 
 

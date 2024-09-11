@@ -45,6 +45,8 @@ services:
     build:
       context: ./
       dockerfile: ./src/orc/backend/Dockerfile
+      args:
+        - POETRY_VERSION=1.8.3
     volumes:
       - ./logs/backend:/app/logs:rw
     restart: always

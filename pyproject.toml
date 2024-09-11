@@ -17,10 +17,12 @@ maintainers = [
 description = ""
 readme = "README.md"
 packages = [{ include = "orc", from = "src" }]
+license = "GPL-3.0-or-later"
+homepage = "https://orc-demo.gesis.org"
 
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.11.3"
 psycopg = "^3.1.18"
 pandas = "^2.2.2"
 gunicorn = "^22.0.0"
