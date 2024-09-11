@@ -17,6 +17,7 @@ maintainers = [
 description = ""
 readme = "README.md"
 packages = [{ include = "orc", from = "src" }]
+license = "GPL-3.0-or-later"
 
 
 [tool.poetry.dependencies]
