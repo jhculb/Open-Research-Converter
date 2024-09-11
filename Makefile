@@ -74,15 +74,11 @@ test_badges:
 	mkdir badges
 	python generate_badges.py
 
-# react_frontend:
-# #   install node.js and npm (for me the working versions are node=16.17.1 and npm=8.15.0)
-#     go to directory: cd /src/orc/frontend/orc-demo
-#     npm install     # to install required modules/packages before running
-#     npm start       # to run a project
-#     npm run build   # to create a production build
-
 certificates_dry_run:
 	docker compose run --rm  certbot certonly --webroot --webroot-path /var/www/certbot/ --dry-run -d orc-demo.gesis.org
 
 certificates_create_and_load:
 	docker compose run --rm  certbot certonly --webroot --webroot-path /var/www/certbot/ -d orc-demo.gesis.org
+
+set_envs:
+	cp .env.template .env && cp src/env_templates/backend.env.template src/env/backend.env && cp src/env_templates/frontend.env.template src/env/frontend.env && cp ./src/env_templates/nginx.env.template ./src/env/nginx.env && cp ./src/env_templates/js.env.template ./src/env/js.env
