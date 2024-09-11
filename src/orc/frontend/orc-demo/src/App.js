@@ -16,12 +16,14 @@ function App() {
     const [limitedResult, setLimitedResult] = useState('');
     const [jobId, setjobId] = useState('');
     const [isDownloadDisabled, setIsDownloadDisabled] = useState(true);
-    // const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    // const blockedEmails = ['john.culbert@gesis.org', 'ahsan.shahid@gesis.org'];
+
     let apiUrl = process.env.REACT_APP_DEV_URL;
     if (process.env.REACT_APP_ENV === "production") {
         apiUrl = process.env.REACT_APP_PROD_URL;
     }
-    console.log("API URL:", apiUrl);
+    // console.log("API URL:", apiUrl);
 
     const handleTextChange = (event) => {
         setText(event.target.value);
@@ -29,19 +31,22 @@ function App() {
     const handleEmailChange = (event) => {
         let email = event.target.value;
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        if (emailRegex.test(email)) {
-            setValidEmail(true);
-        } else {
-            setValidEmail(false);
-        }
         setEmail(email);
+        // Check if email is valid
+        if (!emailRegex.test(email)) {
+            setValidEmail(false);
+            return;
+        }
+        setValidEmail(true);
+        // Check if email is blocked
+        // if (blockedEmails.includes(email.toLowerCase())) {
+        //     setValidEmail(false);
+        //     setEmail('');
+        //     alert('Oops! Smart move! Please insert your personal e-mail address.');
+        // } else {
+        //     setValidEmail(true);
+        // }
     };
-
-    // Function to update the result value
-    // const updateResult = (newResult) => {
-    //     setResult(newResult);
-    // };
 
     //---- function called on Download Result button press
     const downloadResult = () => {
@@ -70,7 +75,7 @@ function App() {
         // let url = 'https://orc-demo.gesis.org/api/start_processing';
         let url = apiUrl + '/api/start_processing';
         let data ={"email": email, "input_data": text};
-        // setIsLoading(true);
+        setIsLoading(true);
         fetch(url, {
             method: 'POST',
             headers: {
@@ -94,7 +99,7 @@ function App() {
                 let outputData = result[0]["output_data"];
                 setjobId(result[0]["job_id"]);
                 setResult(result);
-                // setText('');
+                setText('');
                 if(outputData.length){
                     setIsDownloadDisabled(false);
                     let formattedText = outputData
@@ -106,12 +111,11 @@ function App() {
                 // setResult(JSON.stringify(result[0]["output_data"], null, 2));
                 // console.log('Submit button pressed: ', result);
             })
-            .catch(error => console.log('Submit button error', error));
-            // .finally(() => {
-            //     setIsLoading(false);  // Stop loading
-            // });
+            .catch(error => console.log('Submit button error', error))
+            .finally(() => {
+                setIsLoading(false);  // Stop loading
+            });
     }
-    console.log(validEmail);
     return (
         <div className="container">
             <div className="row header-border mb-4 mt-2">
@@ -142,18 +146,18 @@ function App() {
                             onChange={handleTextChange}
                         />
                         <div className="d-flex justify-content-center">
-                            <button type="button" className="btn btn-color" onClick={() => onSubmit()}>Submit</button>
-                            {/*<button type="button" className={`btn ${!(text && validEmail) ? 'btn-disabled' : 'btn-color'}`} disabled={!(text && validEmail)} onClick={() => onSubmit()}>Submit</button>*/}
+                            {/*<button type="button" className="btn btn-color" onClick={() => onSubmit()}>Submit</button>*/}
+                            <button type="button" className={`btn ${!(text && validEmail) ? 'btn-disabled' : 'btn-color'}`} disabled={!(text && validEmail)} onClick={() => onSubmit()}>Submit</button>
                         </div>
                     </div>
                 </div>
                 <div className="col-6 mt-2 d-flex flex-column position-relative" style={{ height: '100%' }}>
-                    {/*{*/}
-                    {/*    isLoading &&*/}
-                    {/*    <div className="spinner-border spinner-color spinner-position" role="status">*/}
-                    {/*        <span className="sr-only"></span>*/}
-                    {/*    </div>*/}
-                    {/*}*/}
+                    {
+                        isLoading &&
+                        <div className="spinner-border spinner-color spinner-position large-spinner" role="status">
+                            <span className="sr-only"></span>
+                        </div>
+                    }
                     <TextBox
                         title={"Result Box"}
                         rows={20}
@@ -163,8 +167,8 @@ function App() {
                         style={{ height: '100%' }}
                     />
                     <div className="d-flex justify-content-center mb-1">
-                        <button type="button" className="btn btn-color" onClick={() => downloadResult()}>Download Result</button>
-                        {/*<button type="button" className={`btn ${isDownloadDisabled ? 'btn-disabled' : 'btn-color'}`} disabled={isDownloadDisabled} onClick={() => downloadResult()}>Download Result</button>*/}
+                        {/*<button type="button" className="btn btn-color" onClick={() => downloadResult()}>Download Result</button>*/}
+                        <button type="button" className={`btn ${isDownloadDisabled ? 'btn-disabled' : 'btn-color'}`} disabled={isDownloadDisabled} onClick={() => downloadResult()}>Download Result</button>
                     </div>
                 </div>
             </div>
