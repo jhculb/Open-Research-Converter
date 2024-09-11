@@ -18,6 +18,7 @@ description = ""
 readme = "README.md"
 packages = [{ include = "orc", from = "src" }]
 license = "GPL-3.0-or-later"
+homepage = "https://orc-demo.gesis.org"
 
 
 [tool.poetry.dependencies]
