@@ -28,7 +28,8 @@ function CsvFileReader({ setText, className }) {
                     skipEmptyLines: true, // Skip empty lines
                     complete: (result) => {
                         // Extract the DOIs from the parsed data
-                        let dois = result.data.map((row) => row.dois);
+                        // let dois = result.data.map((row) => row.dois);
+                        let dois = result.data.map((row) => Object.values(row)[0]); // Get the first value from each row
                         // Join them into a single comma-separated string
                         setText(dois.join(','));
                     },
