@@ -17,7 +17,7 @@ function App() {
     const [jobId, setjobId] = useState('');
     const [isDownloadDisabled, setIsDownloadDisabled] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
-    // const blockedEmails = ['john.culbert@gesis.org', 'ahsan.shahid@gesis.org'];
+    const blockedEmails = ['john.culbert@gesis.org', 'ahsan.shahid@gesis.org'];
 
     let apiUrl = process.env.REACT_APP_DEV_URL;
     if (process.env.REACT_APP_ENV === "production") {
@@ -37,15 +37,14 @@ function App() {
             setValidEmail(false);
             return;
         }
-        setValidEmail(true);
         // Check if email is blocked
-        // if (blockedEmails.includes(email.toLowerCase())) {
-        //     setValidEmail(false);
-        //     setEmail('');
-        //     alert('Oops! Smart move! Please insert your personal e-mail address.');
-        // } else {
-        //     setValidEmail(true);
-        // }
+        if (blockedEmails.includes(email.toLowerCase())) {
+            setValidEmail(false);
+            setEmail('');
+            alert('Oops! Smart move! Please insert your personal e-mail address.');
+        } else {
+            setValidEmail(true);
+        }
     };
 
     //---- function called on Download Result button press
@@ -119,7 +118,7 @@ function App() {
     return (
         <div className="container">
             <div className="row header-border mb-4 mt-2">
-                <Header title="Open Research Converter" href="http://orc-demo.gesis.org/" />
+                <Header title="Open Research Converter" href="https://www.gesis.org/" />
             </div>
             <div className="row">
                 <div className="col-6 d-flex flex-column">
