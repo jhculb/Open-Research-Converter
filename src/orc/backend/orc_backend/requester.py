@@ -1,10 +1,12 @@
 import asyncio
 import datetime as dt
+import functools
 import itertools
 import logging
 import re
 from typing import Generator
 
+import aiometer
 import requests
 from httpx import AsyncClient
 
@@ -56,7 +58,9 @@ class openalex_requester:
         self._logger = logging.getLogger(__name__)
         self._jobs = {}
         self._rate_limit_interval = 1
-        self._client = RateLimitedClient(1, 9)
+        self._max_concurrent_per_second_aio = 8
+        self._client = RateLimitedClient(1.0, 9)
+        self._aio_client = AsyncClient()
 
     async def health_check(self) -> tuple:
         try:
@@ -74,6 +78,56 @@ class openalex_requester:
             return {"healthy": False, "error": decode_err.__str__}, 200
         return {"healthy": True, "error": False}, 418
 
+    def _prepare_chunks(self, job_id: str) -> list[str] | None:
+        chunked_data = self._chunk_input_data(job_id)
+        if chunked_data is not None:
+            chunked_data = list(chunked_data)
+            return [
+                f'https://api.openalex.org/works?filter=doi:{"|".join(chunks)}&per-page={chunklen}&mailto={self._jobs[job_id]["email"]}&select=id,doi'
+                for chunks, chunklen in chunked_data
+            ]
+
+        else:
+            self._logger.error(f"job_id: {job_id}: _prepare chunks failed ")
+            return None
+
+    async def _fetch(self, request: str):
+        self._logger.debug(request)
+        self._logger.debug("DEBUG: aiometer request sent to openalex")
+        response = await self._aio_client.get(request)
+        self._logger.debug(f"DEBUG: aiometer request returned from openalex, response code: {response.status_code}")
+        retries = 0
+        while response.status_code == 429 and retries < 5:
+            await asyncio.sleep(pow(2, retries))  # Exponential backoff
+            self._logger.debug(f"DEBUG: RETRY aiometer request, retries: {retries}")
+            response = await self._aio_client.get(request)
+            retries += 1
+        return response.json()
+
+    async def _process_aio(self, job_id: str):
+        oa_requests = self._prepare_chunks(job_id)
+        if oa_requests is not None:
+            self._logger.info(f"job_id: {job_id}: Requesting via aiometer")
+            responses = await aiometer.run_all(
+                [functools.partial(self._fetch, query) for query in oa_requests],
+                max_per_second=self._max_concurrent_per_second_aio,
+                max_at_once=self._max_concurrent_per_second_aio,
+            )
+            self._logger.info(f"job_id: {job_id}: Requests via aiometer successful")
+            shuffled_responses = [(work["doi"], work["id"]) for response in responses for work in response["results"]]
+            formatted_input_dois = list(map(self._doi_str_formatter, self._jobs[job_id]["input_data"]))
+            self._jobs[job_id]["aio_responses"] = sorted(
+                shuffled_responses, key=lambda pair: formatted_input_dois.index(pair[0])
+            )
+            self._logger.info(f"job_id: {job_id}: aiometer sorting successful")
+            self._jobs[job_id]["output_csv_data"] = "doi, oa_id\n" + "".join(
+                [f"{doi_val},{oi_val}\n" for (doi_val, oi_val) in self._jobs[job_id]["aio_responses"]]
+            )
+            self._logger.info(f"job_id: {job_id}: aiometer csv string creation successful")
+            self._jobs[job_id]["status"] = "complete"
+        else:
+            self._logger.error(f"job_id: {job_id}: Chunking failed in process for {job_id}, returning False")
+
     async def _process(self, job_id: str):
         self._jobs[job_id]["status"] = "processing"
         self._jobs[job_id]["_tasklist"] = []
@@ -86,11 +140,18 @@ class openalex_requester:
                 self._logger.debug(f"job_id: {job_id}: Request task added for chunk {pos} of {job_id}")
             await asyncio.gather(*tasks)
             results = [self._jobs[job_id]["responses"][pos_iter] for pos_iter in range(0, len(chunked_data))]
+            csv_results = [self._jobs[job_id]["csv_responses"][pos_iter] for pos_iter in range(0, len(chunked_data))]
             self._logger.info(f"job_id: {job_id}: results completed for {job_id}")
         else:
             self._logger.error(f"job_id: {job_id}: Chunking failed in process for {job_id}, returning False")
         output = list(itertools.chain.from_iterable(results))
+        csv_output = list(itertools.chain.from_iterable(csv_results))
+        self._logger.debug(csv_output)
+        self._logger.debug(csv_results)
         self._jobs[job_id]["output_data"] = output
+        self._jobs[job_id]["output_csv_data"] = "doi, oa_id\n" + "".join(
+            [f"{doi_val},{oi_val}\n" for csv_inner in csv_results for (doi_val, oi_val) in csv_inner]
+        )
         self._jobs[job_id]["status"] = "complete"
 
     def _chunk_input_data(
@@ -121,26 +182,25 @@ class openalex_requester:
                 output_str = "https://doi.org/" + input_str
         else:
             output_str = input_str
-        return output_str
+        return output_str.lower()
 
     async def _request(self, chunked_data: list[str], job_id: str, chunklen: int, pos: int) -> None:
         self._logger.info(f"job_id: {job_id}: sending request {pos}")
         formatted_chunk = "|".join(chunked_data)
-        self._logger.debug(f"job_id: {job_id}: formatted_chunk: {formatted_chunk}")
-        self._logger.debug(f"job_id: {job_id}: chunklen: {chunklen}")
         response = await self._client.get(
             f'https://api.openalex.org/works?filter=doi:{formatted_chunk}&per-page={chunklen}&mailto={self._jobs[job_id]["email"]}&select=id,doi'
         )
-        self._logger.debug(f"response: {response}")
         # TODO: add Nina Request functionality for searching the title && Year && Surname / All authors
         shuffled_ids = [work["id"] for work in response.json()["results"]]
-        self._logger.debug(f"job_id: {job_id}: shuffled_ids: {shuffled_ids}")
         dois = [work["doi"] for work in response.json()["results"]]
-        self._logger.debug(f"job_id: {job_id}: dois: {dois}")
-        self._logger.debug(f"job_id: {job_id}: chunked_data: {chunked_data}")
         filtered_chunk = list(map(self._doi_str_formatter, chunked_data))
         positions = [list(map(str.lower, filtered_chunk)).index(doi) for doi in dois]
         ids = [x for _, x in sorted(zip(positions, shuffled_ids, strict=True), key=lambda pair: pair[0])]
+        csv_ids = [
+            ([list(map(str.lower, chunked_data)) for doi in dois][pos][y], x)
+            for y, x in sorted(zip(positions, shuffled_ids, strict=True), key=lambda pair: pair[0])
+        ]
         self._jobs[job_id]["responses"][pos] = ids
+        self._jobs[job_id]["csv_responses"][pos] = csv_ids
         self._jobs[job_id]["progress"] += chunklen
         self._logger.info(f"job_id: {job_id}: _request {pos} complete")

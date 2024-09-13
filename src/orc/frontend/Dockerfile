@@ -4,4 +4,4 @@ COPY orc-demo/package.json orc-demo/package-lock.json /orc-demo/
 RUN npm install
 COPY orc-demo/public/ /orc-demo/public
 COPY orc-demo/src /orc-demo/src
-CMD [ "npm", "start" ]
+ENTRYPOINT [ "npm", "start" ]

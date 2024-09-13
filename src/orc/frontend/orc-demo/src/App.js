@@ -50,23 +50,17 @@ function App() {
 
     //---- function called on Download Result button press
     const downloadResult = () => {
-        let outputData = result[0]["output_data"];
-        let csvContent = "openalex_dois\n"; // Header
-        // Append each item in the outputData array as a new line in the CSV
-        outputData.forEach(item => {
-            csvContent += `${item}\n`;
-        });
-        // Create a Blob from the CSV string
+        let outputData = result[0]["output_full"];
+        const lines = outputData.trim().split('\n');
+        const header = lines[0];
+        const rows = lines.slice(1).join('\n');
+        const csvContent = `${header}\n${rows}`;
         const blob = new Blob([csvContent], { type: 'text/csv' });
-        // Create a temporary anchor element
         const link = document.createElement('a');
-        // Set the download URL as the Blob's URL
         link.href = URL.createObjectURL(blob);
-        // Set the download attribute with a file name
-        link.download = 'openalex_dois.csv';
-        // Programmatically click the link to trigger the download
+        // Set the the desired file name
+        link.download = 'orc_output.csv';
         link.click();
-        // Clean up by revoking the Blob URL
         URL.revokeObjectURL(link.href);
     };
 
@@ -162,7 +156,7 @@ function App() {
                     <TextBox
                         title={"Result Box"}
                         rows={20}
-                        placeholder={'Only first 50 results will be displayed here. Download the file for complete results!'}
+                        placeholder={'OpenAlex DOIs for the first 50 inputs will be shown. Download the file for full results!'}
                         value={limitedResult}
                         readOnly={true}
                         style={{ height: '100%' }}
@@ -181,3 +175,51 @@ function App() {
 }
 
 export default App;
+
+
+// .then(result => {
+//     console.log(JSON.stringify(result));
+//     let outputData = result[0]["output_full"];
+//     setjobId(result[0]["job_id"]);
+//     setResult(result);
+//     setText('');
+//     if(outputData.length){
+//         setIsDownloadDisabled(false);
+//         const lines = outputData.trim().split('\n').slice(0, 51);
+//
+//         // Extract the headers (first line) and the data (remaining lines)
+//         const headers = lines[0].split(',');
+//         const rows = lines.slice(1).map(line => line.split(','));
+//
+//         // Create a text representation with proper alignment using tabs
+//         let formattedText = headers.join('\t\t\t\t\t\t\t\t\t\t\t\t') + '\n';  // Join headers with tabs
+//         rows.forEach(row => {
+//             formattedText += row.join('\t') + '\n';  // Join each row with tabs
+//         });
+//
+//         setLimitedResult(formattedText);
+//     }
+//     // setResult(JSON.stringify(result[0]["output_data"], null, 2));
+//     // console.log('Submit button pressed: ', result);
+// })
+
+// const downloadResult = () => {
+//     let outputData = result[0]["output_data"];
+//     let csvContent = "openalex_dois\n"; // Header
+//     // Append each item in the outputData array as a new line in the CSV
+//     outputData.forEach(item => {
+//         csvContent += `${item}\n`;
+//     });
+//     // Create a Blob from the CSV string
+//     const blob = new Blob([csvContent], { type: 'text/csv' });
+//     // Create a temporary anchor element
+//     const link = document.createElement('a');
+//     // Set the download URL as the Blob's URL
+//     link.href = URL.createObjectURL(blob);
+//     // Set the download attribute with a file name
+//     link.download = 'openalex_dois.csv';
+//     // Programmatically click the link to trigger the download
+//     link.click();
+//     // Clean up by revoking the Blob URL
+//     URL.revokeObjectURL(link.href);
+// };
