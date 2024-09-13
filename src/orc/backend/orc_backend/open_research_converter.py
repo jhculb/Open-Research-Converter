@@ -18,7 +18,9 @@ class OpenResearchConverter(openalex_requester):
         self._jobs[new_job_id] = {}
         self._jobs[new_job_id]["input_data"] = None
         self._jobs[new_job_id]["responses"] = {}
+        self._jobs[new_job_id]["csv_responses"] = {}
         self._jobs[new_job_id]["output_data"] = None
+        self._jobs[new_job_id]["output_csv_data"] = None
         self._jobs[new_job_id]["lock"] = asyncio.Lock()
         self._jobs[new_job_id]["email"] = None
         self._jobs[new_job_id]["status"] = "initialised"
@@ -138,6 +140,7 @@ class OpenResearchConverter(openalex_requester):
             return {
                 "job_id": job_id,
                 "output_data": self._jobs[job_id]["output_data"],
+                "output_full": self._jobs[job_id]["output_csv_data"],
             }, 200
         else:
             return {

@@ -86,11 +86,18 @@ class openalex_requester:
                 self._logger.debug(f"job_id: {job_id}: Request task added for chunk {pos} of {job_id}")
             await asyncio.gather(*tasks)
             results = [self._jobs[job_id]["responses"][pos_iter] for pos_iter in range(0, len(chunked_data))]
+            csv_results = [self._jobs[job_id]["csv_responses"][pos_iter] for pos_iter in range(0, len(chunked_data))]
             self._logger.info(f"job_id: {job_id}: results completed for {job_id}")
         else:
             self._logger.error(f"job_id: {job_id}: Chunking failed in process for {job_id}, returning False")
         output = list(itertools.chain.from_iterable(results))
+        csv_output = list(itertools.chain.from_iterable(csv_results))
+        self._logger.debug(csv_output)
+        self._logger.debug(csv_results)
         self._jobs[job_id]["output_data"] = output
+        self._jobs[job_id]["output_csv_data"] = "doi, oa_id\n" + "".join(
+            [f"{doi_val},{oi_val}\n" for csv_inner in csv_results for (doi_val, oi_val) in csv_inner]
+        )
         self._jobs[job_id]["status"] = "complete"
 
     def _chunk_input_data(
@@ -141,6 +148,11 @@ class openalex_requester:
         filtered_chunk = list(map(self._doi_str_formatter, chunked_data))
         positions = [list(map(str.lower, filtered_chunk)).index(doi) for doi in dois]
         ids = [x for _, x in sorted(zip(positions, shuffled_ids, strict=True), key=lambda pair: pair[0])]
+        csv_ids = [
+            ([list(map(str.lower, chunked_data)) for doi in dois][pos][y], x)
+            for y, x in sorted(zip(positions, shuffled_ids, strict=True), key=lambda pair: pair[0])
+        ]
         self._jobs[job_id]["responses"][pos] = ids
+        self._jobs[job_id]["csv_responses"][pos] = csv_ids
         self._jobs[job_id]["progress"] += chunklen
         self._logger.info(f"job_id: {job_id}: _request {pos} complete")
