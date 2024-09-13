@@ -1,11 +1,12 @@
 // import logo from './logo.svg';
 import React, { useState } from 'react';
 import './App.css';
-import './components/styles/Header.sass'
+import './components/styles/Header.sass';
 import Header from './components/Header';
 import TextBox from './components/TextBox';
 // import UploadFile from "./components/UploadFile";
 import CsvFileReader from './components/CsvFileReader';
+import HintButton from './components/HintButton';
 import Footer from './components/Footer';
 
 function App() {
@@ -110,18 +111,18 @@ function App() {
                 // setResult(JSON.stringify(result[0]["output_data"], null, 2));
                 // console.log('Submit button pressed: ', result);
             })
-            .catch(error => console.log('Submit button error', error))
+            .catch(error => console.log(error))
             .finally(() => {
                 setIsLoading(false);  // Stop loading
             });
     }
     return (
         <div className="container">
-            <div className="row header-border mb-4 mt-2">
+            <div className="row header-border mb-4 mt-2 align-items-center">
                 <Header title="Open Research Converter" href="https://www.gesis.org/" />
             </div>
             <div className="row">
-                <div className="col-6 d-flex flex-column">
+                <div className="col-12 col-md-6 d-flex flex-column">
                     <div className="mt-2">
                         <TextBox
                             customClass={email === "" ? "" : (validEmail ? "custom-valid-focus" : "custom-invalid-focus")}
@@ -133,8 +134,9 @@ function App() {
                             onChange={handleEmailChange}
                         />
                     </div>
-                    <div className="mt-2 flex-grow-0 upload-border">
-                        <CsvFileReader className="m-1" setText={setText} />
+                    <div className="mt-2 d-flex flex-grow-0 align-items-center upload-border">
+                        <CsvFileReader className="m-1 w-100" setText={setText} />
+                        <HintButton className="ml-2" imageName='input_template'></HintButton>
                     </div>
                     <div className="mt-2 flex-grow-1">
                         <TextBox
@@ -150,7 +152,7 @@ function App() {
                         </div>
                     </div>
                 </div>
-                <div className="col-6 mt-2 d-flex flex-column position-relative" style={{ height: '100%' }}>
+                <div className="col-12 col-md-6 mt-2 d-flex flex-column position-relative" style={{ height: '100%' }}>
                     {
                         isLoading &&
                         <div className="spinner-border spinner-color spinner-position large-spinner" role="status">
