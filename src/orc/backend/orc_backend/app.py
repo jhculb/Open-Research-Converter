@@ -46,7 +46,7 @@ async def healthcheck():
 
 
 @app.route("/start_processing", methods=["POST"])
-@timeout(60)
+@timeout(3600)
 @cross_origin()
 def start_processing():
     log.debug("app.py: start_processing called")

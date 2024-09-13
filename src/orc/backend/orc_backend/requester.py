@@ -58,7 +58,7 @@ class openalex_requester:
         self._logger = logging.getLogger(__name__)
         self._jobs = {}
         self._rate_limit_interval = 1
-        self._max_concurrent_per_second_aio = 9
+        self._max_concurrent_per_second_aio = 8
         self._client = RateLimitedClient(1.0, 9)
         self._aio_client = AsyncClient()
 
@@ -92,9 +92,16 @@ class openalex_requester:
             return None
 
     async def _fetch(self, request: str):
+        self._logger.debug(request)
         self._logger.debug("DEBUG: aiometer request sent to openalex")
         response = await self._aio_client.get(request)
-        self._logger.debug("DEBUG: aiometer request returned from openalex")
+        self._logger.debug(f"DEBUG: aiometer request returned from openalex, response code: {response.status_code}")
+        retries = 0
+        while response.status_code == 429 and retries < 5:
+            await asyncio.sleep(pow(2, retries))  # Exponential backoff
+            self._logger.debug(f"DEBUG: RETRY aiometer request, retries: {retries}")
+            response = await self._aio_client.get(request)
+            retries += 1
         return response.json()
 
     async def _process_aio(self, job_id: str):
