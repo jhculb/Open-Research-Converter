@@ -2,6 +2,7 @@ import asyncio
 import datetime as dt
 import itertools
 import logging
+import re
 from typing import Generator
 
 import requests
@@ -108,6 +109,20 @@ class openalex_requester:
             self._logger.error(f"job_id: {job_id}: Chunksize parameter was outside range [1,50]")
             return None
 
+    def _doi_str_formatter(self, input_str: str) -> str:
+        https_regex_str = r"^https:\/\/doi\.org\/"
+        with_regex = re.compile(https_regex_str)
+        http_regex_str = r"^http:\/\/doi\.org\/"
+        with_http_regex = re.compile(http_regex_str)
+        if not bool(with_regex.match(input_str)):
+            if bool(with_http_regex.match(input_str)):
+                output_str = input_str[0:4] + "s" + input_str[4:]
+            else:
+                output_str = "https://doi.org/" + input_str
+        else:
+            output_str = input_str
+        return output_str
+
     async def _request(self, chunked_data: list[str], job_id: str, chunklen: int, pos: int) -> None:
         self._logger.info(f"job_id: {job_id}: sending request {pos}")
         formatted_chunk = "|".join(chunked_data)
@@ -123,7 +138,8 @@ class openalex_requester:
         dois = [work["doi"] for work in response.json()["results"]]
         self._logger.debug(f"job_id: {job_id}: dois: {dois}")
         self._logger.debug(f"job_id: {job_id}: chunked_data: {chunked_data}")
-        positions = [list(map(str.lower, chunked_data)).index(doi) for doi in dois]
+        filtered_chunk = list(map(self._doi_str_formatter, chunked_data))
+        positions = [list(map(str.lower, filtered_chunk)).index(doi) for doi in dois]
         ids = [x for _, x in sorted(zip(positions, shuffled_ids, strict=True), key=lambda pair: pair[0])]
         self._jobs[job_id]["responses"][pos] = ids
         self._jobs[job_id]["progress"] += chunklen
