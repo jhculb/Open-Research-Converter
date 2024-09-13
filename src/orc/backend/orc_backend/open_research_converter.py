@@ -85,6 +85,14 @@ class OpenResearchConverter(openalex_requester):
             return False
         return True
 
+    def _doi_list_formatter(self, data: list[str]) -> list[str]:
+        https_regex_str = r"^https:\/\/doi\.org\/"
+        with_regex = re.compile(https_regex_str)
+        for pos, potential_doi in enumerate(data):
+            if not bool(with_regex.match(potential_doi)):
+                data[pos] = "https://doi.org/" + potential_doi
+        return data
+
     def _validate_data(self, job_id: str, data: list[str]) -> bool:
         # Assumes list of strings containing dois
         self._logger.debug(f"job_id: {job_id}: validating data")
