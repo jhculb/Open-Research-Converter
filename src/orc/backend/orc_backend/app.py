@@ -5,6 +5,7 @@ import logging
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
 from orc.backend.orc_backend.open_research_converter import OpenResearchConverter
+from timeout_decorator import timeout
 
 # from https://stackoverflow.com/questions/67741946/how-to-validate-fields-raw-in-flask-marshmallow?rq=1
 
@@ -45,6 +46,7 @@ async def healthcheck():
 
 
 @app.route("/start_processing", methods=["POST"])
+@timeout(60)
 @cross_origin()
 def start_processing():
     log.debug("app.py: start_processing called")

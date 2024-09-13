@@ -19,6 +19,7 @@ class OpenResearchConverter(openalex_requester):
         self._jobs[new_job_id]["input_data"] = None
         self._jobs[new_job_id]["responses"] = {}
         self._jobs[new_job_id]["csv_responses"] = {}
+        self._jobs[new_job_id]["aio_responses"] = None
         self._jobs[new_job_id]["output_data"] = None
         self._jobs[new_job_id]["output_csv_data"] = None
         self._jobs[new_job_id]["lock"] = asyncio.Lock()
@@ -125,7 +126,7 @@ class OpenResearchConverter(openalex_requester):
             return True
         return False
 
-    def process(self, job_id, data, email) -> None:
+    def process_old(self, job_id, data, email) -> None:
         self._logger.info(f"job_id: {job_id}: orc: processing")
         self._recieve_data(job_id, data, email)
         self._logger.info(f"job_id: {job_id}: orc: data received")
@@ -133,13 +134,35 @@ class OpenResearchConverter(openalex_requester):
             self._logger.info(f"job_id: {job_id}: orc: data was suitable, creating task")
             asyncio.run(self._process(job_id))
 
-    def return_data(self, job_id) -> tuple[dict, int]:
+    def process(self, job_id, data, email) -> None:
+        self._logger.info(f"job_id: {job_id}: orc: processing")
+        self._recieve_data(job_id, data, email)
+        self._logger.info(f"job_id: {job_id}: orc: data received")
+        if self._check_ready(job_id):
+            self._logger.info(f"job_id: {job_id}: orc: data was suitable, creating task")
+            asyncio.run(self._process_aio(job_id))
+
+    def return_data_old(self, job_id) -> tuple[dict, int]:
         self._validate_uuid(job_id=job_id)
         if self._jobs[job_id]["status"] == "complete":
             del self._jobs[job_id]["_tasklist"]
             return {
                 "job_id": job_id,
                 "output_data": self._jobs[job_id]["output_data"],
+                "output_full": self._jobs[job_id]["output_csv_data"],
+            }, 200
+        else:
+            return {
+                "job_id": job_id,
+                "status": self._jobs[job_id]["status"],
+            }, 204
+
+    def return_data(self, job_id) -> tuple[dict, int]:
+        self._validate_uuid(job_id=job_id)
+        if self._jobs[job_id]["status"] == "complete":
+            return {
+                "job_id": job_id,
+                "output_data": [doi_oa_pair[1] for doi_oa_pair in self._jobs[job_id]["aio_responses"]],
                 "output_full": self._jobs[job_id]["output_csv_data"],
             }, 200
         else:
