@@ -6,6 +6,16 @@
 		"dockerfile": "Dockerfile",
 		"context": ".."
 	},
+	"features": {
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {
+			"moby": true,
+			"azureDnsAutoDetection": true,
+			"installDockerBuildx": true,
+			"installDockerComposeSwitch": true,
+			"version": "latest",
+			"dockerDashComposeVersion": "latest"
+		}
+	},
 	"customizations": {
 		"vscode": {
 			"extensions": [
@@ -14,44 +24,19 @@
 				"ms-azuretools.vscode-docker",
 				"ms-python.python",
 				"ms-python.vscode-pylance",
-				"ms-python.pylint",
-				"ms-python.isort",
-				"ms-python.flake8",
-				"ms-python.black-formatter",
 				"ms-vsliveshare.vsliveshare",
 				"ms-vscode.makefile-tools",
+				"charliermarsh.ruff",
 				"ryanluker.vscode-coverage-gutters",
 				"tamasfe.even-better-toml",
 				"sonarsource.sonarlint-vscode",
 				"ms-vscode.makefile-tools",
-				// Optional:
-				// "visualstudioexptteam.vscodeintellicode",
-				// "njpwerner.autodoc",
-				// "ms-toolsai.jupyter",
-				// "ms-toolsai.vscode-jupyter-cell-tags",
-				// "ms-toolsai.jupyter-renderers",
-				// "donjayamanne.python-environment-manager",
-				// "eamodio.gitlens",
-				// "aaron-bond.better-comments",
-				// "mikestead.dotenv"
-				// "GitHub.copilot",
 			],
 			"settings": {
 				"python.defaultInterpreterPath": "/usr/local/bin/python",
-				"black-formatter.path": [
-					"/usr/local/py-utils/bin/black"
-				],
-				"pylint.path": [
-					"/usr/local/py-utils/bin/pylint"
-				],
-				"flake8.path": [
-					"/usr/local/py-utils/bin/flake8"
-				],
-				"isort.path": [
-					"/usr/local/py-utils/bin/isort"
-				]
 			}
 		}
 	},
-	"onCreateCommand": "sudo chown -R vscode .git && pip install pre-commit==3.3.2 && pre-commit install-hooks"
+	"onCreateCommand": "sudo chown -R vscode .git && pip install pre-commit==3.3.2"
+	// pre-commit install hooks as post create?
 }

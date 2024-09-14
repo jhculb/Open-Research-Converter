@@ -1,5 +1,8 @@
-## GESIS
+## ORC
+logs/
+src/orc/nginx/certbot
 
+## GESIS
 badges/
 
 # Byte-compiled / optimized / DLL files
@@ -131,3 +134,33 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# intellij IDEA
+.idea
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# React gitignore
+src/orc/frontend/orc-demo/.gitignore
+
+# React dependencies
+src/orc/frontend/orc-demo/node_modules
+src/orc/frontend/orc-demo/.pnp
+src/orc/frontend/orc-demo/.pnp.js
+
+# React testing
+src/orc/frontend/orc-demo/coverage
+
+# React production
+src/orc/frontend/orc-demo/build
+
+# React misc
+src/orc/frontend/orc-demo/.DS_Store
+src/orc/frontend/orc-demo/.env.local
+src/orc/frontend/orc-demo/.env.development.local
+src/orc/frontend/orc-demo/.env.test.local
+src/orc/frontend/orc-demo/.env.production.local
+
+src/orc/frontend/orc-demo/npm-debug.log*
+src/orc/frontend/orc-demo/yarn-debug.log*
+src/orc/frontend/orc-demo/yarn-error.log*

@@ -1,12 +1,13 @@
 FROM mcr.microsoft.com/devcontainers/python:3 AS base
 
-ARG NODE_VERSION=18.x
+ARG NODE_VERSION=20.x
 RUN curl -fsSL "https://deb.nodesource.com/setup_$NODE_VERSION" | bash - \
-	&& apt-get install -y nodejs
+	&& apt-get install -y nodejs \
+	&& apt-get clean
 
 FROM base AS devcontainer-final
 
-ARG POETRY_VERSION=1.5.1
+ARG POETRY_VERSION=1.8.3
 ENV	PYTHONFAULTHANDLER=1 \
 	PYTHONUNBUFFERED=1 \
 	PYTHONHASHSEED=random \
