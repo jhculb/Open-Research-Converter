@@ -1,91 +1,89 @@
 # Open Research Converter
 ## Description
+The [Open Research Converter (ORC)](https://orc-demo.gesis.org) is a tool designed to allow users to convert proprietary and licensed bibliometric datasets to a shareable format through [OpenAlex](https://openalex.org)'s API ([API documentation found here](https://docs.openalex.org/how-to-use-the-api/api-overview)).
+
+The Open Research Converter has a demo running at [orc-demo.gesis.org](https://orc-demo.gesis.org) where you can trial the functionality. This url may be subject to change or to removal after a period of time.
 ## Table of Contents
-## Installation and Running
-## How to Use
+
+## How to Use the ORC
+### Online
+If you wish to use the ORC without installing locally:
+1. Navigate to https://orc-demo.gesis.org
+2. Fill your the email address into the email box
+	* This is so that OpenAlex can monitor traffic, and places your requests in the "polite pool", where responses are faster and more consistent.
+3. Input your DOI data:
+	* The ORC expects a comma separated list of DOIs in the text box
+	* The ORC does not mind whether DOIs are prefaced with "https://doi.org/"
+	1. Via csv file
+		* Browse to select a csv file, this shall be read into the text box
+		* The ORC expects a single column of DOIs with a header
+			* Therefore if the first row contains a DOI this will be not be parsed into the text box
+	2. Via copy and paste into the text box
+		* You can also manually copy and paste your DOI data into the text box
+	* The ORC can accept thousands of DOIs, though this may take a few minutes.
+4. Click Submit
+	* A waiting animation should play in the right hand output box, if this flashes and then disappears your query may have been unsuccessful. Please try one more time, and then check your input.
+5. Wait for Output
+	* If your query is successful, then in the output box the first 50 OpenAlex IDs corresponding to your DOIs will be returned.
+	* If you have more submitted than 50 DOIs, then click "download CSV" to download a csv file with the DOI in the first column and the corresponding OpenAlex ID in the second column.
+### Local Installation
+If you wish to run the ORC locally please follow these steps:
+1. Install docker and docker compose
+2. Transform the environment variable templates to environment variables
+	* The environment variable templates are the ```.env.template``` files
+	1. Via makefile command (on Linux):
+		1. Run  ```make set_envs```
+	2. Manually:
+		1. Copy the ```.env.template``` file to ```.env``` in the top level directory
+		2. Copy the environment variable template files in src/env/templates to src/env, and remove the ```.template``` suffix for each
+		* These are ```backend.env.template```, ```frontend.env.template```, ```js.env.template``` and ```nginx.env.template```
+		* The corresponding .env files should be named ```backend.env```, ```frontend.env```, ```js.env``` and ```nginx.env```
+3. Run ```docker compose up --build -d```
+	* Or via makefile command ```make run```
+	* This will build the containers and run the code. This may take some time
+4. Use your browser to navigate to ```localhost```, or ```127.0.0.1```
+5. Follow the instructions in the Online section from instruction 2.
+### Nota Bene
+* This tool is in development and may not perform perfectly:
+	* If items are not found in OpenAlex, they may not be returned leading to a smaller number of items in the output
+	* If an error happens on the backend it may not inform the frontend properly, leading to a failure (when the waiting ring disappears) without informing the user why.
+## Development
+### Known Bugs
+1. [B1] - Error handling is not performed on the frontend, leading to the process stopping without informing the user
+### Planned Features
+#### Major
+1. [Maj1] - For items that may exist in other databases without a DOI but contain enough information to confidently match (e.g. author names, title, publishing date, &c.), extending the ORCs capability to match these records.
+#### Minor
+1. [Min1] - Better handling of items which do not exist in OpenAlex (return "Not found" or similar rather than dropping)
+2. [Min2] - Improving test coverage and quality
+3. [Min3] - Reinstating Typecheck for the backend and refactoring so it passes
+4. [Min4] - Implement frontend Testing
+5. [Min5] - Standardising .env variable names and values (local/dev/prod/production)
+6. [Min6] - Implement frontend logging
+7. [Min7] - Change the bind mount for certbot to a docker volume.
+### Contributing
+Please raise github issues with bugs. Any frontend development experience would be greatly appreciated.
+### Tips for Development
+* This project was configured for use on a development container - this will automatically install the project and install development dependencies inside it. (A template version of this project will shortly be publicly released)
+* To add dependencies to the python module use poetry add
+* To enable production change:
+	* ```src/env/js.env``` REACT_APP_ENV: "dev" to "production"
+	* ```.env``` LOCAL_OR_PRODUCTION: "local" to "prod"
+* Most useful commands have been captured in the makefile, this also can assist with figuring out what fits where
+* When docker compose up is run, the logs are captured in a newly created folder /logs/, this is bind mounted to your filesystem.
 ## Credits
+### Developers
+* Jack H. Culbert - Lead Developer - [ORCID](https://orcid.org/0009-0000-1581-4021), [LinkedIn](https://www.linkedin.com/in/jack-c-2485989a/), [Github](https://github.com/jhculb)
+* Ahsan Shahid - Frontend Developer - LinkedIn
+* Philipp Mayr - Team Lead - ORCID
+### Funding
+This work was funded by the Federal Ministry of Education and Research
+via funding numbers: 16WIK2301B / 16WIK2301E, The OpenBib project. We
+acknowledge support by Federal Ministry of Education and Research, Germany under grant number 01PQ17001, the Competence Network for Bibliometrics.
+
+Jack Culbert, and Philipp Mayr received additional funding by the European Union under the Horizon Europe grant OMINO – Overcoming Multilevel INformation Overload under grant number 101086321
+## How to Cite
+As of release on the 16th of September 2024: This software is being submitted to [JOSS](https://joss.theoj.org/), citation details pending.
+
 ## License
-## Internal
-### Flow
-Hi Ahsan,
-
-I have architected the backend to have a rest interface. I'll work out the url to send it to, but for the moment use a dummy url followed by the address.
-
-E.g. "my.dummy.url/new_user"
-
-For details, see the src/orc/backend/app.py file, and for types expected see src/orc/backend/open_research_converter.py.
-
-
-The user experience flow between the interface and the application should be as follows:
-
-
-1. Initialisation
-	- Description: A new user has arrived at the website and starts a session
-	- Call Location:
-		- my.dummy.url/new
-	- Request Type:
-		- GET
-	- Returns:
-		- If successful:
-			- {"content":{"job_id":uuid}, "status_code":201}
-			- This is the identifier that will be used for this session's data
-2. User Inputs Data
-	- Description: The user inputs their email (required), and data in the frontend
-3. Processing Begins
-	- Description: User has input data and email, and clicks button for processing.
-	- Call Location:
-		- my.dummy.url/start_processing
-	- Request Type:
-		- POST
-			- CONTENT:
-				- "job_id": The uuid of the session returned from my.dummy.url/new
-				- "input_data": (IN DEVELOPMENT) A string containing comma separated DOIs
-				- "email": A string containing an email
-	- Returns:
-		- If successful:
-			- {"content":{"job_id": uuid, "status": status, "progress":progress}, "status_code":201}
-		- If uuid invalid:
-			- TODO (HTTP-400)
-		- If email invalid
-			- TODO (HTTP-400)
-		- If data invalid
-			- TODO (HTTP-400)
-4. Checking on progress
-	- Description: The user is waiting for the ORC to process the data, and the website is updating every so often (1 second?) to let them know how it is going
-	- Call Location:
-		- my.dummy.url/get_status
-	- Request Type:
-		- POST
-			- CONTENT:
-				- "job_id": The uuid of the session returned from my.dummy.url/new
-	- Returns:
-		- If uuid valid:
-			- {"content":{"job_id": uuid, "status": status, "progress": progress}, status_code":200}
-			- status may be ["waiting", "processing", "finished", "failed"]
-			- progress is a dictionary of {"valid_dois":integer, "completed_dois":integer}
-		- If uuid invalid:
-			- TODO
-5. Returning completed data to user
-	- Description: The data has processed, which is signified by a call to /get_status having "status" variable == "finished", so now is time to return that data to the frontend.
-	- Call Location:
-		- my.dummy.url/recieve_data
-	- Request Type:
-		- POST
-			- CONTENT:
-				- "job_id": The uuid of the session returned from my.dummy.url/new
-	- Returns:
-		- If uuid valid and status == finished:
-			- {"content":{
-                "job_id": uuid,
-                "output_data": output_data,
-            }, status_code":200}
-			- status may be ["waiting", "processing", "finished", "failed"]
-			- output_data is a list of 2-tuples of strings
-				- e.g. [\(input_doi_1, output_oa_work_id_1\),\(input_doi_2, output_oa_work_id_2\)]
-		- If uuid valid and status == processing:
-			- {"content":{
-                "job_id": uuid,
-                "status": status,
-            }, status_code":204}
-		- If uuid invalid:
-			- TODO
+This code is licenced under GPL-3.0, or later.
