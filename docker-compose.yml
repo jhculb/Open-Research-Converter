@@ -1,0 +1,69 @@
+services:
+  nginx:
+    container_name: reverse-proxy
+    hostname: reverse
+    env_file:
+      - ./src/env/nginx.env
+    build:
+      context: ./src/orc/nginx
+      args:
+        - NGINX_CONF=$LOCAL_OR_PRODUCTION
+    depends_on:
+      - frontend
+      - backend
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
+    volumes:
+      - ./logs/nginx/:/var/log/nginx/:rw
+      - ./src/orc/nginx/certbot/www/:/var/www/certbot/:ro
+      - ./src/orc/nginx/certbot/conf/:/etc/nginx/ssl/:ro
+    networks:
+      - orc-network
+      - certbot-network
+
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./src/orc/nginx/certbot/www/:/var/www/certbot/:rw
+      - ./src/orc/nginx/certbot/conf/:/etc/letsencrypt/:rw
+      - ./logs/certbot/:/var/log/letsencrypt/:rw
+    networks:
+      - certbot-network
+
+  frontend:
+    container_name: orc-frontend
+    hostname: frontend
+    build:
+      context: ./src/orc/frontend/
+    volumes:
+      - ./logs/frontend/:/var/log/:rw
+      - ./src/env/js.env:/orc-demo/.env:ro
+    restart: always
+    env_file:
+      - ./src/env/frontend.env
+    networks:
+      - orc-network
+
+  backend:
+    container_name: orc-backend
+    hostname: backend
+    build:
+      context: ./
+      dockerfile: ./src/orc/backend/Dockerfile
+      args:
+        - POETRY_VERSION=1.8.3
+    volumes:
+      - ./logs/backend:/app/logs:rw
+    restart: always
+    env_file:
+      - ./src/env/backend.env
+    networks:
+      - orc-network
+
+networks:
+  orc-network:
+    driver: bridge
+  certbot-network:
+    driver: bridge

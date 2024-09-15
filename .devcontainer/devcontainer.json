@@ -1,0 +1,42 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.222.0/containers/python-3-miniconda
+{
+	"name": "Python Environment",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"context": ".."
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {
+			"moby": true,
+			"azureDnsAutoDetection": true,
+			"installDockerBuildx": true,
+			"installDockerComposeSwitch": true,
+			"version": "latest",
+			"dockerDashComposeVersion": "latest"
+		}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"editorconfig.editorconfig",
+				"github.vscode-pull-request-github",
+				"ms-azuretools.vscode-docker",
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"ms-vsliveshare.vsliveshare",
+				"ms-vscode.makefile-tools",
+				"charliermarsh.ruff",
+				"ryanluker.vscode-coverage-gutters",
+				"tamasfe.even-better-toml",
+				"sonarsource.sonarlint-vscode",
+				"ms-vscode.makefile-tools",
+			],
+			"settings": {
+				"python.defaultInterpreterPath": "/usr/local/bin/python",
+			}
+		}
+	},
+	"onCreateCommand": "sudo chown -R vscode .git && pip install pre-commit==3.3.2"
+	// pre-commit install hooks as post create?
+}
