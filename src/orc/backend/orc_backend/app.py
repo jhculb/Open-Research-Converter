@@ -4,7 +4,7 @@ import logging
 
 from orc.backend.orc_backend.open_research_converter import OpenResearchConverter
 from quart import Quart, jsonify, request
-from quart_cors import cors, route_cors
+from quart_cors import cors
 
 # from https://stackoverflow.com/questions/67741946/how-to-validate-fields-raw-in-flask-marshmallow?rq=1
 
