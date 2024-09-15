@@ -12,23 +12,27 @@ from quart import current_app
 
 
 @pytest.fixture
-def client():
-    with app.test_client() as client:
+@pytest.mark.asyncio
+async def client():
+    async with app.test_client() as client:
         yield client
 
 
-def test_index_page(client):
-    response = client.get("/")
+@pytest.mark.asyncio
+async def test_index_page(client):
+    response = await client.get("/")
     assert response.status_code == 200
     assert b"ORC API using quart" in response.data
 
 
-def test_generate_new_job(client):
+@pytest.mark.asyncio
+async def test_generate_new_job(client):
     pass
     # return orc.generate_new_job()
 
 
-def test_send_data(client):
+@pytest.mark.asyncio
+async def test_send_data(client):
     pass
     # uuid = request.form["job_id"]
     # text = request.form["input_data"]
@@ -36,19 +40,22 @@ def test_send_data(client):
     # return orc.recieve_data(uuid, text, email)
 
 
-def test_start_processing(client):
+@pytest.mark.asyncio
+async def test_start_processing(client):
     pass
     # uuid = request.form["job_id"]
     # return orc.process(uuid)
 
 
-def test_get_status(client):
+@pytest.mark.asyncio
+async def test_get_status(client):
     pass
     # uuid = request.form["job_id"]
     # return orc.get_status(uuid)
 
 
-def test_recieve_data(client):
+@pytest.mark.asyncio
+async def test_recieve_data(client):
     pass
     # uuid = request.form["job_id"]
     # return orc.return_data(uuid)
