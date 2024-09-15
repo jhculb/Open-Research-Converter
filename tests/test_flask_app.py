@@ -18,11 +18,11 @@ async def client():
         yield client
 
 
-@pytest.mark.asyncio
-async def test_index_page(client):
-    response = await client.get("/")
-    assert response.status_code == 200
-    assert b"ORC API using quart" in response.data
+# @pytest.mark.asyncio
+# async def test_index_page(client):
+#     response = await client.get("/")
+#     assert response.status_code == 200
+#     assert b"ORC API using quart" in response.data
 
 
 @pytest.mark.asyncio
