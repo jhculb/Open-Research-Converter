@@ -7,8 +7,8 @@
 from __future__ import annotations
 
 import pytest
-from flask import current_app
 from orc.backend.orc_backend.app import app, hello_world
+from quart import current_app
 
 
 @pytest.fixture
@@ -20,7 +20,7 @@ def client():
 def test_index_page(client):
     response = client.get("/")
     assert response.status_code == 200
-    assert b"ORC API using Flask" in response.data
+    assert b"ORC API using quart" in response.data
 
 
 def test_generate_new_job(client):
