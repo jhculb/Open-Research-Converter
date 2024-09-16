@@ -134,13 +134,13 @@ class OpenResearchConverter(openalex_requester):
             self._logger.info(f"job_id: {job_id}: orc: data was suitable, creating task")
             asyncio.run(self._process(job_id))
 
-    def process(self, job_id, data, email) -> None:
+    async def process(self, job_id, data, email) -> None:
         self._logger.info(f"job_id: {job_id}: orc: processing")
         self._recieve_data(job_id, data, email)
         self._logger.info(f"job_id: {job_id}: orc: data received")
         if self._check_ready(job_id):
             self._logger.info(f"job_id: {job_id}: orc: data was suitable, creating task")
-            asyncio.run(self._process_aio(job_id))
+            await self._process_aio(job_id)
 
     def return_data_old(self, job_id) -> tuple[dict, int]:
         self._validate_uuid(job_id=job_id)
