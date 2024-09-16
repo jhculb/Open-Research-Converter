@@ -1,0 +1,101 @@
+/*.App {*/
+/*  text-align: center;*/
+/*}*/
+
+/*.App-logo {*/
+/*  height: 40vmin;*/
+/*  pointer-events: none;*/
+/*}*/
+
+/*@media (prefers-reduced-motion: no-preference) {*/
+/*  .App-logo {*/
+/*    animation: App-logo-spin infinite 20s linear;*/
+/*  }*/
+/*}*/
+
+/*.App-header {*/
+/*  background-color: #282c34;*/
+/*  min-height: 100vh;*/
+/*  display: flex;*/
+/*  flex-direction: column;*/
+/*  align-items: center;*/
+/*  justify-content: center;*/
+/*  font-size: calc(10px + 2vmin);*/
+/*  color: white;*/
+/*}*/
+
+/*.App-link {*/
+/*  color: #61dafb;*/
+/*}*/
+
+/*@keyframes App-logo-spin {*/
+/*  from {*/
+/*    transform: rotate(0deg);*/
+/*  }*/
+/*  to {*/
+/*    transform: rotate(360deg);*/
+/*  }*/
+/*}*/
+.header-border{
+    border-bottom: lightgray solid 3px;
+}
+
+.upload-border{
+    border: 1px solid lightgray;
+    border-radius: 5px;
+}
+
+.email-border{
+    border: 1px solid red;
+}
+
+.footer-border{
+    border-top: lightgray solid 3px;
+}
+
+/* Custom focus styling */
+.custom-valid-focus {
+    border-color: green !important; /* Custom border color */
+    box-shadow: 0 0 5px green !important; /* Custom shadow */
+    outline: none !important; /* Remove default outline */
+}
+.custom-invalid-focus {
+    border-color: red !important; /* Custom border color */
+    box-shadow: 0 0 5px red !important; /* Custom shadow */
+    outline: none !important; /* Remove default outline */
+}
+
+.btn-color {
+    background-color: #2596be;
+    color: white;
+    border: none;
+}
+
+.btn-color:hover {
+    background-color: #2596be;
+    color: black;
+    border: none;
+}
+
+.btn-disabled {
+    background-color: lightgray !important;
+    border: none;
+    cursor: not-allowed;
+}
+
+.spinner-color{
+    color: #2596be;
+}
+
+.spinner-position{
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    z-index: 10;
+}
+
+.large-spinner {
+    width: 3rem;
+    height: 3rem;
+    border-width: 0.3em;
+}
