@@ -59,6 +59,22 @@ async def start_processing():
     return response
 
 
+@app.route("/process_all", methods=["POST"])
+async def start_processing_all():
+    log.debug("app.py: start_processing called")
+    json_data = await request.get_json()
+    job_id = orc.generate_new_job()
+    text = json_data["input_data"]
+    email = json_data["email"]
+    log.debug(f"app.py: start_processing input: job_id: {job_id}, text:{text}, email: {email}")
+    await orc.process_all(job_id, text, email)
+    log.debug(f"app.py: finished processing {job_id}")
+    response = jsonify(orc.return_data(job_id))
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    log.debug(f"app.py: get_data response: {response}")
+    return response
+
+
 # @app.route("/get_status", methods=["POST"])
 # @cross_origin()
 # def get_status():
