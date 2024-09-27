@@ -65,7 +65,7 @@ function App() {
     };
 
     //---- function called on Submit button press
-    const onSubmit = () => {
+    const onGetIds = () => {
         // let url = 'https://orc-demo.gesis.org/api/start_processing';
         let url = apiUrl + '/api/start_processing';
         let data ={"email": email, "input_data": text};
@@ -110,6 +110,55 @@ function App() {
                 setIsLoading(false);  // Stop loading
             });
     }
+
+    //---- function called on Submit button press
+    const onGetAll = () => {
+        // let url = 'https://orc-demo.gesis.org/api/start_processing';
+        let url = apiUrl + '/api/process_all';
+        let data ={"email": email, "input_data": text};
+        setIsLoading(true);
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    // Read the response as text to capture HTML or error message
+                    return response.text().then((text) => {
+                        // Log the HTML/error message
+                        console.error('Error response body:', text);
+                        // Optionally, throw an error or return a custom object
+                        throw new Error('Network response was not ok');
+                    });
+                }
+                return response.json();  // Assuming the response is JSON
+            })
+            .then(result => {
+                // let outputData = result[0]["output_data"];
+                // setjobId(result[0]["job_id"]);
+                // setResult(result);
+                // setText('');
+                // if(outputData.length){
+                //     setIsDownloadDisabled(false);
+                //     let formattedText = outputData
+                //         .slice(0, 50)  // Take only the first 50 items
+                //         .map((item, index) => `${index + 1}. ${item}`)  // Create a numbered list
+                //         .join('\n');  // Join with new line characters for display in textarea
+                //     setLimitedResult(formattedText);
+                // }
+                // setResult(JSON.stringify(result[0]["output_data"], null, 2));
+                // console.log('Submit button pressed: ', result);
+                console.log(JSON.stringify(result));
+            })
+            .catch(error => console.log(error))
+            .finally(() => {
+                setIsLoading(false);  // Stop loading
+            });
+    }
+
     return (
         <div className="container">
             <div className="row header-border mb-4 mt-2 align-items-center">
@@ -141,8 +190,10 @@ function App() {
                             onChange={handleTextChange}
                         />
                         <div className="d-flex justify-content-center">
-                            {/*<button type="button" className="btn btn-color" onClick={() => onSubmit()}>Submit</button>*/}
-                            <button type="button" className={`btn ${!(text && validEmail) ? 'btn-disabled' : 'btn-color'}`} disabled={!(text && validEmail)} onClick={() => onSubmit()}>Submit</button>
+                            {/*<button type="button" className="btn btn-color" onClick={() => onGetIds()}>Submit</button>*/}
+                            <button type="button" className={`btn ${!(text && validEmail) ? 'btn-disabled' : 'btn-color'}`} disabled={!(text && validEmail)} onClick={() => onGetIds()}>Get ID(s) only</button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <button type="button" className={`btn ${!(text && validEmail) ? 'btn-disabled' : 'btn-color'}`} disabled={!(text && validEmail)} onClick={() => onGetAll()}>Get all Information</button>
                         </div>
                     </div>
                 </div>
