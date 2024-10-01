@@ -151,14 +151,58 @@ class openalex_requester:
                 max_at_once=self._max_concurrent_per_second_aio,
             )
             self._logger.info(f"job_id: {job_id}: Bulk Requests via aiometer successful")
-            keys = set()
-            for response in responses:
-                for work in response["results"]:
-                    for key in work.keys():
-                        keys.add(key)
-            keys.remove("doi")
-            keys.remove("id")
-            keys = list(keys)
+            keys = [
+                "doi",
+                "oa_id",
+                "ids",
+                "title",
+                "language",
+                "display_name",
+                "is_retracted",
+                "is_paratext",
+                "corresponding_author_ids",
+                "authorships",
+                "publication_date",
+                "publication_year",
+                "created_date",
+                "updated_date",
+                "versions",
+                "biblio",
+                "type",
+                "type_crossref",
+                "indexed_in",
+                "open_access",
+                "best_oa_location",
+                "primary_topic",
+                "topics",
+                "concepts",
+                "keywords",
+                "mesh",
+                "cited_by_api_url",
+                "cited_by_count",
+                "counts_by_year",
+                "cited_by_percentile_year",
+                "citation_normalized_percentile",
+                "fwci",
+                "institutions_distinct_count",
+                "corresponding_institution_ids",
+                "institution_assertions",
+                "primary_location",
+                "locations",
+                "locations_count",
+                "countries_distinct_count",
+                "sustainable_development_goals",
+                "referenced_works",
+                "referenced_works_count",
+                "related_works",
+                "apc_paid",
+                "apc_list",
+                "datasets",
+                "grants",
+                "has_fulltext",
+                "fulltext_origin",
+                "abstract_inverted_index",
+            ]
             shuffled_responses = [
                 (work["doi"], work["id"]) + tuple(work[key] if key in work.keys() else "" for key in keys)
                 for response in responses
@@ -169,15 +213,20 @@ class openalex_requester:
                 shuffled_responses, key=lambda pair: formatted_input_dois.index(pair[0])
             )
             self._logger.info(f"job_id: {job_id}: aiometer sorting successful")
-            self._logger.debug(f"job_id: {self._jobs[job_id]['aio_responses'][0]}")
             self._jobs[job_id]["output_csv_data"] = (
-                "sep=;\n"
-                + "doi; oa_id"
-                + ";".join(keys)
+                "sep=\t\n"
+                + "doi\toa_id\t"
+                + "\t".join(keys)
                 + "\n"
                 + "".join(
                     [
-                        ";".join([str(x).replace("\n", "") for x in aio_response]) + "\n"
+                        "\t".join(
+                            [
+                                str(x).replace("\n", "\\n").replace("\r", "\\r").replace("\t", "    ")
+                                for x in aio_response
+                            ]
+                        )
+                        + "\n"
                         for aio_response in self._jobs[job_id]["aio_responses"]
                     ]
                 ),
