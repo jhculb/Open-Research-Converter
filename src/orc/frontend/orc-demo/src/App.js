@@ -203,7 +203,7 @@ function App() {
                     <TextBox
                         title={"Result Box"}
                         rows={20}
-                        placeholder={'OpenAlex IDs for the first 50 DOIs will be shown.\n\nPlease download for all IDs or full records.'}
+                        placeholder={'OpenAlex IDs for the first 50 DOIs will be shown\n\nPlease download for all IDs or full records'}
                         value={limitedResult}
                         readOnly={true}
                         style={{ height: '100%' }}
