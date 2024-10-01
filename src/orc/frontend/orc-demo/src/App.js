@@ -189,7 +189,7 @@ function App() {
                         />
                         <div className="d-flex justify-content-center">
                             {/*<button type="button" className="btn btn-color" onClick={() => onGetIds()}>Submit</button>*/}
-                            <button type="button" className={`btn ${!(text && validEmail) ? 'btn-disabled' : 'btn-color'}`} disabled={!(text && validEmail)} onClick={() => onGetIds()}>Get IDs only</button>
+                            <button type="button" className={`btn ${!(text && validEmail) ? 'btn-disabled' : 'btn-color'}`} disabled={!(text && validEmail)} onClick={() => onGetIds()}>Convert DOIs to IDs</button>
                         </div>
                     </div>
                 </div>
