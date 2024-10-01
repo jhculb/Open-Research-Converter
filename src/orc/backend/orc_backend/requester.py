@@ -152,8 +152,6 @@ class openalex_requester:
             )
             self._logger.info(f"job_id: {job_id}: Bulk Requests via aiometer successful")
             keys = [
-                "doi",
-                "oa_id",
                 "ids",
                 "title",
                 "language",
