@@ -151,14 +151,16 @@ class openalex_requester:
                 max_at_once=self._max_concurrent_per_second_aio,
             )
             self._logger.info(f"job_id: {job_id}: Bulk Requests via aiometer successful")
-            keys = [
-                item
-                for response in responses
-                for item in response.json()["results"].keys()
-                if item not in ["id", "doi"]
-            ]
+            keys = set()
+            for response in responses:
+                for work in response["results"]:
+                    for key in work.keys():
+                        keys.add(key)
+            keys.remove("doi")
+            keys.remove("id")
+            keys = list(keys)
             shuffled_responses = [
-                (work["doi"], work["id"]) + tuple(work[keys] for work in keys)
+                (work["doi"], work["id"]) + tuple(work[key] if key in work.keys() else "" for key in keys)
                 for response in responses
                 for work in response["results"]
             ]
@@ -167,11 +169,17 @@ class openalex_requester:
                 shuffled_responses, key=lambda pair: formatted_input_dois.index(pair[0])
             )
             self._logger.info(f"job_id: {job_id}: aiometer sorting successful")
-            self._jobs[job_id]["output_csv_data"] = "doi, oa_id\n" + "".join(
-                [
-                    f"{doi_val},{oi_val}" + ",".join(keys) + "\n"
-                    for (doi_val, oi_val) in self._jobs[job_id]["aio_responses"]
-                ]
+            self._logger.debug(f"job_id: {self._jobs[job_id]['aio_responses'][0]}")
+            self._jobs[job_id]["output_csv_data"] = (
+                "doi, oa_id"
+                + ",".join(keys)
+                + "\n"
+                + "".join(
+                    [
+                        ",".join([str(x) for x in aio_response]) + "\n"
+                        for aio_response in self._jobs[job_id]["aio_responses"]
+                    ]
+                ),
             )
             self._logger.info(f"job_id: {job_id}: aiometer bulk csv string creation successful")
             self._jobs[job_id]["status"] = "complete"
