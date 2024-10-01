@@ -54,7 +54,7 @@ function App() {
         setIsDownloadDisabled(true);
         setLimitedResult('');
         setIsDownloadAll(false);
-        let outputData = isDownloadAll? result[0]["output_full"][0] : result[0]["output_full"];
+        let outputData = isDownloadAll ? result[0]["output_full"][0] : result[0]["output_full"];
         const lines = outputData.trim().split('\n');
         const header = lines[0];
         const rows = lines.slice(1).join('\n');
@@ -72,7 +72,7 @@ function App() {
     const onGetIds = () => {
         // let url = 'https://orc-demo.gesis.org/api/start_processing';
         let url = apiUrl + '/api/start_processing';
-        let data ={"email": email, "input_data": text};
+        let data = { "email": email, "input_data": text };
         setIsLoading(true);
         fetch(url, {
             method: 'POST',
@@ -80,7 +80,7 @@ function App() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
-            })
+        })
             .then((response) => {
                 if (!response.ok) {
                     // Read the response as text to capture HTML or error message
@@ -99,7 +99,7 @@ function App() {
                 setjobId(result[0]["job_id"]);
                 setResult(result);
                 setText('');
-                if(outputData.length){
+                if (outputData.length) {
                     setIsDownloadDisabled(false);
                     let formattedText = outputData
                         .slice(0, 50)  // Take only the first 50 items
@@ -118,7 +118,7 @@ function App() {
     const onGetAll = () => {
         // let url = 'https://orc-demo.gesis.org/api/start_processing';
         let url = apiUrl + '/api/process_all';
-        let data ={"email": email, "input_data": text};
+        let data = { "email": email, "input_data": text };
         setIsLoading(true);
         fetch(url, {
             method: 'POST',
@@ -215,7 +215,7 @@ function App() {
                         {/*<button type="button" className="btn btn-color" onClick={() => downloadResult()}>Download Result</button>*/}
                         <button type="button" className={`btn ${isDownloadDisabled ? 'btn-disabled' : 'btn-color'}`} disabled={isDownloadDisabled} onClick={() => downloadResult()}>Download IDs</button>
                         &nbsp;&nbsp;&nbsp;&nbsp;
-                        <button type="button" className={`btn ${!(text && validEmail) ? 'btn-disabled' : 'btn-color'}`} disabled={!(text && validEmail)} onClick={() => onGetAll()}>Download all Info.</button>
+                        <button type="button" className={`btn ${!(text && validEmail) ? 'btn-disabled' : 'btn-color'}`} disabled={!(text && validEmail)} onClick={() => onGetAll()}>Download all Information</button>
                     </div>
                 </div>
             </div>
@@ -227,4 +227,3 @@ function App() {
 }
 
 export default App;
-
