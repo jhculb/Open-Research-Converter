@@ -1,5 +1,5 @@
 // import logo from './logo.svg';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import './components/styles/Header.sass';
 import Header from './components/Header';
@@ -16,6 +16,7 @@ function App() {
     const [result, setResult] = useState('');
     const [limitedResult, setLimitedResult] = useState('');
     const [jobId, setjobId] = useState('');
+    const [isDownloadAll, setIsDownloadAll] = useState(false);
     const [isDownloadDisabled, setIsDownloadDisabled] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const blockedEmails = ['john.culbert@gesis.org', 'ahsan.shahid@gesis.org'];
@@ -24,7 +25,6 @@ function App() {
     if (process.env.REACT_APP_ENV === "production") {
         apiUrl = process.env.REACT_APP_PROD_URL;
     }
-    // console.log("API URL:", apiUrl);
 
     const handleTextChange = (event) => {
         setText(event.target.value);
@@ -50,7 +50,10 @@ function App() {
 
     //---- function called on Download Result button press
     const downloadResult = () => {
-        let outputData = result[0]["output_full"];
+        setIsDownloadDisabled(true);
+        setLimitedResult('');
+        setIsDownloadAll(false);
+        let outputData = isDownloadAll ? result[0]["output_full"][0] : result[0]["output_full"];
         const lines = outputData.trim().split('\n');
         const header = lines[0];
         const rows = lines.slice(1).join('\n');
@@ -65,10 +68,10 @@ function App() {
     };
 
     //---- function called on Submit button press
-    const onSubmit = () => {
+    const onGetIds = () => {
         // let url = 'https://orc-demo.gesis.org/api/start_processing';
         let url = apiUrl + '/api/start_processing';
-        let data ={"email": email, "input_data": text};
+        let data = { "email": email, "input_data": text };
         setIsLoading(true);
         fetch(url, {
             method: 'POST',
@@ -76,7 +79,7 @@ function App() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
-            })
+        })
             .then((response) => {
                 if (!response.ok) {
                     // Read the response as text to capture HTML or error message
@@ -94,7 +97,7 @@ function App() {
                 setjobId(result[0]["job_id"]);
                 setResult(result);
                 setText('');
-                if(outputData.length){
+                if (outputData.length) {
                     setIsDownloadDisabled(false);
                     let formattedText = outputData
                         .slice(0, 50)  // Take only the first 50 items
@@ -102,14 +105,58 @@ function App() {
                         .join('\n');  // Join with new line characters for display in textarea
                     setLimitedResult(formattedText);
                 }
-                // setResult(JSON.stringify(result[0]["output_data"], null, 2));
-                // console.log('Submit button pressed: ', result);
             })
             .catch(error => console.log(error))
             .finally(() => {
                 setIsLoading(false);  // Stop loading
             });
     }
+
+    //---- function called on Submit button press
+    const onGetAll = () => {
+        // let url = 'https://orc-demo.gesis.org/api/start_processing';
+        let url = apiUrl + '/api/process_all';
+        let data = { "email": email, "input_data": text };
+        setIsLoading(true);
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    // Read the response as text to capture HTML or error message
+                    return response.text().then((text) => {
+                        // Log the HTML/error message
+                        console.error('Error response body:', text);
+                        // Optionally, throw an error or return a custom object
+                        throw new Error('Network response was not ok');
+                    });
+                }
+                return response.json();  // Assuming the response is JSON
+            })
+            .then(result => {
+                setjobId(result[0]["job_id"]);
+                setResult(result);
+                setText('');
+                setIsDownloadAll(true);
+
+            })
+            .catch(error => console.log(error))
+            .finally(() => {
+                setIsLoading(false);  // Stop loading
+            });
+    }
+
+    // Using useEffect to trigger isDownloadAll when "Download all Info." is pressed
+    useEffect(() => {
+        if (isDownloadAll) {
+            downloadResult();  // Call the download function
+        }
+    }, [isDownloadAll]);  // Dependency array ensures this effect runs when `isDownloadAll` changes
+
     return (
         <div className="container">
             <div className="row header-border mb-4 mt-2 align-items-center">
@@ -141,8 +188,8 @@ function App() {
                             onChange={handleTextChange}
                         />
                         <div className="d-flex justify-content-center">
-                            {/*<button type="button" className="btn btn-color" onClick={() => onSubmit()}>Submit</button>*/}
-                            <button type="button" className={`btn ${!(text && validEmail) ? 'btn-disabled' : 'btn-color'}`} disabled={!(text && validEmail)} onClick={() => onSubmit()}>Submit</button>
+                            {/*<button type="button" className="btn btn-color" onClick={() => onGetIds()}>Submit</button>*/}
+                            <button type="button" className={`btn ${!(text && validEmail) ? 'btn-disabled' : 'btn-color'}`} disabled={!(text && validEmail)} onClick={() => onGetIds()}>Convert DOIs to IDs</button>
                         </div>
                     </div>
                 </div>
@@ -156,14 +203,16 @@ function App() {
                     <TextBox
                         title={"Result Box"}
                         rows={20}
-                        placeholder={'OpenAlex DOIs for the first 50 inputs will be shown. Download the file for full results!'}
+                        placeholder={'OpenAlex IDs for the first 50 DOIs will be shown. Download the file for all IDs!'}
                         value={limitedResult}
                         readOnly={true}
                         style={{ height: '100%' }}
                     />
                     <div className="d-flex justify-content-center mb-1">
                         {/*<button type="button" className="btn btn-color" onClick={() => downloadResult()}>Download Result</button>*/}
-                        <button type="button" className={`btn ${isDownloadDisabled ? 'btn-disabled' : 'btn-color'}`} disabled={isDownloadDisabled} onClick={() => downloadResult()}>Download Result</button>
+                        <button type="button" className={`btn ${isDownloadDisabled ? 'btn-disabled' : 'btn-color'}`} disabled={isDownloadDisabled} onClick={() => downloadResult()}>Download IDs</button>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <button type="button" className={`btn ${!(text && validEmail) ? 'btn-disabled' : 'btn-color'}`} disabled={!(text && validEmail)} onClick={() => onGetAll()}>Download Full Record</button>
                     </div>
                 </div>
             </div>
@@ -175,51 +224,3 @@ function App() {
 }
 
 export default App;
-
-
-// .then(result => {
-//     console.log(JSON.stringify(result));
-//     let outputData = result[0]["output_full"];
-//     setjobId(result[0]["job_id"]);
-//     setResult(result);
-//     setText('');
-//     if(outputData.length){
-//         setIsDownloadDisabled(false);
-//         const lines = outputData.trim().split('\n').slice(0, 51);
-//
-//         // Extract the headers (first line) and the data (remaining lines)
-//         const headers = lines[0].split(',');
-//         const rows = lines.slice(1).map(line => line.split(','));
-//
-//         // Create a text representation with proper alignment using tabs
-//         let formattedText = headers.join('\t\t\t\t\t\t\t\t\t\t\t\t') + '\n';  // Join headers with tabs
-//         rows.forEach(row => {
-//             formattedText += row.join('\t') + '\n';  // Join each row with tabs
-//         });
-//
-//         setLimitedResult(formattedText);
-//     }
-//     // setResult(JSON.stringify(result[0]["output_data"], null, 2));
-//     // console.log('Submit button pressed: ', result);
-// })
-
-// const downloadResult = () => {
-//     let outputData = result[0]["output_data"];
-//     let csvContent = "openalex_dois\n"; // Header
-//     // Append each item in the outputData array as a new line in the CSV
-//     outputData.forEach(item => {
-//         csvContent += `${item}\n`;
-//     });
-//     // Create a Blob from the CSV string
-//     const blob = new Blob([csvContent], { type: 'text/csv' });
-//     // Create a temporary anchor element
-//     const link = document.createElement('a');
-//     // Set the download URL as the Blob's URL
-//     link.href = URL.createObjectURL(blob);
-//     // Set the download attribute with a file name
-//     link.download = 'openalex_dois.csv';
-//     // Programmatically click the link to trigger the download
-//     link.click();
-//     // Clean up by revoking the Blob URL
-//     URL.revokeObjectURL(link.href);
-// };
