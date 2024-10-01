@@ -171,12 +171,13 @@ class openalex_requester:
             self._logger.info(f"job_id: {job_id}: aiometer sorting successful")
             self._logger.debug(f"job_id: {self._jobs[job_id]['aio_responses'][0]}")
             self._jobs[job_id]["output_csv_data"] = (
-                "doi, oa_id"
-                + ",".join(keys)
+                "sep=;\n"
+                + "doi; oa_id"
+                + ";".join(keys)
                 + "\n"
                 + "".join(
                     [
-                        ",".join([str(x) for x in aio_response]) + "\n"
+                        ";".join([str(x).replace("\n", "") for x in aio_response]) + "\n"
                         for aio_response in self._jobs[job_id]["aio_responses"]
                     ]
                 ),

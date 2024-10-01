@@ -168,10 +168,15 @@ class OpenResearchConverter(openalex_requester):
     def return_data(self, job_id) -> tuple[dict, int]:
         self._validate_uuid(job_id=job_id)
         if self._jobs[job_id]["status"] == "complete":
+            if isinstance(self._jobs[job_id]["output_csv_data"], list):
+                if len(self._jobs[job_id]["output_csv_data"]) == 1:
+                    out_csv_data = self._jobs[job_id]["output_csv_data"][0]
+            else:
+                out_csv_data = self._jobs[job_id]["output_csv_data"]
             return {
                 "job_id": job_id,
                 "output_data": [doi_oa_pair[1] for doi_oa_pair in self._jobs[job_id]["aio_responses"]],
-                "output_full": self._jobs[job_id]["output_csv_data"],
+                "output_full": out_csv_data,
             }, 200
         else:
             return {
