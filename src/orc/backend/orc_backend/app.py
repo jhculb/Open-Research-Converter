@@ -2,15 +2,14 @@ from __future__ import annotations
 
 import logging
 
-from flask import Flask, jsonify, request
-from flask_cors import CORS, cross_origin
 from orc.backend.orc_backend.open_research_converter import OpenResearchConverter
-from timeout_decorator import timeout
+from quart import Quart, jsonify, request
+from quart_cors import cors
 
 # from https://stackoverflow.com/questions/67741946/how-to-validate-fields-raw-in-flask-marshmallow?rq=1
 
-app = Flask(__name__)
-cors = CORS(app)
+app = Quart(__name__)
+cors = cors(app)
 
 gunicorn_error_logger = logging.getLogger("gunicorn.error")
 app.logger.handlers.extend(gunicorn_error_logger.handlers)
@@ -22,7 +21,6 @@ orc = OpenResearchConverter(log)
 
 
 @app.route("/", methods=["GET"])
-@cross_origin()
 def hello_world():
     log.debug("app.py: API root page called")
     description = """
@@ -32,7 +30,7 @@ def hello_world():
                 <meta name="robots" content="noindex" />
                 </head>
                 <body>
-                    <h3>ORC API using Flask</h3>
+                    <h3>ORC API using quart</h3>
                 </body>
                 """
     return description
@@ -46,16 +44,30 @@ async def healthcheck():
 
 
 @app.route("/start_processing", methods=["POST"])
-@timeout(3600)
-@cross_origin()
-def start_processing():
+async def start_processing():
     log.debug("app.py: start_processing called")
-    json_data = request.get_json()
+    json_data = await request.get_json()
     job_id = orc.generate_new_job()
     text = json_data["input_data"]
     email = json_data["email"]
     log.debug(f"app.py: start_processing input: job_id: {job_id}, text:{text}, email: {email}")
-    orc.process(job_id, text, email)
+    await orc.process(job_id, text, email)
+    log.debug(f"app.py: finished processing {job_id}")
+    response = jsonify(orc.return_data(job_id))
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    log.debug(f"app.py: get_data response: {response}")
+    return response
+
+
+@app.route("/process_all", methods=["POST"])
+async def start_processing_all():
+    log.debug("app.py: start_processing called")
+    json_data = await request.get_json()
+    job_id = orc.generate_new_job()
+    text = json_data["input_data"]
+    email = json_data["email"]
+    log.debug(f"app.py: start_processing input: job_id: {job_id}, text:{text}, email: {email}")
+    await orc.process_all(job_id, text, email)
     log.debug(f"app.py: finished processing {job_id}")
     response = jsonify(orc.return_data(job_id))
     response.headers.add("Access-Control-Allow-Origin", "*")

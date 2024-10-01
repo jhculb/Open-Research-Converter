@@ -91,6 +91,19 @@ class openalex_requester:
             self._logger.error(f"job_id: {job_id}: _prepare chunks failed ")
             return None
 
+    def _prepare_chunks_full(self, job_id: str) -> list[str] | None:
+        chunked_data = self._chunk_input_data(job_id)
+        if chunked_data is not None:
+            chunked_data = list(chunked_data)
+            return [
+                f'https://api.openalex.org/works?filter=doi:{"|".join(chunks)}&per-page={chunklen}&mailto={self._jobs[job_id]["email"]}'
+                for chunks, chunklen in chunked_data
+            ]
+
+        else:
+            self._logger.error(f"job_id: {job_id}: _prepare chunks failed ")
+            return None
+
     async def _fetch(self, request: str):
         self._logger.debug(request)
         self._logger.debug("DEBUG: aiometer request sent to openalex")
@@ -127,6 +140,99 @@ class openalex_requester:
             self._jobs[job_id]["status"] = "complete"
         else:
             self._logger.error(f"job_id: {job_id}: Chunking failed in process for {job_id}, returning False")
+
+    async def _process_all(self, job_id: str):
+        oa_requests = self._prepare_chunks_full(job_id)
+        if oa_requests is not None:
+            self._logger.info(f"job_id: {job_id}: Requesting bulk data via aiometer")
+            responses = await aiometer.run_all(
+                [functools.partial(self._fetch, query) for query in oa_requests],
+                max_per_second=self._max_concurrent_per_second_aio,
+                max_at_once=self._max_concurrent_per_second_aio,
+            )
+            self._logger.info(f"job_id: {job_id}: Bulk Requests via aiometer successful")
+            keys = [
+                "ids",
+                "title",
+                "language",
+                "display_name",
+                "is_retracted",
+                "is_paratext",
+                "corresponding_author_ids",
+                "authorships",
+                "publication_date",
+                "publication_year",
+                "created_date",
+                "updated_date",
+                "versions",
+                "biblio",
+                "type",
+                "type_crossref",
+                "indexed_in",
+                "open_access",
+                "best_oa_location",
+                "primary_topic",
+                "topics",
+                "concepts",
+                "keywords",
+                "mesh",
+                "cited_by_api_url",
+                "cited_by_count",
+                "counts_by_year",
+                "cited_by_percentile_year",
+                "citation_normalized_percentile",
+                "fwci",
+                "institutions_distinct_count",
+                "corresponding_institution_ids",
+                "institution_assertions",
+                "primary_location",
+                "locations",
+                "locations_count",
+                "countries_distinct_count",
+                "sustainable_development_goals",
+                "referenced_works",
+                "referenced_works_count",
+                "related_works",
+                "apc_paid",
+                "apc_list",
+                "datasets",
+                "grants",
+                "has_fulltext",
+                "fulltext_origin",
+                "abstract_inverted_index",
+            ]
+            shuffled_responses = [
+                (work["doi"], work["id"]) + tuple(work[key] if key in work.keys() else "" for key in keys)
+                for response in responses
+                for work in response["results"]
+            ]
+            formatted_input_dois = list(map(self._doi_str_formatter, self._jobs[job_id]["input_data"]))
+            self._jobs[job_id]["aio_responses"] = sorted(
+                shuffled_responses, key=lambda pair: formatted_input_dois.index(pair[0])
+            )
+            self._logger.info(f"job_id: {job_id}: aiometer sorting successful")
+            self._jobs[job_id]["output_csv_data"] = (
+                "sep=\t\n"
+                + "doi\toa_id\t"
+                + "\t".join(keys)
+                + "\n"
+                + "".join(
+                    [
+                        "\t".join(
+                            [
+                                str(x).replace("\n", "\\n").replace("\r", "\\r").replace("\t", "    ")
+                                for x in aio_response
+                            ]
+                        )
+                        + "\n"
+                        for aio_response in self._jobs[job_id]["aio_responses"]
+                    ]
+                ),
+            )
+            self._logger.info(f"job_id: {job_id}: aiometer bulk csv string creation successful")
+            self._jobs[job_id]["status"] = "complete"
+        else:
+            self._logger.error(f"job_id: {job_id}: Chunking failed in process_all for {job_id}, returning False")
 
     async def _process(self, job_id: str):
         self._jobs[job_id]["status"] = "processing"

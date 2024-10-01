@@ -135,6 +135,7 @@ def test_check_ready_wrong_uuid(log):
     assert not orc._check_ready("incorrect_uuid")
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     ["email", "data", "expected_output"],
     [
@@ -262,10 +263,10 @@ def test_check_ready_wrong_uuid(log):
         ],
     ],
 )
-def test_init_process_sunny_day(log, email, data, expected_output):
+async def test_init_process_sunny_day(log, email, data, expected_output):
     orc = OpenResearchConverter(log)
     job_id = orc.generate_new_job()
-    orc.process(job_id, data, email)
+    await orc.process(job_id, data, email)
     # TODO Work out way to stall the response, or mock one of the many requests to view progress in the middle
     output_response, output_code = orc.return_data(job_id)
     assert output_code == 200

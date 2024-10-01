@@ -23,4 +23,4 @@ WORKDIR /app/src/orc/backend/orc_backend
 
 EXPOSE 8001
 
-ENTRYPOINT [ "poetry", "run", "gunicorn", "app:app", "-w", "9", "-b", "0.0.0.0:8001", "--access-logfile", "/app/logs/gunicorn_access.log", "--error-logfile", "/app/logs/gunicorn_error.log", "--log-level", "debug", "--timeout", "0"]
+ENTRYPOINT [ "poetry", "run", "gunicorn", "app:app", "--worker-class", "uvicorn.workers.UvicornWorker", "-w", "9", "-b", "0.0.0.0:8001", "--access-logfile", "/app/logs/gunicorn_access.log", "--error-logfile", "/app/logs/gunicorn_error.log", "--log-level", "debug", "--timeout", "0"]
