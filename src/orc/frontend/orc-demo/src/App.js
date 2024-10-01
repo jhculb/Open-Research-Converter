@@ -25,7 +25,6 @@ function App() {
     if (process.env.REACT_APP_ENV === "production") {
         apiUrl = process.env.REACT_APP_PROD_URL;
     }
-    // console.log("API URL:", apiUrl);
 
     const handleTextChange = (event) => {
         setText(event.target.value);
@@ -94,7 +93,6 @@ function App() {
                 return response.json();  // Assuming the response is JSON
             })
             .then(result => {
-                console.log(result);
                 let outputData = result[0]["output_data"];
                 setjobId(result[0]["job_id"]);
                 setResult(result);
@@ -140,7 +138,6 @@ function App() {
                 return response.json();  // Assuming the response is JSON
             })
             .then(result => {
-                console.log(result);
                 setjobId(result[0]["job_id"]);
                 setResult(result);
                 setText('');
