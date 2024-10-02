@@ -48,7 +48,7 @@ function App() {
         }
     };
 
-    //---- function called on Download Result button press
+    //---- function called on Download IDS/Full Records button press
     const downloadResult = () => {
         setIsDownloadDisabled(true);
         setLimitedResult('');
@@ -67,7 +67,11 @@ function App() {
         URL.revokeObjectURL(link.href);
     };
 
-    //---- function called on Submit button press
+    // const clearInput = () => {
+    //     setText('');
+    // }
+
+    //---- function called on Convert DOIs to IDs button press
     const onGetIds = () => {
         // let url = 'https://orc-demo.gesis.org/api/start_processing';
         let url = apiUrl + '/api/start_processing';
@@ -96,7 +100,7 @@ function App() {
                 let outputData = result[0]["output_data"];
                 setjobId(result[0]["job_id"]);
                 setResult(result);
-                setText('');
+                // setText('');
                 if (outputData.length) {
                     setIsDownloadDisabled(false);
                     let formattedText = outputData
@@ -112,7 +116,7 @@ function App() {
             });
     }
 
-    //---- function called on Submit button press
+    //---- function called on Download Full Records button press
     const onGetAll = () => {
         // let url = 'https://orc-demo.gesis.org/api/start_processing';
         let url = apiUrl + '/api/process_all';
@@ -140,7 +144,7 @@ function App() {
             .then(result => {
                 setjobId(result[0]["job_id"]);
                 setResult(result);
-                setText('');
+                // setText('');
                 setIsDownloadAll(true);
 
             })
@@ -155,6 +159,7 @@ function App() {
         if (isDownloadAll) {
             downloadResult();  // Call the download function
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isDownloadAll]);  // Dependency array ensures this effect runs when `isDownloadAll` changes
 
     return (
@@ -188,8 +193,12 @@ function App() {
                             onChange={handleTextChange}
                         />
                         <div className="d-flex justify-content-center">
-                            {/*<button type="button" className="btn btn-color" onClick={() => onGetIds()}>Submit</button>*/}
-                            <button type="button" className={`btn ${!(text && validEmail) ? 'btn-disabled' : 'btn-color'}`} disabled={!(text && validEmail)} onClick={() => onGetIds()}>Convert DOIs to IDs</button>
+                            {/*<button type="button" className={`btn ${(!(text) || isLoading) ? 'btn-disabled' : 'btn-color'}`} disabled={!text} onClick={() => clearInput()}>Clear Input</button>*/}
+                            {/*<div className="mx-auto">*/}
+                            {/*&nbsp;&nbsp;&nbsp;&nbsp;*/}
+                            <button type="button" className={`btn ${(!(text && validEmail)) ? 'btn-disabled' : 'btn-color'}`} disabled={(!(text && validEmail))} onClick={() => onGetIds()}>Convert DOIs to IDs</button>
+                            {/*|| isLoading*/}
+                            {/*</div>*/}
                         </div>
                     </div>
                 </div>
@@ -209,10 +218,10 @@ function App() {
                         style={{ height: '100%' }}
                     />
                     <div className="d-flex justify-content-center mb-1">
-                        {/*<button type="button" className="btn btn-color" onClick={() => downloadResult()}>Download Result</button>*/}
                         <button type="button" className={`btn ${isDownloadDisabled ? 'btn-disabled' : 'btn-color'}`} disabled={isDownloadDisabled} onClick={() => downloadResult()}>Download IDs</button>
                         &nbsp;&nbsp;&nbsp;&nbsp;
-                        <button type="button" className={`btn ${!(text && validEmail) ? 'btn-disabled' : 'btn-color'}`} disabled={!(text && validEmail)} onClick={() => onGetAll()}>Download Full Records</button>
+                        <button type="button" className={`btn ${(!(text && validEmail)) ? 'btn-disabled' : 'btn-color'}`} disabled={(!(text && validEmail))} onClick={() => onGetAll()}>Download Full Records</button>
+                        {/*|| isLoading*/}
                     </div>
                 </div>
             </div>
