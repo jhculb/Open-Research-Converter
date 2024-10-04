@@ -67,9 +67,9 @@ function App() {
         URL.revokeObjectURL(link.href);
     };
 
-    // const clearInput = () => {
-    //     setText('');
-    // }
+    const clearInput = () => {
+        setText('');
+    }
 
     //---- function called on Convert DOIs to IDs button press
     const onGetIds = () => {
@@ -193,12 +193,9 @@ function App() {
                             onChange={handleTextChange}
                         />
                         <div className="d-flex justify-content-center">
-                            {/*<button type="button" className={`btn ${(!(text) || isLoading) ? 'btn-disabled' : 'btn-color'}`} disabled={!text} onClick={() => clearInput()}>Clear Input</button>*/}
-                            {/*<div className="mx-auto">*/}
-                            {/*&nbsp;&nbsp;&nbsp;&nbsp;*/}
-                            <button type="button" className={`btn ${(!(text && validEmail)) ? 'btn-disabled' : 'btn-color'}`} disabled={(!(text && validEmail))} onClick={() => onGetIds()}>Convert DOIs to IDs</button>
-                            {/*|| isLoading*/}
-                            {/*</div>*/}
+                            <button type="button" className={`btn ${(!(text) || isLoading) ? 'btn-disabled' : 'btn-color'}`} disabled={(!(text) || isLoading)} onClick={() => clearInput()}>Clear Input</button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <button type="button" className={`btn ${(!(text && validEmail) || isLoading) ? 'btn-disabled' : 'btn-color'}`} disabled={(!(text && validEmail) || isLoading)} onClick={() => onGetIds()}>Convert DOIs to IDs</button>
                         </div>
                     </div>
                 </div>
@@ -220,8 +217,7 @@ function App() {
                     <div className="d-flex justify-content-center mb-1">
                         <button type="button" className={`btn ${isDownloadDisabled ? 'btn-disabled' : 'btn-color'}`} disabled={isDownloadDisabled} onClick={() => downloadResult()}>Download IDs</button>
                         &nbsp;&nbsp;&nbsp;&nbsp;
-                        <button type="button" className={`btn ${(!(text && validEmail)) ? 'btn-disabled' : 'btn-color'}`} disabled={(!(text && validEmail))} onClick={() => onGetAll()}>Download Full Records</button>
-                        {/*|| isLoading*/}
+                        <button type="button" className={`btn ${(!(text && validEmail) || isLoading) ? 'btn-disabled' : 'btn-color'}`} disabled={(!(text && validEmail) || isLoading)} onClick={() => onGetAll()}>Download Full Records</button>
                     </div>
                 </div>
             </div>
