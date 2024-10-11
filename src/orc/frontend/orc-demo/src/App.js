@@ -20,11 +20,10 @@ function App() {
                 <Header title="Open Research Converter" href="https://www.gesis.org/" isHome={isHome} />
             </div>
             <BrowserRouter>
-                <div>
                     <Routes>
                         <Route path="/" element={<Home/>}/>
+                        <Route path="/about" element={<About/>}/>
                     </Routes>
-                </div>
             </BrowserRouter>
             <div className="row mt-4">
                 <Footer></Footer>

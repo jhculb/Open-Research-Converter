@@ -105,8 +105,8 @@ Please raise github issues with bugs. Any frontend development experience would 
 ## Credits
 ### Developers
 * Jack H. Culbert - Lead Developer - [ORCID](https://orcid.org/0009-0000-1581-4021), [LinkedIn](https://www.linkedin.com/in/jack-c-2485989a/), [Github](https://github.com/jhculb)
-* Ahsan Shahid - Frontend Developer - LinkedIn
-* Philipp Mayr - Team Lead - ORCID
+* Muhammad Ahsan Shahid - Frontend Developer - [ORCID](https://orcid.org/0000-0002-7274-7934), [LinkedIn](https://www.linkedin.com/in/muhammad-ahsan-shahid/), [Github](https://github.com/MAhsanShahid)
+* Philipp Mayr - Team Lead - [ORCID](https://orcid.org/0000-0002-6656-1658)
 ### Funding
 This work was funded by the Federal Ministry of Education and Research
 via funding numbers: 16WIK2301B / 16WIK2301E, The OpenBib project. We

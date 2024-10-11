@@ -82,6 +82,7 @@ function Home() {
         })
             .then((response) => {
                 if (!response.ok) {
+                    setLimitedResult('Oops, something went wrong! Please check your input and try again.');
                     // Read the response as text to capture HTML or error message
                     return response.text().then((text) => {
                         // Log the HTML/error message
