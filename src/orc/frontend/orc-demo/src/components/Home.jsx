@@ -70,7 +70,6 @@ function Home() {
     const onGetIds = () => {
         // let url = 'https://orc-demo.gesis.org/api/start_processing';
         let url = apiUrl + '/api/start_processing';
-        console.log(apiUrl);
         let data = { "email": email, "input_data": text };
         setIsLoading(true);
         fetch(url, {

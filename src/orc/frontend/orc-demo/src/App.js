@@ -8,11 +8,9 @@ import Footer from './components/Footer';
 
 function App() {
     const pathName = window.location.pathname; // Access the current path
-    console.log(pathName)
     // Check the current path
     const isHome = pathName === '/';
     // const isAbout = pathName === '/about';
-    console.log(isHome)
 
     return (
         <div className="container">

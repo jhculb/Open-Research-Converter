@@ -96,48 +96,6 @@ const About = () => {
             </p>
         </div>
 
-        {/*<div className="col-md-4">*/}
-        {/*<h2 className="text-center">How the ORC Works</h2>*/}
-        {/*<p>*/}
-        {/*    The input is being processed after sending the request to the respective API endpoint on the ORC server which further calls OpenAlex's API to process the input and provide the output.*/}
-        {/*</p>*/}
-        {/*<p>*/}
-        {/*    This output data is returned and displayed as a response to your request.*/}
-        {/*</p>*/}
-        {/*<p>*/}
-        {/*    We also log the request data for our record and further processing like calculating the number of users and successful requests.*/}
-        {/*</p>*/}
-        {/*</div>*/}
-
-        {/*<div className="col-md-4 col-border">*/}
-        {/*    /!*https://github.com/jhculb/Open-Research-Converter/issues*!/*/}
-        {/*<h2 className="text-center">Contributors & More</h2>*/}
-        {/*<i className="fas fa-users" style={{ marginRight: '10px' }}></i> <strong>Developers</strong>*/}
-        {/*<ul className="list-unstyled mt-2">*/}
-        {/*    <li>*/}
-        {/*        <i className="fas fa-user" style={{ marginRight: '10px' }}></i>*/}
-        {/*        Jack H. Culbert - Lead Developer*/}
-        {/*        <p className="ms-4">*/}
-        {/*            <a href="https://orcid.org/0009-0000-1581-4021" target="_blank" rel="noopener noreferrer">ORCID</a> <a href="https://www.linkedin.com/in/jack-c-2485989a/" target="_blank" rel="noopener noreferrer">LinkedIn</a> <a href="https://github.com/jhculb" target="_blank" rel="noopener noreferrer">GitHub</a>*/}
-        {/*        </p>*/}
-        {/*    </li>*/}
-        {/*    <li className="mt-1">*/}
-        {/*        <i className="fas fa-user" style={{ marginRight: '10px' }}></i>*/}
-        {/*        Muhammad Ahsan Shahid - Frontend Developer*/}
-        {/*        <ul>*/}
-        {/*            <li><a href="https://orcid.org/0000-0002-7274-7934" target="_blank" rel="noopener noreferrer">ORCID</a> <a href="https://www.linkedin.com/in/muhammad-ahsan-shahid/" target="_blank" rel="noopener noreferrer">LinkedIn</a> <a href="https://github.com/MAhsanShahid" target="_blank" rel="noopener noreferrer">GitHub</a></li>*/}
-        {/*        </ul>*/}
-        {/*    </li>*/}
-        {/*    <li className="mt-1">*/}
-        {/*        <i className="fas fa-user" style={{ marginRight: '10px' }}></i>*/}
-        {/*        Philipp Mayr - Team Lead*/}
-        {/*        <ul>*/}
-        {/*            <li><a href="https://orcid.org/0000-0002-6656-1658" target="_blank" rel="noopener noreferrer">ORCID</a></li>*/}
-        {/*        </ul>*/}
-        {/*    </li>*/}
-        {/*</ul>*/}
-        {/*</div>*/}
-
         <div className="col-md-10">
             <h2 className="text-center headings-color mt-3">How to use it?</h2>
             <h4 className="headings-color"><i className="fas fa-book me-2"></i>Instructions</h4>
