@@ -3,6 +3,7 @@ import React from 'react';
 import './styles/About.sass';
 import open_bib from '../images/openbib.gif';
 import gesis_logo from '../images/logo_gesis.svg';
+import Bmbf from '../images/bmbf.svg';
 
 const About = () => {
     return <div className="row align-items-center justify-content-center">
@@ -35,143 +36,145 @@ const About = () => {
                 OpenAlex has a limit of 500 items per 10 seconds, therefore the users requests might be slow.
             </p>
 
-            {/*<h4 className="headings-color"><i className="fas fa-users me-2 mt-3"></i>Team from*/}
-            {/*    <a href="https://www.gesis.org/home" target="_blank" rel="noopener noreferrer">*/}
-            {/*        <img src={gesis_logo} alt="gesis" className="ms-2" style={{height: '30px', verticalAlign: 'middle'}}/>*/}
-            {/*    </a>*/}
-            {/*</h4>*/}
-            {/*<ul className="list-unstyled mt-2">*/}
-            {/*    <li>*/}
-            {/*        <i className="fas fa-user me-2 headings-color"></i>*/}
-            {/*        Jack H. Culbert - Lead Developer*/}
-            {/*        <span className="ms-2">*/}
-            {/*            <a href="https://orcid.org/0009-0000-1581-4021" target="_blank" rel="noopener noreferrer">ORCID</a> <a href="https://www.linkedin.com/in/jack-c-2485989a/" target="_blank" rel="noopener noreferrer">LinkedIn</a> <a href="https://github.com/jhculb" target="_blank" rel="noopener noreferrer">GitHub</a>*/}
-            {/*        </span>*/}
-            {/*    </li>*/}
-            {/*    <li className="mt-1">*/}
-            {/*        <i className="fas fa-user me-2 headings-color"></i>*/}
-            {/*        Muhammad Ahsan Shahid - Frontend Developer*/}
-            {/*        <span className="ms-2">*/}
-            {/*            <a href="https://orcid.org/0000-0002-7274-7934" target="_blank" rel="noopener noreferrer">ORCID</a> <a href="https://www.linkedin.com/in/muhammad-ahsan-shahid/" target="_blank" rel="noopener noreferrer">LinkedIn</a> <a href="https://github.com/MAhsanShahid" target="_blank" rel="noopener noreferrer">GitHub</a>*/}
-            {/*        </span>*/}
-            {/*    </li>*/}
-            {/*    <li className="mt-1">*/}
-            {/*        <i className="fas fa-user me-2 headings-color"></i>*/}
-            {/*        Philipp Mayr - Team Lead*/}
-            {/*        <span className="ms-2">*/}
-            {/*            <a href="https://orcid.org/0000-0002-6656-1658" target="_blank" rel="noopener noreferrer">ORCID</a>*/}
-            {/*        </span>*/}
-            {/*    </li>*/}
-            {/*</ul>*/}
-
-            {/*<h4 className="headings-color"><i className="fas fa-certificate me-2 mt-3"></i>License</h4>*/}
-            {/*<p>*/}
-            {/*    This work is licenced under GPL-3.0, or later.*/}
-            {/*</p>*/}
-
-            {/*<h4 className="headings-color"><i className="fas fa-dollar-sign me-2 mt-3"></i>Funding</h4>*/}
-            {/*<p>*/}
-            {/*    This work was funded by the Federal Ministry of Education and Research via funding numbers: 16WIK2301B /*/}
-            {/*    16WIK2301E, The <a href="https://www.openbib.org/" target="_blank" rel="noopener noreferrer">*/}
-            {/*    <img src={open_bib} alt="OpenBib" style={{height: '20px', verticalAlign: 'middle'}}/>*/}
-            {/*    </a> project.*/}
-            {/*    We acknowledge support by Federal Ministry of Education and Research, Germany under grant number*/}
-            {/*    01PQ17001, the Competence Network for Bibliometrics.*/}
-            {/*</p>*/}
-            {/*<p>*/}
-            {/*    Jack Culbert and Philipp Mayr received additional funding by the European Union under the Horizon Europe*/}
-            {/*    grant OMINO – Overcoming Multilevel INformation Overload under grant number 101086321.*/}
-            {/*</p>*/}
-        </div>
-
-        <div className="col-md-4">
-            <h2 className="text-center">How the ORC Works</h2>
-            <p>
-                The input is being processed after sending the request to the respective API endpoint on the ORC server which further calls OpenAlex's API to process the input and provide the output.
-            </p>
-            <p>
-                This output data is returned and displayed as a response to your request.
-            </p>
-            <p>
-                We also log the request data for our record and further processing like calculating the number of users and successful requests.
-            </p>
-        </div>
-
-        <div className="col-md-4 col-border">
-            {/*https://github.com/jhculb/Open-Research-Converter/issues*/}
-            <h2 className="text-center">Contributors & More</h2>
-            <i className="fas fa-users" style={{ marginRight: '10px' }}></i> <strong>Developers</strong>
-            <ul className="list-unstyled mt-2">
+            <h6 className="headings-color"><i className="fas fa-sticky-note me-2"></i>Note</h6>
+            This tool is in development and may not perform perfectly:
+            <ul>
+                <li>If items are not found in OpenAlex, they may not be returned, leading to a smaller number of items in the output.</li>
                 <li>
-                    <i className="fas fa-user" style={{ marginRight: '10px' }}></i>
-                    Jack H. Culbert - Lead Developer
-                    <p className="ms-4">
-                        <a href="https://orcid.org/0009-0000-1581-4021" target="_blank" rel="noopener noreferrer">ORCID</a> <a href="https://www.linkedin.com/in/jack-c-2485989a/" target="_blank" rel="noopener noreferrer">LinkedIn</a> <a href="https://github.com/jhculb" target="_blank" rel="noopener noreferrer">GitHub</a>
-                    </p>
-                </li>
-                <li className="mt-1">
-                    <i className="fas fa-user" style={{ marginRight: '10px' }}></i>
-                    Muhammad Ahsan Shahid - Frontend Developer
-                    <ul>
-                        <li><a href="https://orcid.org/0000-0002-7274-7934" target="_blank" rel="noopener noreferrer">ORCID</a> <a href="https://www.linkedin.com/in/muhammad-ahsan-shahid/" target="_blank" rel="noopener noreferrer">LinkedIn</a> <a href="https://github.com/MAhsanShahid" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-                    </ul>
-                </li>
-                <li className="mt-1">
-                    <i className="fas fa-user" style={{ marginRight: '10px' }}></i>
-                    Philipp Mayr - Team Lead
-                    <ul>
-                        <li><a href="https://orcid.org/0000-0002-6656-1658" target="_blank" rel="noopener noreferrer">ORCID</a></li>
-                    </ul>
+                    If an error happens on the backend it may not inform the frontend properly, leading to a failure (when the waiting ring disappears) without informing the user why.
                 </li>
             </ul>
+
+            <h4 className="headings-color"><i className="fas fa-users me-2 mt-3"></i>Team from
+                <a href="https://www.gesis.org/home" target="_blank" rel="noopener noreferrer">
+                    <img src={gesis_logo} alt="gesis" className="ms-2" style={{height: '30px', verticalAlign: 'middle'}}/>
+                </a>
+            </h4>
+            <ul className="list-unstyled mt-2">
+                <li>
+                    <i className="fas fa-user me-2 headings-color"></i>
+                    Jack H. Culbert - Lead Developer
+                    <span className="ms-2">
+                        <a href="https://orcid.org/0009-0000-1581-4021" target="_blank" rel="noopener noreferrer">ORCID</a> <a href="https://www.linkedin.com/in/jack-c-2485989a/" target="_blank" rel="noopener noreferrer">LinkedIn</a> <a href="https://github.com/jhculb" target="_blank" rel="noopener noreferrer">GitHub</a>
+                    </span>
+                </li>
+                <li className="mt-1">
+                    <i className="fas fa-user me-2 headings-color"></i>
+                    Muhammad Ahsan Shahid - Frontend Developer
+                    <span className="ms-2">
+                        <a href="https://orcid.org/0000-0002-7274-7934" target="_blank" rel="noopener noreferrer">ORCID</a> <a href="https://www.linkedin.com/in/muhammad-ahsan-shahid/" target="_blank" rel="noopener noreferrer">LinkedIn</a> <a href="https://github.com/MAhsanShahid" target="_blank" rel="noopener noreferrer">GitHub</a>
+                    </span>
+                </li>
+                <li className="mt-1">
+                    <i className="fas fa-user me-2 headings-color"></i>
+                    Philipp Mayr - Team Lead
+                    <span className="ms-2">
+                        <a href="https://orcid.org/0000-0002-6656-1658" target="_blank" rel="noopener noreferrer">ORCID</a>
+                    </span>
+                </li>
+            </ul>
+
+            <h4 className="headings-color"><i className="fas fa-certificate me-2 mt-3"></i>License</h4>
+            <p>
+                This work is licenced under GPL-3.0, or later.
+            </p>
+
+            <h4 className="headings-color"><i className="fas fa-dollar-sign me-2 mt-3"></i>Funding</h4>
+            <p>
+                This work was funded by the Federal Ministry of Education and Research <a href="https://www.bmbf.de/bmbf/en/home/home_node.html" target="_blank" rel="noopener noreferrer">
+                <img src={Bmbf} alt="Bmbf" style={{height: '30px', verticalAlign: 'middle'}}/>
+            </a> via funding numbers: 16WIK2301B /
+                16WIK2301E, The <a href="https://www.openbib.org/" target="_blank" rel="noopener noreferrer">
+                <img src={open_bib} alt="OpenBib" style={{height: '20px', verticalAlign: 'middle'}}/>
+                </a> project.
+                We acknowledge support by Federal Ministry of Education and Research, Germany under grant number
+                01PQ17001, the Competence Network for Bibliometrics.
+            </p>
+            <p>
+                Jack Culbert and Philipp Mayr received additional funding by the European Union under the Horizon Europe
+                grant OMINO – Overcoming Multilevel INformation Overload under grant number 101086321.
+            </p>
         </div>
 
-        {/*<div className="col-md-12">*/}
-        {/*    <h2 className="text-center headings-color mt-3">How to use it?</h2>*/}
-        {/*    <h4 className="headings-color"><i className="fas fa-book me-2"></i>Instructions</h4>*/}
-        {/*    <ol>*/}
-        {/*        <li>Navigate to <a href="https://orc-demo.gesis.org" target="_blank" rel="noopener noreferrer">https://orc-demo.gesis.org</a></li>*/}
-        {/*        <li>Fill in your email address into the email box. This is so that OpenAlex can monitor traffic and places your requests in the "polite pool," where responses are faster and more consistent.</li>*/}
-        {/*        <li>Input your DOI data:</li>*/}
-        {/*        <ul>*/}
-        {/*            <li><strong>Via text box:</strong> The ORC expects a comma-separated list of DOIs. It does not mind whether DOIs are prefaced with "https://doi.org/"</li>*/}
-        {/*            <li><strong>Via CSV file:</strong> Browse to select a CSV file, which will be read into the text box. The ORC expects a single column of DOIs with a header. If the first row contains a DOI, it will not be parsed.</li>*/}
-        {/*            <li><strong>Via copy-paste:</strong> You can also manually copy and paste your DOI data into the text box. The ORC can accept thousands of DOIs, but it may take a few minutes to process.</li>*/}
-        {/*        </ul>*/}
-        {/*        <li>Click Submit</li>*/}
-        {/*        <ul>*/}
-        {/*            <li>A waiting animation should appear in the right-hand output box. If it flashes and disappears, your query may have been unsuccessful. Please try again or check your input. </li>*/}
-        {/*        </ul>*/}
-        {/*        <li>Wait for Output</li>*/}
-        {/*        <ul>*/}
-        {/*            <li>If successful, the first 50 OpenAlex IDs corresponding to your DOIs will appear in the output box. If you submitted more than 50 DOIs, click "download CSV" to download a file containing the DOI in the first column and the OpenAlex ID in the second.</li>*/}
-        {/*        </ul>*/}
-        {/*    </ol>*/}
-
-        {/*    <h5 className="headings-color"><i className="fas fa-tools me-2"></i>Local Installation</h5>*/}
-        {/*    <p>*/}
-        {/*        If you wish to run the ORC locally, please go to <a href="https://github.com/jhculb/Open-Research-Converter?tab=readme-ov-file#local-installation" target="_blank" rel="noopener noreferrer">Local Installation </a>*/}
-        {/*    </p>*/}
-
-        {/*    <h5 className="headings-color"><i className="fas fa-sticky-note me-2"></i>Note</h5>*/}
-        {/*    This tool is in development and may not perform perfectly:*/}
-        {/*        <ul>*/}
-        {/*            <li>If items are not found in OpenAlex, they may not be returned, leading to a smaller number of items in the output.</li>*/}
-        {/*            <li>*/}
-        {/*                If an error happens on the backend it may not inform the frontend properly, leading to a failure (when the waiting ring disappears) without informing the user why.*/}
-        {/*            </li>*/}
-        {/*        </ul>*/}
-
-        {/*    <h5 className="headings-color"><i className="fas fa-pen me-2"></i>Want to Cite?</h5>*/}
-        {/*    <p>*/}
-        {/*        As of release on the 16th of September 2024: This software is being submitted to <a href="https://joss.theoj.org/" target="_blank" rel="noopener noreferrer">JOSS</a>, citation details pending.*/}
-        {/*    </p>*/}
-
-        {/*    <h5 className="headings-color"><i className="fas fa-bug me-2"></i>Report an Issue</h5>*/}
-        {/*    <p>*/}
-        {/*        If you have encountered any bug and want to report it, kindly go to <a href="https://github.com/jhculb/Open-Research-Converter/issues" target="_blank" rel="noopener noreferrer">Open Issue </a>*/}
-        {/*    </p>*/}
+        {/*<div className="col-md-4">*/}
+        {/*<h2 className="text-center">How the ORC Works</h2>*/}
+        {/*<p>*/}
+        {/*    The input is being processed after sending the request to the respective API endpoint on the ORC server which further calls OpenAlex's API to process the input and provide the output.*/}
+        {/*</p>*/}
+        {/*<p>*/}
+        {/*    This output data is returned and displayed as a response to your request.*/}
+        {/*</p>*/}
+        {/*<p>*/}
+        {/*    We also log the request data for our record and further processing like calculating the number of users and successful requests.*/}
+        {/*</p>*/}
         {/*</div>*/}
+
+        {/*<div className="col-md-4 col-border">*/}
+        {/*    /!*https://github.com/jhculb/Open-Research-Converter/issues*!/*/}
+        {/*<h2 className="text-center">Contributors & More</h2>*/}
+        {/*<i className="fas fa-users" style={{ marginRight: '10px' }}></i> <strong>Developers</strong>*/}
+        {/*<ul className="list-unstyled mt-2">*/}
+        {/*    <li>*/}
+        {/*        <i className="fas fa-user" style={{ marginRight: '10px' }}></i>*/}
+        {/*        Jack H. Culbert - Lead Developer*/}
+        {/*        <p className="ms-4">*/}
+        {/*            <a href="https://orcid.org/0009-0000-1581-4021" target="_blank" rel="noopener noreferrer">ORCID</a> <a href="https://www.linkedin.com/in/jack-c-2485989a/" target="_blank" rel="noopener noreferrer">LinkedIn</a> <a href="https://github.com/jhculb" target="_blank" rel="noopener noreferrer">GitHub</a>*/}
+        {/*        </p>*/}
+        {/*    </li>*/}
+        {/*    <li className="mt-1">*/}
+        {/*        <i className="fas fa-user" style={{ marginRight: '10px' }}></i>*/}
+        {/*        Muhammad Ahsan Shahid - Frontend Developer*/}
+        {/*        <ul>*/}
+        {/*            <li><a href="https://orcid.org/0000-0002-7274-7934" target="_blank" rel="noopener noreferrer">ORCID</a> <a href="https://www.linkedin.com/in/muhammad-ahsan-shahid/" target="_blank" rel="noopener noreferrer">LinkedIn</a> <a href="https://github.com/MAhsanShahid" target="_blank" rel="noopener noreferrer">GitHub</a></li>*/}
+        {/*        </ul>*/}
+        {/*    </li>*/}
+        {/*    <li className="mt-1">*/}
+        {/*        <i className="fas fa-user" style={{ marginRight: '10px' }}></i>*/}
+        {/*        Philipp Mayr - Team Lead*/}
+        {/*        <ul>*/}
+        {/*            <li><a href="https://orcid.org/0000-0002-6656-1658" target="_blank" rel="noopener noreferrer">ORCID</a></li>*/}
+        {/*        </ul>*/}
+        {/*    </li>*/}
+        {/*</ul>*/}
+        {/*</div>*/}
+
+        <div className="col-md-10">
+            <h2 className="text-center headings-color mt-3">How to use it?</h2>
+            <h4 className="headings-color"><i className="fas fa-book me-2"></i>Instructions</h4>
+            <ol>
+                <li>Navigate to <a href="https://orc-demo.gesis.org" target="_blank" rel="noopener noreferrer">https://orc-demo.gesis.org</a></li>
+                <li>Fill in your email address into the email box. This is so that OpenAlex can monitor traffic and places your requests in the "polite pool," where responses are faster and more consistent.</li>
+                <li>Input your DOI data:</li>
+                <ul>
+                    <li><strong>Via text box:</strong> The ORC expects a comma-separated list of DOIs. It does not mind whether DOIs are prefaced with "https://doi.org/"</li>
+                    <li><strong>Via CSV file:</strong> Browse to select a CSV file, which will be read into the text box. The ORC expects a single column of DOIs with a header. If the first row contains a DOI, it will not be parsed.</li>
+                    <li><strong>Via copy-paste:</strong> You can also manually copy and paste your DOI data into the text box. The ORC can accept thousands of DOIs, but it may take a few minutes to process.</li>
+                </ul>
+                <li>Click Submit</li>
+                <ul>
+                    <li>A waiting animation should appear in the right-hand output box. If it flashes and disappears, your query may have been unsuccessful. Please try again or check your input. </li>
+                </ul>
+                <li>Wait for Output</li>
+                <ul>
+                    <li>If successful, the first 50 OpenAlex IDs corresponding to your DOIs will appear in the output box. If you submitted more than 50 DOIs, click "download CSV" to download a file containing the DOI in the first column and the OpenAlex ID in the second.</li>
+                </ul>
+            </ol>
+
+            <h5 className="headings-color"><i className="fas fa-tools me-2"></i>Local Installation</h5>
+            <p>
+                If you wish to run the ORC locally, please go to <a href="https://github.com/jhculb/Open-Research-Converter?tab=readme-ov-file#local-installation" target="_blank" rel="noopener noreferrer">Local Installation </a>
+            </p>
+
+            <h5 className="headings-color"><i className="fas fa-pen me-2"></i>Want to Cite?</h5>
+            <p>
+                As of release on the 16th of September 2024: This software is being submitted to <a href="https://joss.theoj.org/" target="_blank" rel="noopener noreferrer">JOSS</a>, citation details pending.
+            </p>
+
+            <h5 className="headings-color"><i className="fas fa-bug me-2"></i>Report an Issue</h5>
+            <p>
+                If you have encountered any bug and want to report it, kindly go to <a href="https://github.com/jhculb/Open-Research-Converter/issues" target="_blank" rel="noopener noreferrer">Open Issue </a>
+            </p>
+        </div>
     </div>;
 };
 
