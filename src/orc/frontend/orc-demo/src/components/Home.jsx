@@ -82,6 +82,7 @@ function Home() {
             .then((response) => {
                 if (!response.ok) {
                     setLimitedResult('Oops, something went wrong! Please check your input and try again.');
+                    setIsDownloadDisabled(true);
                     // Read the response as text to capture HTML or error message
                     return response.text().then((text) => {
                         // Log the HTML/error message
@@ -180,7 +181,7 @@ function Home() {
                     <TextBox
                         title={"Input Box"}
                         rows={16}
-                        placeholder={'Please enter comma separated DOIs or upload a csv file containing DOIs in the first column'}
+                        placeholder={'Please enter comma separated DOIs or upload a csv file(max. size 1 MB) containing DOIs in the first column'}
                         value={text}
                         onChange={handleTextChange}
                     />
