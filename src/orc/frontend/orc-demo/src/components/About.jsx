@@ -1,13 +1,10 @@
 // About.js
 import React from 'react';
 import './styles/About.sass';
-import open_bib from '../images/openbib.gif';
-import gesis_logo from '../images/logo_gesis.svg';
-import Bmbf from '../images/bmbf.svg';
 
 const About = () => {
     return <div className="row align-items-center justify-content-center">
-        <div className="col-md-10 col-border">
+        <div className="col-md-11">
             <h2 className="text-center headings-color">About ORC</h2>
             <p>
                 The <a href="https://orc-demo.gesis.org" target="_blank" rel="noopener noreferrer">
@@ -20,6 +17,43 @@ const About = () => {
                 Try out the ORC demo where you can trial the functionality.
                 This URL may be subject to change or to removal after a period of time.
             </p>
+
+            <h4 className="headings-color mt-3">How to use it?</h4>
+            <h5 className="headings-color"><i className="fas fa-book me-2"></i>Instructions</h5>
+            <ol>
+                <li>Navigate to <a href="https://orc-demo.gesis.org" target="_blank" rel="noopener noreferrer">https://orc-demo.gesis.org</a></li>
+                <li>Fill in your email address into the email box. This is so that OpenAlex can monitor traffic and places your requests in the "polite pool," where responses are faster and more consistent.</li>
+                <li>Input your DOI data:</li>
+                <ul>
+                    <li><strong>Via text box:</strong> The ORC expects a comma-separated list of DOIs. It does not mind whether DOIs are prefaced with "https://doi.org/"</li>
+                    <li><strong>Via CSV file:</strong> Browse to select a CSV file with maximum size of 1 Megabyte, which will be read into the text box. The ORC expects a single column of DOIs with a header. If the first row contains a DOI, it will not be parsed.</li>
+                    <li><strong>Via copy-paste:</strong> You can also manually copy and paste your DOI data into the text box. The ORC can accept thousands of DOIs, but it may take a few minutes to process.</li>
+                </ul>
+                <li>Click Submit</li>
+                <ul>
+                    <li>A waiting animation should appear in the right-hand output box. If it flashes and disappears, your query may have been unsuccessful. Please try again or check your input. </li>
+                </ul>
+                <li>Wait for Output</li>
+                <ul>
+                    <li>If successful, the first 50 OpenAlex IDs corresponding to your DOIs will appear in the output box. If you submitted more than 50 DOIs, click "download CSV" to download a file containing the DOI in the first column and the OpenAlex ID in the second.</li>
+                </ul>
+            </ol>
+
+            <h6 className="headings-color"><i className="fas fa-tools me-2"></i>Local Installation</h6>
+            <p>
+                If you wish to run the ORC locally, please go to <a href="https://github.com/jhculb/Open-Research-Converter?tab=readme-ov-file#local-installation" target="_blank" rel="noopener noreferrer">Local Installation </a>
+            </p>
+
+            <h6 className="headings-color"><i className="fas fa-pen me-2"></i>Want to Cite?</h6>
+            <p>
+                As of release on the 16th of September 2024: This software is being submitted to <a href="https://joss.theoj.org/" target="_blank" rel="noopener noreferrer">JOSS</a>, citation details pending.
+            </p>
+
+            <h6 className="headings-color"><i className="fas fa-bug me-2"></i>Report an issue</h6>
+            <p>
+                You are welcome to report a problem or to open a new ticket, kindly go to <a href="https://github.com/jhculb/Open-Research-Converter/issues" target="_blank" rel="noopener noreferrer">Open Issue </a>
+            </p>
+
             <h4 className="headings-color"><i className="fas fa-lightbulb me-2"></i>How it works?</h4>
             <p>
                 The input is being processed after sending the request to the respective API endpoint on the ORC server which further calls OpenAlex's API to process the input and provide the output.
@@ -45,11 +79,7 @@ const About = () => {
                 </li>
             </ul>
 
-            <h4 className="headings-color"><i className="fas fa-users me-2 mt-3"></i>Team from
-                <a href="https://www.gesis.org/home" target="_blank" rel="noopener noreferrer">
-                    <img src={gesis_logo} alt="gesis" className="ms-2" style={{height: '30px', verticalAlign: 'middle'}}/>
-                </a>
-            </h4>
+            <h4 className="headings-color"><i className="fas fa-users me-2 mt-3"></i>Team</h4>
             <ul className="list-unstyled mt-2">
                 <li>
                     <i className="fas fa-user me-2 headings-color"></i>
@@ -81,11 +111,11 @@ const About = () => {
 
             <h4 className="headings-color"><i className="fas fa-dollar-sign me-2 mt-3"></i>Funding</h4>
             <p>
-                This work was funded by the Federal Ministry of Education and Research <a href="https://www.bmbf.de/bmbf/en/home/home_node.html" target="_blank" rel="noopener noreferrer">
-                <img src={Bmbf} alt="Bmbf" style={{height: '30px', verticalAlign: 'middle'}}/>
+                This work was funded by the <a href="https://www.bmbf.de/bmbf/en/home/home_node.html" target="_blank" rel="noopener noreferrer">
+                Federal Ministry of Education and Research (BMBF)
             </a> via funding numbers: 16WIK2301B /
                 16WIK2301E, The <a href="https://www.openbib.org/" target="_blank" rel="noopener noreferrer">
-                <img src={open_bib} alt="OpenBib" style={{height: '20px', verticalAlign: 'middle'}}/>
+                OpenBib
                 </a> project.
                 We acknowledge support by Federal Ministry of Education and Research, Germany under grant number
                 01PQ17001, the Competence Network for Bibliometrics.
@@ -93,44 +123,6 @@ const About = () => {
             <p>
                 Jack Culbert and Philipp Mayr received additional funding by the European Union under the Horizon Europe
                 grant OMINO – Overcoming Multilevel INformation Overload under grant number 101086321.
-            </p>
-        </div>
-
-        <div className="col-md-10">
-            <h2 className="text-center headings-color mt-3">How to use it?</h2>
-            <h4 className="headings-color"><i className="fas fa-book me-2"></i>Instructions</h4>
-            <ol>
-                <li>Navigate to <a href="https://orc-demo.gesis.org" target="_blank" rel="noopener noreferrer">https://orc-demo.gesis.org</a></li>
-                <li>Fill in your email address into the email box. This is so that OpenAlex can monitor traffic and places your requests in the "polite pool," where responses are faster and more consistent.</li>
-                <li>Input your DOI data:</li>
-                <ul>
-                    <li><strong>Via text box:</strong> The ORC expects a comma-separated list of DOIs. It does not mind whether DOIs are prefaced with "https://doi.org/"</li>
-                    <li><strong>Via CSV file:</strong> Browse to select a CSV file, which will be read into the text box. The ORC expects a single column of DOIs with a header. If the first row contains a DOI, it will not be parsed.</li>
-                    <li><strong>Via copy-paste:</strong> You can also manually copy and paste your DOI data into the text box. The ORC can accept thousands of DOIs, but it may take a few minutes to process.</li>
-                </ul>
-                <li>Click Submit</li>
-                <ul>
-                    <li>A waiting animation should appear in the right-hand output box. If it flashes and disappears, your query may have been unsuccessful. Please try again or check your input. </li>
-                </ul>
-                <li>Wait for Output</li>
-                <ul>
-                    <li>If successful, the first 50 OpenAlex IDs corresponding to your DOIs will appear in the output box. If you submitted more than 50 DOIs, click "download CSV" to download a file containing the DOI in the first column and the OpenAlex ID in the second.</li>
-                </ul>
-            </ol>
-
-            <h5 className="headings-color"><i className="fas fa-tools me-2"></i>Local Installation</h5>
-            <p>
-                If you wish to run the ORC locally, please go to <a href="https://github.com/jhculb/Open-Research-Converter?tab=readme-ov-file#local-installation" target="_blank" rel="noopener noreferrer">Local Installation </a>
-            </p>
-
-            <h5 className="headings-color"><i className="fas fa-pen me-2"></i>Want to Cite?</h5>
-            <p>
-                As of release on the 16th of September 2024: This software is being submitted to <a href="https://joss.theoj.org/" target="_blank" rel="noopener noreferrer">JOSS</a>, citation details pending.
-            </p>
-
-            <h5 className="headings-color"><i className="fas fa-bug me-2"></i>Report an Issue</h5>
-            <p>
-                If you have encountered any bug and want to report it, kindly go to <a href="https://github.com/jhculb/Open-Research-Converter/issues" target="_blank" rel="noopener noreferrer">Open Issue </a>
             </p>
         </div>
     </div>;

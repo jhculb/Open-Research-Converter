@@ -17,8 +17,8 @@ class Header extends Component {
             <div className="col-12 col-md-1 mt-2 d-flex justify-content-center justify-content-md-end align-self-end">
                 {
                     this.props.isHome?
-                        <a href="/about" className="mb-0 link-color">
-                            <i className="fas fa-info-circle fa-2x"></i>
+                        <a href="/about" className="mb-0 link-color" style={{ fontSize: '22px' }}>
+                            About
                         </a>
                         :
                         <a href="/" className="mb-0 link-color">

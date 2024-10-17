@@ -151,7 +151,7 @@ function Home() {
             });
     }
 
-    // Using useEffect to trigger isDownloadAll when "Download all Info." is pressed
+    // Using useEffect to trigger isDownloadAll when "Download Full Records" is pressed
     useEffect(() => {
         if (isDownloadAll) {
             downloadResult();  // Call the download function
@@ -181,7 +181,7 @@ function Home() {
                     <TextBox
                         title={"Input Box"}
                         rows={16}
-                        placeholder={'Please enter comma separated DOIs or upload a csv file(max. size 1 MB) containing DOIs in the first column'}
+                        placeholder={'Please enter comma separated DOIs or upload a csv file (max. size 1 MB) containing DOIs in the first column'}
                         value={text}
                         onChange={handleTextChange}
                     />
