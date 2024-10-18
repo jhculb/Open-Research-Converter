@@ -28,7 +28,6 @@ function CsvFileReader({ setText, className }) {
                     skipEmptyLines: true, // Skip empty lines
                     complete: (result) => {
                         // Extract the DOIs from the parsed data
-                        // let dois = result.data.map((row) => row.dois);
                         let dois = result.data.map((row) => Object.values(row)[0]); // Get the first value from each row
                         // Join them into a single comma-separated string
                         setText(dois.join(','));
@@ -44,39 +43,7 @@ function CsvFileReader({ setText, className }) {
     return (
         <div className={className}>
             <input type="file" accept=".csv" onChange={handleFileChange}/>
-            {/*<p style={{ color: 'green' }}>File size must be less than 1 MB.</p>*/}
-            {/*{fileName && <p style={{ color: 'gray' }}>{fileName}</p>}*/}
             {error && <p style={{ color: 'red' }}>{error}</p>}
-            {/*'Choose a CSV file having single column containing DOIs.'*/}
-            {/*{csvData.length > 0 && (*/}
-            {/*    <div>*/}
-            {/*        <h3>CSV Data:</h3>*/}
-            {/*        {csvData && (*/}
-            {/*            <div>*/}
-            {/*                <h3>Comma Separated DOIs:</h3>*/}
-            {/*                <p>{csvData}</p>*/}
-            {/*            </div>*/}
-            {/*        )}*/}
-            {/*        /!*<table border="1">*!/*/}
-            {/*        /!*    <thead>*!/*/}
-            {/*        /!*    <tr>*!/*/}
-            {/*        /!*        {Object.keys(csvData[0]).map((key) => (*!/*/}
-            {/*        /!*            <th key={key}>{key}</th>*!/*/}
-            {/*        /!*        ))}*!/*/}
-            {/*        /!*    </tr>*!/*/}
-            {/*        /!*    </thead>*!/*/}
-            {/*        /!*    <tbody>*!/*/}
-            {/*        /!*    {csvData.map((row, index) => (*!/*/}
-            {/*        /!*        <tr key={index}>*!/*/}
-            {/*        /!*            {Object.values(row).map((value, i) => (*!/*/}
-            {/*        /!*                <td key={i}>{value}</td>*!/*/}
-            {/*        /!*            ))}*!/*/}
-            {/*        /!*        </tr>*!/*/}
-            {/*        /!*    ))}*!/*/}
-            {/*        /!*    </tbody>*!/*/}
-            {/*        /!*</table>*!/*/}
-            {/*    </div>*/}
-            {/*)}*/}
         </div>
     );
 }

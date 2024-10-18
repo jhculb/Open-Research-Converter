@@ -68,7 +68,6 @@ function Home() {
 
     //---- function called on Convert DOIs to IDs button press
     const onGetIds = () => {
-        // let url = 'https://orc-demo.gesis.org/api/start_processing';
         let url = apiUrl + '/api/start_processing';
         let data = { "email": email, "input_data": text };
         setIsLoading(true);
@@ -97,7 +96,6 @@ function Home() {
                 let outputData = result[0]["output_data"];
                 setjobId(result[0]["job_id"]);
                 setResult(result);
-                // setText('');
                 if (outputData.length) {
                     setIsDownloadDisabled(false);
                     let formattedText = outputData
@@ -115,7 +113,6 @@ function Home() {
 
     //---- function called on Download Full Records button press
     const onGetAll = () => {
-        // let url = 'https://orc-demo.gesis.org/api/start_processing';
         let url = apiUrl + '/api/process_all';
         let data = { "email": email, "input_data": text };
         setIsLoading(true);
