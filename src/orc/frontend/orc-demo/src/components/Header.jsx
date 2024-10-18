@@ -1,6 +1,5 @@
 import {Component} from "react";
 import './styles/Header.sass';
-// import orc_logo from '../images/orc-logo.png';
 import gesis_logo from '../images/logo_gesis.svg';
 
 class Header extends Component {

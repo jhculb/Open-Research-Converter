@@ -10,7 +10,6 @@ function App() {
     const pathName = window.location.pathname; // Access the current path
     // Check the current path
     const isHome = pathName === '/';
-    // const isAbout = pathName === '/about';
 
     return (
         <div className="container">
