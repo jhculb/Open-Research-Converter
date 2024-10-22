@@ -8,8 +8,9 @@
 6. [Technologies Used](#technologies-used)
 7. [Folder Structure](#folder-structure)
 8. [License](#license)
-9. [Developers](#developers)
-10. [Acknowledgements](#acknowledgements)
+9. [Contributing](#contributing)
+10. [Developers](#developers)
+11. [Acknowledgements](#acknowledgements)
 
 ## Demo
 URL: https://orc-demo.gesis.org/
@@ -56,6 +57,9 @@ src/
 
 ## License
 This work is licenced under [GPL-3.0](https://www.gnu.org/licenses/gpl-3.0.de.html), or later.
+
+## Contributing
+Your suggestions and feedback are welcome. Kindly explore project's [GitHub Repository](https://github.com/jhculb/Open-Research-Converter/issues) to report a problem or to open a new issue.
 
 ## Developers
 - Jack H. Culbert - Lead Developer [ORCID](https://orcid.org/0009-0000-1581-4021) [LinkedIn](https://www.linkedin.com/in/jack-c-2485989a/) [GitHub](https://github.com/jhculb)
