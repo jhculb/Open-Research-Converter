@@ -1,90 +1,72 @@
-# Set up the project
-####  install node.js and npm (for me the working versions are node=16.17.1 and npm=8.15.0)
-####  go to directory: cd /src/orc/frontend/orc-demo
-####  npm install     # to install required modules/packages before running
-####  npm start       # to run a project
-###### view running app using `http://localhost:3000/`
-####  npm run build   # to create a production build
-## Functions in App.js that are called on buttons press
-Go to the file "App.js" under the following path
-#### `cd src/orc/frontend/orc-demo/src/`
-Function name called on "Submit" button press
-#### `const onSubmit = () =>`
-Function name called on "Download Result" button press
-#### `const getResult = () =>`
-Result will be displayed in the boxes on top of each button and also printed on the browser's console.
-Each function is independent for simplicity and has well commented description for better understanding followed by good naming convention for variables.
+# ORC project
+## Table of Contents
+1. [Demo](#demo)
+2. [Features](#features)
+3. [Prerequisites](#prerequisites)
+4. [Installation](#installation)
+5. [Running the App](#running-the-app)
+6. [Technologies Used](#technologies-used)
+7. [Folder Structure](#folder-structure)
+8. [License](#license)
+9. [Contributing](#contributing)
+10. [Developers](#developers)
+11. [Acknowledgements](#acknowledgements)
 
+## Demo
+URL: https://orc-demo.gesis.org/
 
+## Features
+Main features of the app:
+- Users provided input DOIs (as a comma separated string or single column CSV file upto max. size of 1 Mb) are converted to OpenAlex IDs
+- For the input provided, the IDs or Full Records could be downloaded as a CSV file.
 
+## Prerequisites
+List the necessary requirements to run the React app:
+- node=22.9.0 and npm=10.8.3
 
-# Getting Started with Create React App
+## Installation
+- install node.js and npm (for me the working versions are node=22.9.0 and npm=10.8.3)
+- go to directory: `cd /src/orc/frontend/orc-demo`
+- `npm install` to install required modules/packages before running
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Running the App
+- `npm start` to run the app in the development mode
+- view running app using `http://localhost:3000/`
+- `npm run build` to create a production build
 
-## Available Scripts
+## Technologies Used
+- ReactJS ([Create React App](https://github.com/facebook/create-react-app))
+- react-router-dom (for routing)
+- Bootstrap
+- Fetch API
+- Sass: Syntactically Awesome Style Sheets
 
-In the project directory, you can run:
+## Folder Structure
+```
+src/ 
+├── orc/ 
+    ├── frontend/ 
+        ├── orc-demo/ 
+            ├── src/ 
+                ├── components/ # Reusable UI components
+                    ├── styles/ # Style sheets for each component  
+                ├── images/ # Contains the logos and images used  
+                ├── App.js # Main application component and entry point
+                └── App.css # Style sheet for main application
+```
 
-### `npm start`
+## License
+This work is licenced under [GPL-3.0](https://www.gnu.org/licenses/gpl-3.0.de.html), or later.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Contributing
+Your suggestions and feedback are welcome. Kindly explore project's [GitHub Repository](https://github.com/jhculb/Open-Research-Converter/issues) to report a problem or to open a new issue.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Developers
+- Jack H. Culbert - Lead Developer [ORCID](https://orcid.org/0009-0000-1581-4021) [LinkedIn](https://www.linkedin.com/in/jack-c-2485989a/) [GitHub](https://github.com/jhculb)
+- Muhammad Ahsan Shahid - Frontend Developer [ORCID](https://orcid.org/0000-0002-7274-7934) [LinkedIn](https://www.linkedin.com/in/muhammad-ahsan-shahid/) [GitHub](https://github.com/MAhsanShahid)
+- Philipp Mayr - Team Lead [ORCID](https://orcid.org/0000-0002-6656-1658)
 
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Acknowledgements
+- The Open Research Converter (ORC) is a tool designed to allow users to convert proprietary and licensed bibliometric datasets to a shareable format through [OpenAlex](https://openalex.org/)'s [API](https://docs.openalex.org/how-to-use-the-api/api-overview).
+- This work was funded by the [Federal Ministry of Education and Research (BMBF)](https://www.bmbf.de/bmbf/en/home/home_node.html) via funding numbers: 16WIK2301B / 16WIK2301E, the [OpenBib](https://www.openbib.org/) project. We acknowledge support by Federal Ministry of Education and Research, Germany under grant number 01PQ17001, the Competence Network for Bibliometrics.
+- Jack Culbert and Philipp Mayr received additional funding by the European Union under the Horizon Europe grant OMINO – Overcoming Multilevel INformation Overload under grant number 101086321.
