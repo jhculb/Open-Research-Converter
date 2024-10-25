@@ -42,7 +42,7 @@ function CsvFileReader({ setText, className }) {
 
     return (
         <div className={className}>
-            <input type="file" accept=".csv" onChange={handleFileChange}/>
+            <input data-testid="upload-csv" type="file" accept=".csv" onChange={handleFileChange}/>
             {error && <p style={{ color: 'red' }}>{error}</p>}
         </div>
     );

@@ -9,6 +9,7 @@ const HintButton = ({ imageName }) => {
         <div style={{ position: 'relative', display: 'inline-block' }}>
             <button
                 className="btn btn-style"
+                data-testid="hint-button"
                 onMouseEnter={() => setShowImage(true)}
                 onMouseLeave={() => setShowImage(false)}
             >
