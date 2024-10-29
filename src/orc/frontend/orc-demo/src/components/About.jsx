@@ -113,8 +113,8 @@ const About = () => {
                 This work was funded by the <a href="https://www.bmbf.de/bmbf/en/home/home_node.html" target="_blank" rel="noopener noreferrer">
                 Federal Ministry of Education and Research (BMBF)
             </a> via funding numbers: 16WIK2301B /
-                16WIK2301E, The <a href="https://www.openbib.org/" target="_blank" rel="noopener noreferrer">
-                OpenBib
+                16WIK2301E, The <a href="https://bibliometrie.info/forschung/" target="_blank" rel="noopener noreferrer">
+                OPENBIB
                 </a> project.
                 We acknowledge support by Federal Ministry of Education and Research, Germany under grant number
                 01PQ17001, the Competence Network for Bibliometrics.
