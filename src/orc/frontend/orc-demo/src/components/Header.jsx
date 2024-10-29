@@ -1,6 +1,6 @@
 import {Component} from "react";
 import './styles/Header.sass';
-import gesis_logo from '../images/logo_gesis.svg';
+import gesis_logo from '../images/logo_gesis_en.svg';
 
 class Header extends Component {
     render() {
