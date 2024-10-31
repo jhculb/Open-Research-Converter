@@ -16,12 +16,10 @@ function App() {
             <div className="row header-border mb-4 mt-2 align-items-center">
                 <Header title="Open Research Converter" href="https://www.gesis.org/" isHome={isHome} />
             </div>
-            <BrowserRouter>
-                    <Routes>
-                        <Route path="/" element={<Home/>}/>
-                        <Route path="/about" element={<About/>}/>
-                    </Routes>
-            </BrowserRouter>
+            <Routes>
+                <Route path="/" element={<Home/>}/>
+                <Route path="/about" element={<About/>}/>
+            </Routes>
             <div className="row mt-4">
                 <Footer></Footer>
             </div>
