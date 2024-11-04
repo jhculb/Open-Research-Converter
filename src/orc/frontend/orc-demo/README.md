@@ -33,6 +33,7 @@ List the necessary requirements to run the React app:
 - `npm start` to run the app in the development mode
 - view running app using `http://localhost:3000/`
 - `npm run build` to create a production build
+- `npm test` to launch the test runner in the interactive watch mode. See the section about [running tests](https://create-react-app.dev/docs/running-tests/) for more information.
 
 ## Technologies Used
 - ReactJS ([Create React App](https://github.com/facebook/create-react-app))
@@ -49,8 +50,9 @@ src/
         ├── orc-demo/ 
             ├── src/ 
                 ├── components/ # Reusable UI components
-                    ├── styles/ # Style sheets for each component  
-                ├── images/ # Contains the logos and images used  
+                    ├── styles/ # Style sheets for each component
+                ├── images/ # Contains the logos and images used
+                ├── tests/ # Contains the test files
                 ├── App.js # Main application component and entry point
                 └── App.css # Style sheet for main application
 ```
