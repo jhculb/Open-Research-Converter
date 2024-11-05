@@ -169,7 +169,7 @@ function App() {
                             customClass={email === "" ? "" : (validEmail ? "custom-valid-focus" : "custom-invalid-focus")}
                             title={"Email"}
                             rows={1}
-                            placeholder={'Enter your email address!'}
+                            placeholder={'Please enter your email address'}
                             value={email}
                             type="email"
                             onChange={handleEmailChange}
@@ -183,7 +183,7 @@ function App() {
                         <TextBox
                             title={"Input Box"}
                             rows={16}
-                            placeholder={'DOIs from selected CSV file are displayed here! (OR) Enter comma separated DOIs!'}
+                            placeholder={'Please enter comma separated DOIs or upload a csv file containing DOIs in the first column'}
                             value={text}
                             onChange={handleTextChange}
                         />
@@ -203,7 +203,7 @@ function App() {
                     <TextBox
                         title={"Result Box"}
                         rows={20}
-                        placeholder={'OpenAlex IDs for the first 50 DOIs will be shown. Download the file for all IDs!'}
+                        placeholder={'OpenAlex IDs for the first 50 DOIs will be shown.\n\nPlease download for all IDs or full records.'}
                         value={limitedResult}
                         readOnly={true}
                         style={{ height: '100%' }}
@@ -212,7 +212,7 @@ function App() {
                         {/*<button type="button" className="btn btn-color" onClick={() => downloadResult()}>Download Result</button>*/}
                         <button type="button" className={`btn ${isDownloadDisabled ? 'btn-disabled' : 'btn-color'}`} disabled={isDownloadDisabled} onClick={() => downloadResult()}>Download IDs</button>
                         &nbsp;&nbsp;&nbsp;&nbsp;
-                        <button type="button" className={`btn ${!(text && validEmail) ? 'btn-disabled' : 'btn-color'}`} disabled={!(text && validEmail)} onClick={() => onGetAll()}>Download Full Record</button>
+                        <button type="button" className={`btn ${!(text && validEmail) ? 'btn-disabled' : 'btn-color'}`} disabled={!(text && validEmail)} onClick={() => onGetAll()}>Download Full Records</button>
                     </div>
                 </div>
             </div>
