@@ -26,9 +26,9 @@ The Open Research Converter has a demo running at [orc-demo.gesis.org](https://o
 
 <!-- TOC end -->
 <!-- TOC --><a name="how-to-use-the-orc"></a>
-## How to Use the ORC
+## [How to Use the ORC](#how-to-use-the-orc)
 <!-- TOC --><a name="online"></a>
-### Online
+### [Online](#Online)
 If you wish to use the ORC without installing locally:
 1. Navigate to https://orc-demo.gesis.org
 2. Fill your the email address into the email box
@@ -49,7 +49,7 @@ If you wish to use the ORC without installing locally:
 	* If your query is successful, then in the output box the first 50 OpenAlex IDs corresponding to your DOIs will be returned.
 	* If you have more submitted than 50 DOIs, then click "download CSV" to download a csv file with the DOI in the first column and the corresponding OpenAlex ID in the second column.
 <!-- TOC --><a name="local-installation"></a>
-### Local Installation
+### [Local Installation](#Local-Installation)
 If you wish to run the ORC locally please follow these steps:
 1. Install docker and docker compose
 2. Transform the environment variable templates to environment variables
@@ -67,22 +67,22 @@ If you wish to run the ORC locally please follow these steps:
 4. Use your browser to navigate to ```localhost```, or ```127.0.0.1```
 5. Follow the instructions in the Online section from instruction 2.
 <!-- TOC --><a name="please-note"></a>
-### Please Note
+### [Please Note](#Please-Note)
 * This tool is in development and may not perform perfectly:
 	* If items are not found in OpenAlex, they may not be returned leading to a smaller number of items in the output
 	* If an error happens on the backend it may not inform the frontend properly, leading to a failure (when the waiting ring disappears) without informing the user why.
 <!-- TOC --><a name="development"></a>
-## Development
+## [Development](#Development)
 <!-- TOC --><a name="known-bugs"></a>
-### Known Bugs
+### [Known Bugs](#Known-Bugs)
 1. [B1] - Error handling is not performed on the frontend, leading to the process stopping without informing the user
 <!-- TOC --><a name="planned-features"></a>
-### Planned Features
+### [Planned Features](#Planned-Features)
 <!-- TOC --><a name="major"></a>
-#### Major
+#### [Major](#Major)
 1. [Maj1] - For items that may exist in other databases without a DOI but contain enough information to confidently match (e.g. author names, title, publishing date, &c.), extending the ORCs capability to match these records.
 <!-- TOC --><a name="minor"></a>
-#### Minor
+#### [Minor](#Minor)
 1. [Min1] - Better handling of items which do not exist in OpenAlex (return "Not found" or similar rather than dropping)
 2. [Min2] - Improving test coverage and quality
 3. [Min3] - Reinstating Typecheck for the backend and refactoring so it passes
@@ -91,10 +91,10 @@ If you wish to run the ORC locally please follow these steps:
 6. [Min6] - Implement frontend logging
 7. [Min7] - Change the bind mount for certbot to a docker volume.
 <!-- TOC --><a name="contributing"></a>
-### Contributing
+### [Contributing](#Contributing)
 Please raise github issues with bugs. Any frontend development experience would be greatly appreciated.
 <!-- TOC --><a name="tips-for-development"></a>
-### Tips for Development
+### [Tips for Development](#Tips for Development)
 * This project was configured for use on a development container - this will automatically install the project and install development dependencies inside it. (A template version of this project will shortly be publicly released)
 * To add dependencies to the python module use poetry add
 * To enable production change:
@@ -102,19 +102,30 @@ Please raise github issues with bugs. Any frontend development experience would 
 	* ```.env``` LOCAL_OR_PRODUCTION: "local" to "prod"
 * Most useful commands have been captured in the makefile, this also can assist with figuring out what fits where
 * When docker compose up is run, the logs are captured in a newly created folder /logs/, this is bind mounted to your filesystem.
-## Credits
-### Developers
+## [Credits](#Credits)
+### [Developers](#Developers)
 * Jack H. Culbert - Lead Developer - [ORCID](https://orcid.org/0009-0000-1581-4021), [LinkedIn](https://www.linkedin.com/in/jack-c-2485989a/), [Github](https://github.com/jhculb)
 * Ahsan Shahid - Frontend Developer - LinkedIn
 * Philipp Mayr - Team Lead - ORCID
-### Funding
+### [Funding](#Funding)
 This work was funded by the Federal Ministry of Education and Research
 via funding numbers: 16WIK2301B / 16WIK2301E, The OpenBib project. We
 acknowledge support by Federal Ministry of Education and Research, Germany under grant number 01PQ17001, the Competence Network for Bibliometrics.
 
 Jack Culbert, and Philipp Mayr received additional funding by the European Union under the Horizon Europe grant OMINO – Overcoming Multilevel INformation Overload under grant number 101086321
-## How to Cite
+## [How to Cite](#How-to-Cite)
 As of release on the 16th of September 2024: This software is being submitted to [JOSS](https://joss.theoj.org/), citation details pending.
 
-## License
+## [Thanks](#thanks)
+Remember to cite the OpenAlex work:
+```bib
+@article{priem2022openalex,
+  title={OpenAlex: A fully-open index of scholarly works, authors, venues, institutions, and concepts},
+  author={Priem, Jason and Piwowar, Heather and Orr, Richard},
+  journal={arXiv preprint arXiv:2205.01833},
+  year={2022}
+}
+```
+
+## [License](#License)
 This code is licenced under GPL-3.0, or later.
