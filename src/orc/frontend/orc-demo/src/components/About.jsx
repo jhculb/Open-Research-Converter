@@ -105,7 +105,7 @@ const About = () => {
 
             <h4 className="headings-color"><i className="fas fa-certificate me-2 mt-3"></i>License</h4>
             <p>
-                This work is licenced under GPL-3.0, or later.
+                This work is licenced under <a href="https://www.gnu.org/licenses/gpl-3.0-standalone.html" target="_blank" rel="noopener noreferrer">GPL-3.0</a>, or later.
             </p>
 
             <h4 className="headings-color"><i className="fas fa-dollar-sign me-2 mt-3"></i>Funding</h4>
