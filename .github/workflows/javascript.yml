@@ -1,4 +1,6 @@
-name: NodeJS with Grunt
+### Adapted from https://github.com/actions/starter-workflows/blob/main/ci/npm-grunt.yml
+
+name: NodeJS
 
 on:
   push:
@@ -12,8 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 22.x]
-
+        node-version: [16.17.1]
     steps:
     - uses: actions/checkout@v4
 
@@ -23,6 +24,8 @@ jobs:
         node-version: ${{ matrix.node-version }}
 
     - name: Build
+      working-directory: ./src/orc/frontend/orc-demo
       run: npm install
     - name: Test
+      working-directory: ./src/orc/frontend/orc-demo
       run: npm test
