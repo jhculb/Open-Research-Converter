@@ -55,13 +55,16 @@ The tool has been tested on datasets of 100,000 DOIs and was stable, if slow. At
 
 The Open Research Converter has been used in the release of two datasets:  @culbert_2024_10997451 which complements @gupta_2024 and @smirnova_2024_10607235 which complements @mir_2024.
 
-
-
 # Acknowledgements
 
 This work was funded by the Federal Ministry of Education and Research via funding numbers: 16WIK2301B / 16WIK2301E, The [OpenBib Project](https://bibliometrie.info/en/research/) [@schmidt_2024].
 We acknowledge support by Federal Ministry of Education and Research, Germany under grant number 01PQ17001, the Competence Network for Bibliometrics.
 
 Jack Culbert and Philipp Mayr received additional funding by the European Union under the Horizon Europe grant [OMINO – Overcoming Multilevel INformation Overload](https://ominoproject.eu) under grant number 101086321 [@holyst2024].
+
+Our thanks go to [Nina Smirnova](https://orcid.org/0000-0002-3177-3554) for the initial inspiration for this project.
+
+# Contributor Role Taxonomy ([CRediT](https://credit.niso.org/))
+**Jack H. Culbert**: Conceptualization (lead); Investigation (lead); Methodology (lead); Software (equal); Visualization (supporting) Writing - Original Draft Preparation (lead); Writing - Review and Editing (equal). **Muhammad Ahsan Shahid**: Software (equal); Visualization (lead); Writing - Review and Editing (equal). **Philipp Mayr**: Project Administration (lead); Supervision (lead); Writing - Review and Editing (equal).
 
 # References
