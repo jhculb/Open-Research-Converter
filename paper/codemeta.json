@@ -1,0 +1,30 @@
+{
+  "@context": "https://raw.githubusercontent.com/codemeta/codemeta/master/codemeta.jsonld",
+  "@type": "Code",
+  "author": [
+    {
+      "@id": "https://orcid.org/0009-0000-1581-4021",
+      "@type": "Person",
+      "email": "jack.culbert@gesis.org",
+      "name": "Jack H. Culbert",
+      "affiliation": "GESIS - Leibniz Institute for the Social Sciences"
+    },
+    {
+      "@id": "https://orcid.org/0000-0002-7274-7934",
+      "@type": "Person",
+      "email": "ahsan.shahid@gesis.org",
+      "name": "Muhammad Ahsan Shahid",
+      "affiliation": "GESIS - Leibniz Institute for the Social Sciences"
+    }
+  ],
+  "identifier": "",
+  "codeRepository": "https://github.com/jhculb/Open-Research-Converter",
+  "datePublished": "2024-10-29",
+  "dateModified": "2024-10-29",
+  "dateCreated": "2024-10-29",
+  "description": "The Open Research Converter is a tool designed to allow users to convert bibliometric datasets to a sharable format using OpenAlex",
+  "keywords": "Reproduciblity, Scientometrics, Bibliometrics, Open Science, Reproducible Bibliometrics",
+  "license": "GPL v3.0",
+  "title": "Open Research Converter",
+  "version": "v1.1.0"
+}
