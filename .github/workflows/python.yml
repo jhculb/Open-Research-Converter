@@ -51,7 +51,7 @@ jobs:
 
       - run: poetry run bandit -c pyproject.toml -r ./src/ --format txt > bandit.txt
 
-      - name: Archive code coverage results
+      - name: Archive bandit results
         uses: actions/upload-artifact@v4
         with:
           name: bandit-report
