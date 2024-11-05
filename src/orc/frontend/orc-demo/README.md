@@ -58,7 +58,7 @@ src/
 ```
 
 ## License
-This work is licenced under [GPL-3.0](https://www.gnu.org/licenses/gpl-3.0.de.html), or later.
+This work is licenced under [GPL-3.0](https://www.gnu.org/licenses/gpl-3.0-standalone.html), or later.
 
 ## Contributing
 Your suggestions and feedback are welcome. Kindly explore project's [GitHub Repository](https://github.com/jhculb/Open-Research-Converter/issues) to report a problem or to open a new issue.
