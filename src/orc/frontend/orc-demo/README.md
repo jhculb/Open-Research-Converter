@@ -70,5 +70,5 @@ Your suggestions and feedback are welcome. Kindly explore project's [GitHub Repo
 
 ## Acknowledgements
 - The Open Research Converter (ORC) is a tool designed to allow users to convert proprietary and licensed bibliometric datasets to a shareable format through [OpenAlex](https://openalex.org/)'s [API](https://docs.openalex.org/how-to-use-the-api/api-overview).
-- This work was funded by the [Federal Ministry of Education and Research (BMBF)](https://www.bmbf.de/bmbf/en/home/home_node.html) via funding numbers: 16WIK2301B / 16WIK2301E, the [OpenBib](https://www.openbib.org/) project. We acknowledge support by Federal Ministry of Education and Research, Germany under grant number 01PQ17001, the Competence Network for Bibliometrics.
+- This work was funded by the [Federal Ministry of Education and Research (BMBF)](https://www.bmbf.de/bmbf/en/home/home_node.html) via funding numbers: 16WIK2301B / 16WIK2301E, the [OPENBIB](https://bibliometrie.info/forschung/) project. We acknowledge support by Federal Ministry of Education and Research, Germany under grant number 01PQ17001, the Competence Network for Bibliometrics.
 - Jack Culbert and Philipp Mayr received additional funding by the European Union under the Horizon Europe grant OMINO – Overcoming Multilevel INformation Overload under grant number 101086321.
