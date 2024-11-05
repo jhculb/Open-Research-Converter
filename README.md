@@ -116,8 +116,8 @@ Jack Culbert, and Philipp Mayr received additional funding by the European Union
 ## [How to Cite](#How-to-Cite)
 As of release on the 16th of September 2024: This software is being submitted to [JOSS](https://joss.theoj.org/), citation details pending.
 
-## [Thanks](#thanks)
-Remember to cite the OpenAlex work:
+### [Thanks](#thanks)
+Please remember to also cite the OpenAlex work:
 ```bib
 @article{priem2022openalex,
   title={OpenAlex: A fully-open index of scholarly works, authors, venues, institutions, and concepts},
