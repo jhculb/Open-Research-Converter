@@ -10,11 +10,14 @@ lint:
 lint_and_fix:
 	poetry run ruff check --select I --fix ./src
 
-test: test_coverage
+test: test_coverage test_javascript
 
 test_v: test_coverage_v
 
 test_vv: test_coverage_vv
+
+test_javascript:
+	(cd ./src/orc/frontend/orc-demo ; npm test)
 
 security: bandit
 
