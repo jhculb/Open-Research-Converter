@@ -77,6 +77,9 @@ test_badges:
 	mkdir badges
 	python generate_badges.py
 
+test_javascript:
+    npm test
+
 certificates_dry_run:
 	docker compose run --rm  certbot certonly --webroot --webroot-path /var/www/certbot/ --dry-run -d orc-demo.gesis.org
 
