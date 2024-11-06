@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 import asyncio
+import functools
 import logging
 import queue
 from logging.handlers import QueueHandler
 from pathlib import Path
-from uuid import uuid4
 
 import pytest
 from orc.backend.orc_backend.open_research_converter import OpenResearchConverter
@@ -97,7 +97,7 @@ def test_chunk_input_data_invalid_chunksize(log, invalid_chunksize):
 )
 def test_request(log, chunk_data, chunk_len, email, expected_ids):
     orc = OpenResearchConverter(log)
-    job_id = orc.generate_new_job()
-    orc._jobs[job_id]["email"] = email
-    asyncio.run(orc._request(chunk_data, job_id, chunk_len, 0))
-    assert orc._jobs[job_id]["responses"][0] == expected_ids  # TODO Fix the bodge with chunk_len-1
+    query = f'https://api.openalex.org/works?filter=doi:{"|".join(chunk_data)}&per-page={chunk_len}&mailto={email}&select=id,doi'
+    response = asyncio.run(orc._request(query))
+    returned_ids = [result["id"] for result in response["results"]]
+    assert set(returned_ids) == set(expected_ids)
