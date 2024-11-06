@@ -145,6 +145,7 @@ class OpenResearchConverter(OpenAlexRequester):
     def return_data(self, job_id) -> tuple[dict, int]:
         self._validate_uuid(job_id=job_id)
         if self._jobs[job_id]["status"] == "complete":
+            out_csv_data = None
             if isinstance(self._jobs[job_id]["output_csv_data"], list):
                 if len(self._jobs[job_id]["output_csv_data"]) == 1:
                     out_csv_data = self._jobs[job_id]["output_csv_data"][0]

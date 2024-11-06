@@ -95,9 +95,10 @@ def test_chunk_input_data_invalid_chunksize(log, invalid_chunksize):
         ],
     ],
 )
-def test_request(log, chunk_data, chunk_len, email, expected_ids):
+@pytest.mark.asyncio
+async def test_request(log, chunk_data, chunk_len, email, expected_ids):
     orc = OpenResearchConverter(log)
     query = f'https://api.openalex.org/works?filter=doi:{"|".join(chunk_data)}&per-page={chunk_len}&mailto={email}&select=id,doi'
-    response = asyncio.run(orc._request(query))
+    response = await orc._request(query)
     returned_ids = [result["id"] for result in response["results"]]
     assert set(returned_ids) == set(expected_ids)
