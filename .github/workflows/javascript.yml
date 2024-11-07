@@ -1,0 +1,31 @@
+### Adapted from https://github.com/actions/starter-workflows/blob/main/ci/npm-grunt.yml
+
+name: NodeJS
+
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.17.1]
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Build
+      working-directory: ./src/orc/frontend/orc-demo
+      run: npm install
+    - name: Test
+      working-directory: ./src/orc/frontend/orc-demo
+      run: npm test
