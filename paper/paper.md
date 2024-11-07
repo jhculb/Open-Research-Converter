@@ -43,7 +43,7 @@ Easing the barrier of access to OpenAlex is a current theme of work in the bibli
 
 Currently OpenAlex has no easy method for researchers to convert their datasets from proprietary formats to OpenAlex. While it is possible to manually convert smaller datasets using OpenAlex's website, or download the OpenAlex data dump and process this to enable matching.
 
-We provide here in the Open Research Coverter a tool utilising the OpenAlex API enabling simple bulk conversion of bilbiometric data to a shareable format.
+We provide here in the Open Research Coverter a tool utilising the OpenAlex API enabling simple bulk conversion of bibliometric data (DOIs) to a shareable format.
 
 # Functionality
 
