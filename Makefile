@@ -12,9 +12,15 @@ lint_and_fix:
 
 test: test_coverage
 
+test_full:
+	test_coverage test_coverage_integration test_javascript
+
 test_v: test_coverage_v
 
 test_vv: test_coverage_vv
+
+test_javascript:
+	(cd ./src/orc/frontend/orc-demo ; npm test)
 
 security: bandit
 
@@ -26,6 +32,9 @@ prerun_precommit:
 
 test_coverage:
 	poetry run coverage run -m pytest --capture=tee-sys ./tests
+
+test_coverage_integration:
+	poetry run coverage run -m pytest -m integration --capture=tee-sys ./tests
 
 test_coverage_v:
 	poetry run coverage run -m pytest -v --capture=tee-sys ./tests
@@ -73,6 +82,9 @@ view_running_containers:
 test_badges:
 	mkdir badges
 	python generate_badges.py
+
+test_javascript:
+	npm test
 
 certificates_dry_run:
 	docker compose run --rm  certbot certonly --webroot --webroot-path /var/www/certbot/ --dry-run -d orc-demo.gesis.org

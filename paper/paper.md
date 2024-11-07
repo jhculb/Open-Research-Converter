@@ -45,6 +45,8 @@ Currently OpenAlex has no easy method for researchers to convert their datasets 
 
 We provide here in the Open Research Coverter a tool utilising the OpenAlex API enabling simple bulk conversion of bilbiometric data to a shareable format.
 
+![Homepage for the ORC.\label{fig:orc-homepage}](orc_homepage.png)
+
 # Functionality
 
 The Open Research Converter is a containerised Python and Javascript based tool which when run serves a webpage allowing a user to enter either a string of [DOIs](https://www.doi.org/) via copy and paste, or by uploading a correctly formatted CSV file. The user can then convert these to OpenAlex WorkIDs or retrieve the full bibliographic record from OpenAlex.

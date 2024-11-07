@@ -50,7 +50,8 @@ repos:
                 .*\.pyc|
                 .*\.list|
                 .*\fixture*|
-                tests/test_open_research_converter.py
+                tests/test_open_research_converter.py|
+                tests/fixtures/jason.csv
             )$
 
   - repo: https://github.com/pre-commit/pygrep-hooks

@@ -1,7 +1,6 @@
 const TextBox = ({ customClass="", title="Text Box", rows=10, placeholder="Paste your text here...", value, type="text", readOnly, onChange }) => {
     return (
         <div>
-            {/*<h1 className="mb-4">{title}</h1>*/}
             {type==="email"?(
                 <input
                     type="email"
@@ -15,32 +14,12 @@ const TextBox = ({ customClass="", title="Text Box", rows=10, placeholder="Paste
                 <textarea
                     className={"form-control mb-2 " + customClass + " "}
                     rows={rows}
+                    title={title}
                     placeholder={placeholder}
                     value={value}
                     readOnly={readOnly}
                     onChange={onChange}
                 ></textarea>
-
-                // <div className="position-relative">
-                //     <textarea
-                //         className={"form-control mb-2 " + customClass + " "}
-                //         rows={rows}
-                //         placeholder={placeholder}
-                //         value={value}
-                //         readOnly={readOnly}
-                //         onChange={onChange}
-                //     ></textarea>
-                //
-                //     {value && (
-                //         <button
-                //             type="button"
-                //             className="btn-clear"
-                //             onClick={() => onChange({ target: { value: '' } })}
-                //         >
-                //             &times;
-                //         </button>
-                //     )}
-                // </div>
             )}
         </div>
     );
