@@ -1,12 +1,7 @@
 ### Adapted from https://github.com/actions/starter-workflows/blob/main/ci/npm-grunt.yml
 
 name: NodeJS
-
-on:
-  push:
-    branches: [ $default-branch ]
-  pull_request:
-    branches: [ $default-branch ]
+on: [push]
 
 jobs:
   build:

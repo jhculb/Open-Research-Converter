@@ -1,10 +1,6 @@
 ### Thanks to Jacob Kaplan Moss: https://jacobian.org/til/github-actions-poetry/
-
-on:
-  push:
-    branches: [ $default-branch ]
-  pull_request:
-    branches: [ $default-branch ]
+name: Python
+on: [push]
 
 jobs:
   test:
