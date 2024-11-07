@@ -1,4 +1,5 @@
-FROM nginx:1.27.0
+ARG NGINX_VERSION=1.27.0
+FROM nginx:${NGINX_VERSION}
 RUN rm /var/log/nginx/*
 COPY static/robots.txt static/404.html /var/nginx/www/
 ARG NGINX_CONF

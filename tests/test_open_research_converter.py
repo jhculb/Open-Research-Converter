@@ -29,34 +29,7 @@ def create_logger():
     return root_logger
 
 
-def hello_world():
-    return "hello world"
-
-
-def hello_test():
-    """
-    This defines the expected usage, which can then be used in various test cases.
-    Pytest will not execute this code directly, since the function does not contain the suffex "test"
-    """
-    hello_world()
-
-
-def test_hello(unit_test_mocks: None):
-    """
-    This is a simple test, which can use a mock to override online functionality.
-    unit_test_mocks: Fixture located in conftest.py, implicitly imported via pytest.
-    """
-    hello_test()
-
-
-def test_init_hello():
-    """
-    This test is marked implicitly as an integration test because the name contains "_init_"
-    https://docs.pytest.org/en/6.2.x/example/markers.html#automatically-adding-markers-based-on-test-names
-    """
-    hello_test()
-
-
+@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_init_healthcheck_sunny_day(log):
     orc = OpenResearchConverter(log)
@@ -81,31 +54,6 @@ def test_generate_new_job(log):
     assert orc._jobs[identifier]["status"] == "initialised"
     assert "progress" in orc._jobs[identifier]
     assert orc._jobs[identifier]["progress"] == 0
-
-
-# def test_get_status_initial(log):
-#     orc = OpenResearchConverter(log)
-#     new_user_uuid = orc.generate_new_job()
-#     check_response, code = orc.get_status(new_user_uuid)
-#     assert code == 200
-#     assert "status" in check_response
-#     assert "progress" in check_response
-#     assert check_response["status"] == "initialised"
-#     assert check_response["progress"] == 0
-
-
-# def test_get_status_incorrect_uuid(log):
-#     orc = OpenResearchConverter(log)
-#     response, code = orc.get_status("incorrectuuid")
-#     assert response["job_id"] == "incorrectuuid"
-#     assert code == 400
-
-
-# def test_get_status_incorrect_uuid_type(log):
-#     orc = OpenResearchConverter(log)
-#     response, code = orc.get_status("4")
-#     assert response["job_id"] == "4"
-#     assert code == 400
 
 
 def test_validate_data(log):
@@ -135,6 +83,7 @@ def test_check_ready_wrong_uuid(log):
     assert not orc._check_ready("incorrect_uuid")
 
 
+@pytest.mark.integration
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     ["email", "data", "expected_output"],
@@ -267,12 +216,7 @@ async def test_init_process_sunny_day(log, email, data, expected_output):
     orc = OpenResearchConverter(log)
     job_id = orc.generate_new_job()
     await orc.process(job_id, data, email)
-    # TODO Work out way to stall the response, or mock one of the many requests to view progress in the middle
     output_response, output_code = orc.return_data(job_id)
     assert output_code == 200
     output_data = output_response["output_data"]
     assert output_data == expected_output
-
-
-def test_return_data():
-    pass
