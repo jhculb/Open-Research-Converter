@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
-import functools
 import logging
 import queue
 from logging.handlers import QueueHandler
@@ -30,7 +28,6 @@ def create_logger():
     return root_logger
 
 
-# TODO add longer doi list test case
 @pytest.mark.parametrize(
     ["valid_doi_list", "valid_output"],
     [
@@ -96,6 +93,7 @@ def test_chunk_input_data_invalid_chunksize(log, invalid_chunksize):
     ],
 )
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_request(log, chunk_data, chunk_len, email, expected_ids):
     orc = OpenResearchConverter(log)
     query = f'https://api.openalex.org/works?filter=doi:{"|".join(chunk_data)}&per-page={chunk_len}&mailto={email}&select=id,doi'

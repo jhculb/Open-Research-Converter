@@ -29,6 +29,7 @@ def create_logger():
     return root_logger
 
 
+@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_init_healthcheck_sunny_day(log):
     orc = OpenResearchConverter(log)
@@ -53,31 +54,6 @@ def test_generate_new_job(log):
     assert orc._jobs[identifier]["status"] == "initialised"
     assert "progress" in orc._jobs[identifier]
     assert orc._jobs[identifier]["progress"] == 0
-
-
-# def test_get_status_initial(log):
-#     orc = OpenResearchConverter(log)
-#     new_user_uuid = orc.generate_new_job()
-#     check_response, code = orc.get_status(new_user_uuid)
-#     assert code == 200
-#     assert "status" in check_response
-#     assert "progress" in check_response
-#     assert check_response["status"] == "initialised"
-#     assert check_response["progress"] == 0
-
-
-# def test_get_status_incorrect_uuid(log):
-#     orc = OpenResearchConverter(log)
-#     response, code = orc.get_status("incorrectuuid")
-#     assert response["job_id"] == "incorrectuuid"
-#     assert code == 400
-
-
-# def test_get_status_incorrect_uuid_type(log):
-#     orc = OpenResearchConverter(log)
-#     response, code = orc.get_status("4")
-#     assert response["job_id"] == "4"
-#     assert code == 400
 
 
 def test_validate_data(log):
@@ -107,6 +83,7 @@ def test_check_ready_wrong_uuid(log):
     assert not orc._check_ready("incorrect_uuid")
 
 
+@pytest.mark.integration
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     ["email", "data", "expected_output"],
