@@ -20,7 +20,7 @@ authors:
     affiliation: 1
 affiliations:
   - index: 1
-    name: GESIS - Leibniz-Institute for the Social Sciences
+    name: GESIS -- Leibniz Institute for the Social Sciences
     ror: 00hx57361
 date: 5 November 2024
 bibliography: paper.bib
