@@ -1,28 +1,31 @@
 # ORC project
 ## Table of Contents
-1. [Demo](#demo)
-2. [Features](#features)
-3. [Prerequisites](#prerequisites)
-4. [Installation](#installation)
-5. [Running the App](#running-the-app)
-6. [Technologies Used](#technologies-used)
-7. [Folder Structure](#folder-structure)
-8. [License](#license)
-9. [Contributing](#contributing)
-10. [Developers](#developers)
-11. [Acknowledgements](#acknowledgements)
+- [ORC project](#orc-project)
+  - [Table of Contents](#table-of-contents)
+  - [Demo](#demo)
+  - [Features](#features)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Running the App](#running-the-app)
+  - [Technologies Used](#technologies-used)
+  - [Folder Structure](#folder-structure)
+  - [License](#license)
+  - [Contributing](#contributing)
+  - [Developers](#developers)
+  - [Acknowledgements](#acknowledgements)
 
 ## Demo
 URL: https://orc-demo.gesis.org/
 
 ## Features
 Main features of the app:
-- Users provided input DOIs (as a comma separated string or single column CSV file upto max. size of 1 Mb) are converted to OpenAlex IDs
+- Users provided input DOIs (as a comma separated string or single column CSV file up to max. size of 1 Mb) are converted to OpenAlex IDs
 - For the input provided, the IDs or Full Records could be downloaded as a CSV file.
 
 ## Prerequisites
-List the necessary requirements to run the React app:
-- node=22.9.0 and npm=10.8.3
+The necessary requirements to run the React app are:
+- node=22.9.0
+- npm=10.8.3
 
 ## Installation
 - install node.js and npm (for me the working versions are node=22.9.0 and npm=10.8.3)
@@ -44,11 +47,11 @@ List the necessary requirements to run the React app:
 
 ## Folder Structure
 ```
-src/ 
-├── orc/ 
-    ├── frontend/ 
-        ├── orc-demo/ 
-            ├── src/ 
+src/
+├── orc/
+    ├── frontend/
+        ├── orc-demo/
+            ├── src/
                 ├── components/ # Reusable UI components
                     ├── styles/ # Style sheets for each component
                 ├── images/ # Contains the logos and images used

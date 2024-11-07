@@ -10,7 +10,10 @@ lint:
 lint_and_fix:
 	poetry run ruff check --select I --fix ./src
 
-test: test_coverage test_javascript
+test: test_coverage
+
+test_full:
+	test_coverage test_coverage_integration test_javascript
 
 test_v: test_coverage_v
 
@@ -29,6 +32,9 @@ prerun_precommit:
 
 test_coverage:
 	poetry run coverage run -m pytest --capture=tee-sys ./tests
+
+test_coverage_integration:
+	poetry run coverage run -m pytest -m integration --capture=tee-sys ./tests
 
 test_coverage_v:
 	poetry run coverage run -m pytest -v --capture=tee-sys ./tests
@@ -78,7 +84,7 @@ test_badges:
 	python generate_badges.py
 
 test_javascript:
-    npm test
+	npm test
 
 certificates_dry_run:
 	docker compose run --rm  certbot certonly --webroot --webroot-path /var/www/certbot/ --dry-run -d orc-demo.gesis.org
