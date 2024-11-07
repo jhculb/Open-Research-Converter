@@ -48,7 +48,7 @@
 </contrib>
 <aff id="aff-1">
 <institution-wrap>
-<institution>GESIS - Leibniz-Institute for the Social
+<institution>GESIS – Leibniz Institute for the Social
 Sciences</institution>
 <institution-id institution-id-type="ROR">00hx57361</institution-id>
 </institution-wrap>
@@ -149,8 +149,13 @@ a Creative Commons Attribution 4.0 International License (CC BY
   website, or download the OpenAlex data dump and process this to enable
   matching.</p>
   <p>We provide here in the Open Research Coverter a tool utilising the
-  OpenAlex API enabling simple bulk conversion of bilbiometric data to a
-  shareable format.</p>
+  OpenAlex API enabling simple bulk conversion of bibliometric data
+  (DOIs) to a shareable format.</p>
+  <fig>
+    <caption><p>Homepage for the
+    ORC.<styled-content id="figU003Aorc-homepage"></styled-content></p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="orc_homepage.png" />
+  </fig>
 </sec>
 <sec id="functionality">
   <title>Functionality</title>
