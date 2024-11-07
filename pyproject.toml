@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "Open Research Converter"
-version = "1.0.0"
+version = "1.1.0"
 authors = [
     "Jack Culbert <jack.culbert@gesis.org>",
     "Ahsan Shahid <ahsan.shahid@gesis.org>",
@@ -140,9 +140,6 @@ testpaths = "tests"
 junit_family = "xunit2"
 markers = [
     "integration: marks as integration test",
-    "notebooks: marks as notebook test",
-    "gpu: marks as gpu test",
-    "spark: marks tests which need Spark",
     "slow: marks tests as slow",
     "unit: fast offline tests",
 ]

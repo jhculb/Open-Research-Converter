@@ -1,33 +1,57 @@
-<!-- TOC --><a name="open-research-converter"></a>
+
 # Open Research Converter
-<!-- TOC --><a name="description"></a>
 ## Description
 The [Open Research Converter (ORC)](https://orc-demo.gesis.org) is a tool designed to allow users to convert proprietary and licensed bibliometric datasets to a shareable format through [OpenAlex](https://openalex.org)'s API ([API documentation found here](https://docs.openalex.org/how-to-use-the-api/api-overview)).
 
 The Open Research Converter has a demo running at [orc-demo.gesis.org](https://orc-demo.gesis.org) where you can trial the functionality. This url may be subject to change or to removal after a period of time.
-<!-- TOC --><a name="table-of-contents"></a>
+## Statement of Need
+Bibliometrics and in particular Scientometrics suffers from a lack of reproducibility, wherein the databases used to perform bibliometrics are often proprietary and therefore bound by copyright and access agreements which forbid sharing the underlying data used to create the scientific insights shared in papers.
+
+OpenAlex released in 2022 and is a open-source bibliometric database compiled by [Our Research](https://ourresearch.org/) which releases its data with a maximally permissive copyright (specifically under the [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/) deed), allowing free sharing of all data. This has allowed bibliometric researchers to download and interrogate the data as they see fit, and enables sharing of data.
+
+However, dealing with OpenAlex data can be cumbersome. The methods of access are currently via the [website](https://openalex.org/), [API](https://api.openalex.org/), or a [data dump](https://docs.openalex.org/download-all-data/openalex-snapshot), each of which have challenges for researchers associated with it. Namely, to use the website limits the amount of information available to be displayed and may require downloading and then processing the data further to achieve the desired insights, to use the API requires a level of technical knowledge and is rate limited by OpenAlex, and the data dumps are very large (approximately 300GB at time of writing) and also require technical knowledge in the processing and interrogation of the data.
+
+Easing the barrier of access to OpenAlex is a current theme of work in the bibliometrics community, for example @massimo_2024 have created a tool in the R programming language, [openalexR](https://docs.ropensci.org/openalexR/), capable of bulk collection of OpenAlex data and processing this data from OpenAlex's JSON based data format to a tabular format. Similarly [OpenAlex Networks](https://github.com/filipinascimento/openalexnet) is a Python library for generation of OpenAlex datasets and processing of citation and coauthorship networks. [OpenAlexNet](https://www.nuget.org/packages/OpenAlexNet) is a C# wrapper for OpenAlex enabling searching of OpenAlex.
+
+Currently OpenAlex has no easy method for researchers to convert their datasets from proprietary formats to OpenAlex. While it is possible to manually convert smaller datasets using OpenAlex's website, or download the OpenAlex data dump and process this to enable matching.
+
+We provide here in the Open Research Coverter a tool utilising the OpenAlex API enabling simple bulk conversion of bilbiometric data to a shareable format.
+
 ## Table of Contents
-<!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
-
 - [Open Research Converter](#open-research-converter)
-   * [Description](#description)
-   * [Table of Contents](#table-of-contents)
-   * [How to Use the ORC](#how-to-use-the-orc)
-      + [Online](#online)
-      + [Local Installation](#local-installation)
-      + [Please Note](#please-note)
-   * [Development](#development)
-      + [Known Bugs](#known-bugs)
-      + [Planned Features](#planned-features)
-         - [Major](#major)
-         - [Minor](#minor)
-      + [Contributing](#contributing)
-      + [Tips for Development](#tips-for-development)
+	- [Description](#description)
+	- [Statement of Need](#statement-of-need)
+	- [Table of Contents](#table-of-contents)
+	- [How to Use the ORC](#how-to-use-the-orc)
+		- [Online](#online)
+		- [Local Installation](#local-installation)
+		- [Please Note](#please-note)
+	- [Functionality](#functionality)
+		- [NGINX Container](#nginx-container)
+		- [Frontend Container](#frontend-container)
+		- [Backend Container](#backend-container)
+	- [Development](#development)
+		- [CI/CD](#cicd)
+			- [Testing](#testing)
+				- [Frontend](#frontend)
+				- [Backend](#backend)
+			- [Dependency Management](#dependency-management)
+			- [CI/CD Configuration](#cicd-configuration)
+		- [Known Bugs](#known-bugs)
+		- [Planned Features](#planned-features)
+			- [Major](#major)
+			- [Minor](#minor)
+		- [Contributing](#contributing)
+		- [Tips for Development](#tips-for-development)
+		- [Support](#support)
+	- [Credits](#credits)
+		- [Developers](#developers)
+		- [Funding](#funding)
+	- [How to Cite](#how-to-cite)
+		- [Thanks](#thanks)
+	- [License](#license)
 
-<!-- TOC end -->
-<!-- TOC --><a name="how-to-use-the-orc"></a>
 ## How to Use the ORC
-<!-- TOC --><a name="online"></a>
 ### Online
 If you wish to use the ORC without installing locally:
 1. Navigate to https://orc-demo.gesis.org
@@ -48,9 +72,8 @@ If you wish to use the ORC without installing locally:
 5. Wait for Output
 	* If your query is successful, then in the output box the first 50 OpenAlex IDs corresponding to your DOIs will be returned.
 	* If you have more submitted than 50 DOIs, then click "download CSV" to download a csv file with the DOI in the first column and the corresponding OpenAlex ID in the second column.
-<!-- TOC --><a name="local-installation"></a>
 ### Local Installation
-If you wish to run the ORC locally please follow these steps:
+Should you wish to run the ORC locally, please follow these steps:
 1. Install docker and docker compose
 2. Transform the environment variable templates to environment variables
 	* The environment variable templates are the ```.env.template``` files
@@ -66,34 +89,125 @@ If you wish to run the ORC locally please follow these steps:
 	* This will build the containers and run the code. This may take some time
 4. Use your browser to navigate to ```localhost```, or ```127.0.0.1```
 5. Follow the instructions in the Online section from instruction 2.
-<!-- TOC --><a name="please-note"></a>
 ### Please Note
-* This tool is in development and may not perform perfectly:
+* The ORC is still in development and may contain bugs, for example:
 	* If items are not found in OpenAlex, they may not be returned leading to a smaller number of items in the output
-	* If an error happens on the backend it may not inform the frontend properly, leading to a failure (when the waiting ring disappears) without informing the user why.
-<!-- TOC --><a name="development"></a>
+	* If an error happens on the backend it may not inform the frontend properly, leading to a failure (when the waiting ring disappears) without informing the user as to why.
+## Functionality
+The ORC functions in a containerised environment. To run this using the makefile type `make run`.
+
+There are three containers that are initialised, a nginx container that acts as a reverse proxy, a frontend container that serves a JavaScript based website, and a backend container which has the processing and API interface.
+
+### NGINX Container
+Acts as reverse proxy for front- and back-end containers. Copies in robots and 404 html pages and has two potential configurations, local and prod. Which of these is chosen is selected by the .env in the TLD.
+
+Local.default.conf is a simpler configuration designed for running the ORC locally. If you wish to deploy to a server to host ORC and wish to enable SSH, prod.default.conf allows for this configuration using certbot. The commands to trial and run the certbot authentication are in the makefile `certificates_dry_run` and `certificates_create_and_load` respectively. Further certbot configuration is found in the docker-compose.yml.
+
+### Frontend Container
+A separate README detailing the Frontend container can be found at `src/orc/frontend/orc-demo/README.md`
+
+### Backend Container
+Exposes port 8001 for app traffic.
+
+Utilises Gunicorn for serving the app with hard coded parameters (assistance for injecting these parameters into the entrypoint command without using shell style or `bash -c...` would be appreciated). These can be changed in the ENTRYPOINT command in the Dockerfile.
+
+* app.py
+	- Contains async API to interface with the JavaScript Application
+	* Route ``/`` - hello_world
+		- Returns root HTML with noindex Robots
+	* Route ``/healthcheck``
+		- Queries OpenAlex to check there is a working connection
+	* Route ``/start_processing``
+		- Queries OpenAlex for WorkIDs
+	* Route ``/process_all``
+		- Queries OpenAlex for full bibliographic records
+* open_research_converter.py
+	* OpenResearchConverter
+		- Contains code to coordinate processing the input DOIs (data) and returned values from OpenAlex (superclass of OpenAlexRequester)
+		* generate_new_job
+			- Creates UUID for job and assigns memory in dictionary for data
+		* process
+			- Checks input data is correctly formatted and begins querying OpenAlex for WorkIDs
+		* process_all
+			- Checks input data is correctly formatted and begins querying OpenAlex for full bibliometric data
+		* return_data
+			- Formats and returns data to frontend
+		* Private Functions:
+			* _recieve_data
+				- Stores input data with best effort to reformat correctly
+			* _validate_input_data
+				- Checks job exists, email exists and is correctly formatted, and the data exists and is correctly formatted
+			* _validate_uuid
+				- Checks the UUID is in the job dictionary
+			* _validate_email
+				- Checks the email is a string. (Email regex exists on the frontend to check it is correctly formatted)
+			* _validate_data
+				- Checks the data is a list of valid dois (with or without `https://doi.org/` prefix).
+			* _check_ready
+				- Checks the formatted data (post _validate_data) is in the dictionary
+* requester.py
+	* OpenAlexRequester
+		- Base class for accessing OpenAlex API using asynchronous httpx client and exponential backoff in case of rate limit breaking.
+		* health_check
+			- Tests connection to OpenAlex API
+		* Private Functions
+			* _process_aio
+				- Coordinates processing the data (chunking, formatting requests) and sending requests to OpenAlex to return WorkIDs with aiometer
+			* _process_all
+				- Coordinates processing the data (chunking, formatting requests) and sending requests to OpenAlex to return full bibliographic records with aiometer
+			* _prepare_chunks
+				- Takes DOI chunk and formats into a request to OpenAlex API for WorkIDs
+			* _prepare_chunks_full
+				- Takes DOI chunk and formats into a request to OpenAlex API for full bibliographic data
+			* _chunk_input_data
+				- Splits data into 'chunks' of 50 DOIs
+			* _doi_str_formatter
+				- Regularises DOIs to https prefix and lowercase
+			* _fetch
+				- Sends requests to OpenAlex API using aioclient and implements exponential backoff
+
+
 ## Development
-<!-- TOC --><a name="known-bugs"></a>
+### CI/CD
+The ORC was built with a Gitlab CI/CD specific to GESIS. We have included in v1.1.0 a thinner Github CI/CD template. The majority of commands and testing used can be replicated via the Makefile. We include the structure of the current Gitlab CI/CD here:
+- Build
+- Lint
+  - Ruff
+    - `ruff check ./src`
+- Test
+  - Coverage using Pytest
+    - `poetry run coverage run -m pytest -m "" ./tests`
+  - Bandit
+    - `bandit -c pyproject.toml -r ./src/ --format txt > bandit.txt`
+  - Pyright
+    - `pyright ./src --outputjson > report_raw.json`
+- Deploy
+#### Testing
+##### Frontend
+Frontend Testing must be run from `src/orc/frontend/orc-demo/` with `npm test`.
+##### Backend
+Backend Tests can be found in `tests/`. A csv of DOIs from Jason Priem (founder of OpenAlex) and the associated OpenAlex WorkIDs can be found in `tests/fixtures/priem.csv`. Similarly in ``test_requester.py`` and ``test_open_research_converter.py`` in ``tests/`` one may find lists of DOIs and associated WorkIDs used for testing the ORC. A guide for creating your own test set is found in `tests/fixtures/extraction.md`.
+#### Dependency Management
+All dependency management for the backend is managed by poetry. For the frontend it is captured in ``package.json`` and `package-lock.json`.
+#### CI/CD Configuration
+Following PEP621, configuration for core project metadata is stored in the pyproject.toml where possible.
 ### Known Bugs
-1. [B1] - Error handling is not performed on the frontend, leading to the process stopping without informing the user
-<!-- TOC --><a name="planned-features"></a>
+1. [B1] - Error handling is currently not performed on the frontend, leading to the process occasionally stopping without informing the user
+2. [B2] - Reports of DOI input string ending in comma failing.
 ### Planned Features
-<!-- TOC --><a name="major"></a>
 #### Major
-1. [Maj1] - For items that may exist in other databases without a DOI but contain enough information to confidently match (e.g. author names, title, publishing date, &c.), extending the ORCs capability to match these records.
-<!-- TOC --><a name="minor"></a>
+1. [M1] - For items that may exist in other databases without a DOI but contain enough information to confidently match (e.g. author names, title, publishing date, &c.), extending the ORCs capability to match these records.
 #### Minor
-1. [Min1] - Better handling of items which do not exist in OpenAlex (return "Not found" or similar rather than dropping)
-2. [Min2] - Improving test coverage and quality
-3. [Min3] - Reinstating Typecheck for the backend and refactoring so it passes
-4. [Min4] - Implement frontend Testing
-5. [Min5] - Standardising .env variable names and values (local/dev/prod/production)
-6. [Min6] - Implement frontend logging
-7. [Min7] - Change the bind mount for certbot to a docker volume.
-<!-- TOC --><a name="contributing"></a>
+1. [m1] - Better handling of items which do not exist in OpenAlex (return "Not found" or similar rather than dropping)
+2. [m2] - Improving test coverage and quality
+3. [m3] - Reinstating Typecheck for the backend
+4. [m4] - ~~Implement frontend Testing~~
+5. [m5] - Standardising .env variable names and values (local/dev/prod/production)
+6. [m6] - Implement frontend logging
+7. [m7] - ~~Change the bind mount for certbot to a docker volume.~~
+8. [m8] - Adding ability to change gunicorn parameters via ARG/ENV in the backend container. (see ``Functionality/Backend Container``)
 ### Contributing
 Please raise github issues with bugs. Any frontend development experience would be greatly appreciated.
-<!-- TOC --><a name="tips-for-development"></a>
 ### Tips for Development
 * This project was configured for use on a development container - this will automatically install the project and install development dependencies inside it. (A template version of this project will shortly be publicly released)
 * To add dependencies to the python module use poetry add
@@ -102,10 +216,12 @@ Please raise github issues with bugs. Any frontend development experience would 
 	* ```.env``` LOCAL_OR_PRODUCTION: "local" to "prod"
 * Most useful commands have been captured in the makefile, this also can assist with figuring out what fits where
 * When docker compose up is run, the logs are captured in a newly created folder /logs/, this is bind mounted to your filesystem.
+### Support
+If you are having difficulties using the ORC locally or at [orc-demo.gesis.org](orc-demo.gesis.org) please reach out to Jack Culbert at [jack.culbert@gesis.org](mailto:jack.culbert@gesis.org?subject=ORC%20Support:%20)
 ## Credits
 ### Developers
 * Jack H. Culbert - Lead Developer - [ORCID](https://orcid.org/0009-0000-1581-4021), [LinkedIn](https://www.linkedin.com/in/jack-c-2485989a/), [Github](https://github.com/jhculb)
-* Muhammad Ahsan Shahid - Frontend Developer - [ORCID](https://orcid.org/0000-0002-7274-7934), [LinkedIn](https://www.linkedin.com/in/muhammad-ahsan-shahid), [Github](https://github.com/MAhsanShahid)
+* Muhammad Ahsan Shahid - Frontend Developer - [ORCID](https://orcid.org/0000-0002-7274-7934), [LinkedIn](https://www.linkedin.com/in/muhammad-ahsan-shahid/), [Github](https://github.com/MAhsanShahid)
 * Philipp Mayr - Team Lead - [ORCID](https://orcid.org/0000-0002-6656-1658)
 ### Funding
 This work was funded by the Federal Ministry of Education and Research
@@ -114,7 +230,16 @@ acknowledge support by Federal Ministry of Education and Research, Germany under
 
 Jack Culbert, and Philipp Mayr received additional funding by the European Union under the Horizon Europe grant OMINO – Overcoming Multilevel INformation Overload under grant number 101086321
 ## How to Cite
-As of release on the 16th of September 2024: This software is being submitted to [JOSS](https://joss.theoj.org/), citation details pending.
-
+As of release of v1.1.0 on the 5th of November 2024: This software has been submitted to [JOSS](https://joss.theoj.org/), citation details pending.
+### Thanks
+Please remember to also cite the OpenAlex work:
+```bib
+@article{priem2022openalex,
+  title={OpenAlex: A fully-open index of scholarly works, authors, venues, institutions, and concepts},
+  author={Priem, Jason and Piwowar, Heather and Orr, Richard},
+  journal={arXiv preprint arXiv:2205.01833},
+  year={2022}
+}
+```
 ## License
-This code is licenced under GPL-3.0, or later.
+This code is licenced under [GPL-3.0](https://www.gnu.org/licenses/gpl-3.0-standalone.html), or later.

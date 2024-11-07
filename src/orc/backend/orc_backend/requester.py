@@ -1,7 +1,5 @@
 import asyncio
-import datetime as dt
 import functools
-import itertools
 import logging
 import re
 from typing import Generator
@@ -14,57 +12,136 @@ HEALTHCHECK_ADDR = "https://api.openalex.org/?mailto=jack.culbert@gesis.org"
 HEALTH_CHECK_RESPONSE = {"documentation_url": "https://openalex.org/rest-api", "msg": "Don't panic", "version": "0.0.1"}
 # Can do healthcheck every 90 seconds and not break politeness
 
-# unless you keep a strong reference to a running task, it can be dropped during execution
-# https://docs.python.org/3/library/asyncio-task.html#asyncio.create_task
-_background_tasks = set()
 
-
-class RateLimitedClient(AsyncClient):
-    """httpx.AsyncClient with a rate limit."""
-
-    # Thanks go to clbarnes: https://github.com/encode/httpx/issues/815
-
-    def __init__(self, interval: dt.timedelta | float, count=1, **kwargs):
-        """
-        Parameters
-        ----------
-        interval : Union[dt.timedelta, float]
-            Length of interval.
-            If a float is given, seconds are assumed.
-        numerator : int, optional
-            Number of requests which can be sent in any given interval (default 1).
-        """
-        if isinstance(interval, dt.timedelta):
-            interval = interval.total_seconds()
-
-        self.interval = interval
-        self.semaphore = asyncio.Semaphore(count)
-        super().__init__(**kwargs)
-
-    def _schedule_semaphore_release(self):
-        wait = asyncio.create_task(asyncio.sleep(self.interval))
-        _background_tasks.add(wait)
-
-        def wait_cb(task):
-            self.semaphore.release()
-            _background_tasks.discard(task)
-
-        wait.add_done_callback(wait_cb)
-
-
-class openalex_requester:
+class OpenAlexRequester:
     def __init__(self) -> None:
         logging.basicConfig(level=logging.DEBUG)
         self._logger = logging.getLogger(__name__)
         self._jobs = {}
         self._rate_limit_interval = 1
         self._max_concurrent_per_second_aio = 8
-        self._client = RateLimitedClient(1.0, 9)
         self._aio_client = AsyncClient()
+
+    async def _process_aio(self, job_id: str):
+        oa_requests = self._prepare_chunks(job_id)
+        if oa_requests is not None:
+            self._logger.info(f"job_id: {job_id}: Requesting via aiometer")
+            responses = await aiometer.run_all(
+                [functools.partial(self._request, query) for query in oa_requests],
+                max_per_second=self._max_concurrent_per_second_aio,
+                max_at_once=self._max_concurrent_per_second_aio,
+            )
+            self._logger.info(f"job_id: {job_id}: Requests via aiometer successful")
+            shuffled_responses = [(work["doi"], work["id"]) for response in responses for work in response["results"]]
+            formatted_input_dois = list(map(self._doi_str_formatter, self._jobs[job_id]["input_data"]))
+            self._jobs[job_id]["aio_responses"] = sorted(
+                shuffled_responses, key=lambda pair: formatted_input_dois.index(pair[0])
+            )
+            self._logger.info(f"job_id: {job_id}: aiometer sorting successful")
+            self._jobs[job_id]["output_csv_data"] = "doi, oa_id\n" + "".join(
+                [f"{doi_val},{oi_val}\n" for (doi_val, oi_val) in self._jobs[job_id]["aio_responses"]]
+            )
+            self._logger.info(f"job_id: {job_id}: aiometer csv string creation successful")
+            self._jobs[job_id]["status"] = "complete"
+        else:
+            self._logger.error(f"job_id: {job_id}: Chunking failed in process for {job_id}, returning False")
+
+    async def _process_all(self, job_id: str):
+        oa_requests = self._prepare_chunks_full(job_id)
+        if oa_requests is not None:
+            self._logger.info(f"job_id: {job_id}: Requesting bulk data via aiometer")
+            responses = await aiometer.run_all(
+                [functools.partial(self._request, query) for query in oa_requests],
+                max_per_second=self._max_concurrent_per_second_aio,
+                max_at_once=self._max_concurrent_per_second_aio,
+            )
+            self._logger.info(f"job_id: {job_id}: Bulk Requests via aiometer successful")
+            keys = [
+                "ids",
+                "title",
+                "language",
+                "display_name",
+                "is_retracted",
+                "is_paratext",
+                "corresponding_author_ids",
+                "authorships",
+                "publication_date",
+                "publication_year",
+                "created_date",
+                "updated_date",
+                "versions",
+                "biblio",
+                "type",
+                "type_crossref",
+                "indexed_in",
+                "open_access",
+                "best_oa_location",
+                "primary_topic",
+                "topics",
+                "concepts",
+                "keywords",
+                "mesh",
+                "cited_by_api_url",
+                "cited_by_count",
+                "counts_by_year",
+                "cited_by_percentile_year",
+                "citation_normalized_percentile",
+                "fwci",
+                "institutions_distinct_count",
+                "corresponding_institution_ids",
+                "institution_assertions",
+                "primary_location",
+                "locations",
+                "locations_count",
+                "countries_distinct_count",
+                "sustainable_development_goals",
+                "referenced_works",
+                "referenced_works_count",
+                "related_works",
+                "apc_paid",
+                "apc_list",
+                "datasets",
+                "grants",
+                "has_fulltext",
+                "fulltext_origin",
+                "abstract_inverted_index",
+            ]
+            shuffled_responses = [
+                (work["doi"], work["id"]) + tuple(work[key] if key in work.keys() else "" for key in keys)
+                for response in responses
+                for work in response["results"]
+            ]
+            formatted_input_dois = list(map(self._doi_str_formatter, self._jobs[job_id]["input_data"]))
+            self._jobs[job_id]["aio_responses"] = sorted(
+                shuffled_responses, key=lambda pair: formatted_input_dois.index(pair[0])
+            )
+            self._logger.info(f"job_id: {job_id}: aiometer sorting successful")
+            self._jobs[job_id]["output_csv_data"] = (
+                "sep=\t\n"
+                + "doi\toa_id\t"
+                + "\t".join(keys)
+                + "\n"
+                + "".join(
+                    [
+                        "\t".join(
+                            [
+                                str(x).replace("\n", "\\n").replace("\r", "\\r").replace("\t", "    ")
+                                for x in aio_response
+                            ]
+                        )
+                        + "\n"
+                        for aio_response in self._jobs[job_id]["aio_responses"]
+                    ]
+                ),
+            )
+            self._logger.info(f"job_id: {job_id}: aiometer bulk csv string creation successful")
+            self._jobs[job_id]["status"] = "complete"
+        else:
+            self._logger.error(f"job_id: {job_id}: Chunking failed in process_all for {job_id}, returning False")
 
     async def health_check(self) -> tuple:
         try:
-            response = await self._client.get(HEALTHCHECK_ADDR)
+            response = await self._aio_client.get(HEALTHCHECK_ADDR)
             if response.json() != HEALTH_CHECK_RESPONSE:
                 self._logger.error("Health check failed - response not as expected")
                 return {"healthy": False, "error": "unknown"}, 200
@@ -91,68 +168,18 @@ class openalex_requester:
             self._logger.error(f"job_id: {job_id}: _prepare chunks failed ")
             return None
 
-    async def _fetch(self, request: str):
-        self._logger.debug(request)
-        self._logger.debug("DEBUG: aiometer request sent to openalex")
-        response = await self._aio_client.get(request)
-        self._logger.debug(f"DEBUG: aiometer request returned from openalex, response code: {response.status_code}")
-        retries = 0
-        while response.status_code == 429 and retries < 5:
-            await asyncio.sleep(pow(2, retries))  # Exponential backoff
-            self._logger.debug(f"DEBUG: RETRY aiometer request, retries: {retries}")
-            response = await self._aio_client.get(request)
-            retries += 1
-        return response.json()
-
-    async def _process_aio(self, job_id: str):
-        oa_requests = self._prepare_chunks(job_id)
-        if oa_requests is not None:
-            self._logger.info(f"job_id: {job_id}: Requesting via aiometer")
-            responses = await aiometer.run_all(
-                [functools.partial(self._fetch, query) for query in oa_requests],
-                max_per_second=self._max_concurrent_per_second_aio,
-                max_at_once=self._max_concurrent_per_second_aio,
-            )
-            self._logger.info(f"job_id: {job_id}: Requests via aiometer successful")
-            shuffled_responses = [(work["doi"], work["id"]) for response in responses for work in response["results"]]
-            formatted_input_dois = list(map(self._doi_str_formatter, self._jobs[job_id]["input_data"]))
-            self._jobs[job_id]["aio_responses"] = sorted(
-                shuffled_responses, key=lambda pair: formatted_input_dois.index(pair[0])
-            )
-            self._logger.info(f"job_id: {job_id}: aiometer sorting successful")
-            self._jobs[job_id]["output_csv_data"] = "doi, oa_id\n" + "".join(
-                [f"{doi_val},{oi_val}\n" for (doi_val, oi_val) in self._jobs[job_id]["aio_responses"]]
-            )
-            self._logger.info(f"job_id: {job_id}: aiometer csv string creation successful")
-            self._jobs[job_id]["status"] = "complete"
-        else:
-            self._logger.error(f"job_id: {job_id}: Chunking failed in process for {job_id}, returning False")
-
-    async def _process(self, job_id: str):
-        self._jobs[job_id]["status"] = "processing"
-        self._jobs[job_id]["_tasklist"] = []
+    def _prepare_chunks_full(self, job_id: str) -> list[str] | None:
         chunked_data = self._chunk_input_data(job_id)
         if chunked_data is not None:
             chunked_data = list(chunked_data)
-            tasks = set()
-            for pos, (chunks, chunklen) in enumerate(chunked_data):
-                tasks.add(asyncio.create_task(self._request(chunks, job_id, chunklen, pos)))
-                self._logger.debug(f"job_id: {job_id}: Request task added for chunk {pos} of {job_id}")
-            await asyncio.gather(*tasks)
-            results = [self._jobs[job_id]["responses"][pos_iter] for pos_iter in range(0, len(chunked_data))]
-            csv_results = [self._jobs[job_id]["csv_responses"][pos_iter] for pos_iter in range(0, len(chunked_data))]
-            self._logger.info(f"job_id: {job_id}: results completed for {job_id}")
+            return [
+                f'https://api.openalex.org/works?filter=doi:{"|".join(chunks)}&per-page={chunklen}&mailto={self._jobs[job_id]["email"]}'
+                for chunks, chunklen in chunked_data
+            ]
+
         else:
-            self._logger.error(f"job_id: {job_id}: Chunking failed in process for {job_id}, returning False")
-        output = list(itertools.chain.from_iterable(results))
-        csv_output = list(itertools.chain.from_iterable(csv_results))
-        self._logger.debug(csv_output)
-        self._logger.debug(csv_results)
-        self._jobs[job_id]["output_data"] = output
-        self._jobs[job_id]["output_csv_data"] = "doi, oa_id\n" + "".join(
-            [f"{doi_val},{oi_val}\n" for csv_inner in csv_results for (doi_val, oi_val) in csv_inner]
-        )
-        self._jobs[job_id]["status"] = "complete"
+            self._logger.error(f"job_id: {job_id}: _prepare chunks failed ")
+            return None
 
     def _chunk_input_data(
         self, job_id: str, chunksize: int = 50
@@ -184,23 +211,15 @@ class openalex_requester:
             output_str = input_str
         return output_str.lower()
 
-    async def _request(self, chunked_data: list[str], job_id: str, chunklen: int, pos: int) -> None:
-        self._logger.info(f"job_id: {job_id}: sending request {pos}")
-        formatted_chunk = "|".join(chunked_data)
-        response = await self._client.get(
-            f'https://api.openalex.org/works?filter=doi:{formatted_chunk}&per-page={chunklen}&mailto={self._jobs[job_id]["email"]}&select=id,doi'
-        )
-        # TODO: add Nina Request functionality for searching the title && Year && Surname / All authors
-        shuffled_ids = [work["id"] for work in response.json()["results"]]
-        dois = [work["doi"] for work in response.json()["results"]]
-        filtered_chunk = list(map(self._doi_str_formatter, chunked_data))
-        positions = [list(map(str.lower, filtered_chunk)).index(doi) for doi in dois]
-        ids = [x for _, x in sorted(zip(positions, shuffled_ids, strict=True), key=lambda pair: pair[0])]
-        csv_ids = [
-            ([list(map(str.lower, chunked_data)) for doi in dois][pos][y], x)
-            for y, x in sorted(zip(positions, shuffled_ids, strict=True), key=lambda pair: pair[0])
-        ]
-        self._jobs[job_id]["responses"][pos] = ids
-        self._jobs[job_id]["csv_responses"][pos] = csv_ids
-        self._jobs[job_id]["progress"] += chunklen
-        self._logger.info(f"job_id: {job_id}: _request {pos} complete")
+    async def _request(self, request: str):
+        self._logger.debug(request)
+        self._logger.debug("DEBUG: aiometer request sent to openalex")
+        response = await self._aio_client.get(request)
+        self._logger.debug(f"DEBUG: aiometer request returned from openalex, response code: {response.status_code}")
+        retries = 0
+        while response.status_code == 429 and retries < 5:
+            await asyncio.sleep(pow(2, retries))  # Exponential backoff
+            self._logger.debug(f"DEBUG: RETRY aiometer request, retries: {retries}")
+            response = await self._aio_client.get(request)
+            retries += 1
+        return response.json()
