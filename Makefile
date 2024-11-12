@@ -94,3 +94,6 @@ certificates_create_and_load:
 
 set_envs:
 	cp .env.template .env && cp src/env_templates/backend.env.template src/env/backend.env && cp src/env_templates/frontend.env.template src/env/frontend.env && cp ./src/env_templates/nginx.env.template ./src/env/nginx.env && cp ./src/env_templates/js.env.template ./src/env/js.env
+
+compile_paper:
+	docker run --rm --volume $PWD/paper:/data --user $(id -u):$(id -g) --env JOURNAL=joss openjournals/inara
