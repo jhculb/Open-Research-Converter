@@ -30,7 +30,7 @@ httpx = "^0.27.0"
 requests = "^2.32.3"
 pytest-asyncio = "^0.23.8"
 aiometer = "^0.5.0"
-quart = "^0.19.6"
+quart = "^0.19.7"
 quart-cors = "^0.7.0"
 uvicorn = "^0.30.6"
 
