@@ -5,6 +5,8 @@ import './styles/CsvFileReader.sass'
 function CsvFileReader({ setText, className }) {
     const [fileName, setFileName] = useState(''); // Holds the name of the selected file
     const [error, setError] = useState('');
+    const [hasHeader, setHasHeader] = useState(true); // State to track header toggle
+    const [labelTitle, setLabelTitle] = useState("Enabled! First row will be skipped while reading the csv file on upload."); // State to track header toggle
     // Set your file size limit here (in bytes)
     const FILE_SIZE_LIMIT = 1 * 1024 * 1024; // 1 MB
 
@@ -24,7 +26,7 @@ function CsvFileReader({ setText, className }) {
             // When the file is read, parse it using PapaParse
             reader.onload = (e) => {
                 const csv = Papa.parse(e.target.result, {
-                    header: true, // Set this to true if the CSV file has a header row
+                    header: hasHeader, // Set this to true if the CSV file has a header row
                     skipEmptyLines: true, // Skip empty lines
                     complete: (result) => {
                         // Extract the DOIs from the parsed data
@@ -44,6 +46,21 @@ function CsvFileReader({ setText, className }) {
         <div className={className}>
             <input data-testid="upload-csv" type="file" accept=".csv" onChange={handleFileChange} />
             {error && <p style={{ color: 'red' }}>{error}</p>}
+            <label htmlFor="has-header-toggle" className="toggle-label" title={labelTitle}>
+                Has header:
+            </label>
+            <label className="toggle-switch" title={labelTitle}>
+                <input
+                    id="has-header-toggle"
+                    type="checkbox"
+                    checked={hasHeader}
+                    onChange={(e) => {
+                        setHasHeader(e.target.checked);
+                        setLabelTitle(e.target.checked?"Enabled! First row will be skipped while reading the csv file on upload.":"Disabled! First row will be fetched while reading the csv file on upload.");
+                    }}
+                />
+                <span className="slider"></span>
+            </label>
         </div>
     );
 }
