@@ -22,6 +22,7 @@ orc = OpenResearchConverter(log)
 
 @app.route("/", methods=["GET"])
 def hello_world():
+    """Route stub for the API - useful for manual healthchecking"""
     log.debug("app.py: API root page called")
     description = """
                 <!DOCTYPE html>
@@ -38,12 +39,14 @@ def hello_world():
 
 @app.route("/healthcheck", methods=["GET"])
 async def healthcheck():
+    """Route for health checking the backend"""
     log.debug("app.py: healthcheck called")
     return await orc.health_check()
 
 
 @app.route("/start_processing", methods=["POST"])
 async def start_processing():
+    """Route for returning the OpenAlex WorkIDs to the frontend"""
     log.debug("app.py: start_processing called")
     json_data = await request.get_json()
     job_id = orc.generate_new_job()
@@ -60,6 +63,7 @@ async def start_processing():
 
 @app.route("/process_all", methods=["POST"])
 async def start_processing_all():
+    """Route for returning the full OpenAlex Records to the frontend."""
     log.debug("app.py: start_processing called")
     json_data = await request.get_json()
     job_id = orc.generate_new_job()
