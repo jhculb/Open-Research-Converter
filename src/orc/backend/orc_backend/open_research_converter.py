@@ -8,6 +8,8 @@ from orc.backend.orc_backend.requester import OpenAlexRequester
 
 
 class OpenResearchConverter(OpenAlexRequester):
+    """This class contains code to interface between the frontend and the requester class, and orchestrate the processing of a job"""
+
     def __init__(self, log) -> None:
         """Instantiate the Open Research Converter (functionality to serve the frontend) from the Requester class (functionality to communicate with OpenAlex)."""
         super().__init__()

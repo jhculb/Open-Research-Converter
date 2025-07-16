@@ -14,6 +14,8 @@ HEALTH_CHECK_RESPONSE = {"documentation_url": "https://openalex.org/rest-api", "
 
 
 class OpenAlexRequester:
+    """This class contains code to interface and process requests to the OpenAlex API"""
+
     def __init__(self) -> None:
         """Instantiate a requester, initialising the parameters"""
         logging.basicConfig(level=logging.DEBUG)
