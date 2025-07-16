@@ -15,6 +15,7 @@ HEALTH_CHECK_RESPONSE = {"documentation_url": "https://openalex.org/rest-api", "
 
 class OpenAlexRequester:
     def __init__(self) -> None:
+        """Instantiate a requester, initialising the parameters"""
         logging.basicConfig(level=logging.DEBUG)
         self._logger = logging.getLogger(__name__)
         self._jobs = {}
@@ -23,6 +24,7 @@ class OpenAlexRequester:
         self._aio_client = AsyncClient()
 
     async def _process_aio(self, job_id: str):
+        """4. Orchestrates the asynchronous requests for OpenAlex WorkIDs"""
         oa_requests = self._prepare_chunks(job_id)
         if oa_requests is not None:
             self._logger.info(f"job_id: {job_id}: Requesting via aiometer")
@@ -47,6 +49,7 @@ class OpenAlexRequester:
             self._logger.error(f"job_id: {job_id}: Chunking failed in process for {job_id}, returning False")
 
     async def _process_all(self, job_id: str):
+        """4. Orchestrates the asynchronous requests for OpenAlex full records"""
         oa_requests = self._prepare_chunks_full(job_id)
         if oa_requests is not None:
             self._logger.info(f"job_id: {job_id}: Requesting bulk data via aiometer")
@@ -140,6 +143,7 @@ class OpenAlexRequester:
             self._logger.error(f"job_id: {job_id}: Chunking failed in process_all for {job_id}, returning False")
 
     async def health_check(self) -> tuple:
+        """Hook"""
         try:
             response = await self._aio_client.get(HEALTHCHECK_ADDR)
             if response.json() != HEALTH_CHECK_RESPONSE:
@@ -156,11 +160,12 @@ class OpenAlexRequester:
         return {"healthy": True, "error": False}, 418
 
     def _prepare_chunks(self, job_id: str) -> list[str] | None:
+        """5. Splits the DOIs into chunks of length ._chunklen and formats them into URLs requesting the ID and DOI"""
         chunked_data = self._chunk_input_data(job_id)
         if chunked_data is not None:
             chunked_data = list(chunked_data)
             return [
-                f'https://api.openalex.org/works?filter=doi:{"|".join(chunks)}&per-page={chunklen}&mailto={self._jobs[job_id]["email"]}&select=id,doi'
+                f"https://api.openalex.org/works?filter=doi:{'|'.join(chunks)}&per-page={chunklen}&mailto={self._jobs[job_id]['email']}&select=id,doi"
                 for chunks, chunklen in chunked_data
             ]
 
@@ -169,11 +174,12 @@ class OpenAlexRequester:
             return None
 
     def _prepare_chunks_full(self, job_id: str) -> list[str] | None:
+        """5. Splits the DOIs into chunks of length ._chunklen and formats them into URLs requesting the full record"""
         chunked_data = self._chunk_input_data(job_id)
         if chunked_data is not None:
             chunked_data = list(chunked_data)
             return [
-                f'https://api.openalex.org/works?filter=doi:{"|".join(chunks)}&per-page={chunklen}&mailto={self._jobs[job_id]["email"]}'
+                f"https://api.openalex.org/works?filter=doi:{'|'.join(chunks)}&per-page={chunklen}&mailto={self._jobs[job_id]['email']}"
                 for chunks, chunklen in chunked_data
             ]
 
@@ -184,6 +190,7 @@ class OpenAlexRequester:
     def _chunk_input_data(
         self, job_id: str, chunksize: int = 50
     ) -> Generator[tuple[list[str], int], None, None] | None:
+        """5.1 Does the chunking of a list into smaller lists of length chunksize or less"""
         if not isinstance(chunksize, int):
             self._logger.error(f"job_id: {job_id}: Non-int passed as chunk")
             return None
@@ -198,6 +205,7 @@ class OpenAlexRequester:
             return None
 
     def _doi_str_formatter(self, input_str: str) -> str:
+        """7. Checks the input string is a DOI and returns a regularised lower case format"""
         https_regex_str = r"^https:\/\/doi\.org\/"
         with_regex = re.compile(https_regex_str)
         http_regex_str = r"^http:\/\/doi\.org\/"
@@ -212,6 +220,7 @@ class OpenAlexRequester:
         return output_str.lower()
 
     async def _request(self, request: str):
+        """6. Requests data from OpenAlex via the request string"""
         self._logger.debug(request)
         self._logger.debug("DEBUG: aiometer request sent to openalex")
         response = await self._aio_client.get(request)

@@ -9,10 +9,12 @@ from orc.backend.orc_backend.requester import OpenAlexRequester
 
 class OpenResearchConverter(OpenAlexRequester):
     def __init__(self, log) -> None:
+        """Instantiate the Open Research Converter (functionality to serve the frontend) from the Requester class (functionality to communicate with OpenAlex)."""
         super().__init__()
         self._logger = log
 
     def generate_new_job(self) -> str:
+        """1. Initialises the data structures associated with a job"""
         new_job_id = uuid.uuid4().__str__()
         self._logger.debug(f"orc.py: new job created with id: {new_job_id}")
         self._jobs[new_job_id] = {}
@@ -30,6 +32,7 @@ class OpenResearchConverter(OpenAlexRequester):
         return new_job_id
 
     def _recieve_data(self, job_id: str, data: list[str], email: str):
+        """2. Recieves data from the frontend"""
         if isinstance(data, str):
             data = list(map(str.strip, data.split(",")))
         if isinstance(data, list):
@@ -45,6 +48,7 @@ class OpenResearchConverter(OpenAlexRequester):
             self._logger.error("job_id: {job_id}: _validate_input_data failed")
 
     def _validate_input_data(self, job_id: str, data: list[str], email: str) -> bool:
+        """3. Orchestrates the validation of the data"""
         job_id_is_valid = False
         email_is_valid = False
         data_is_valid = False
@@ -62,6 +66,7 @@ class OpenResearchConverter(OpenAlexRequester):
         return job_id_is_valid and email_is_valid and data_is_valid
 
     def _validate_uuid(self, job_id: str) -> bool:
+        """3.1 Validates the UUID"""
         try:
             if not isinstance(job_id, str):
                 raise AssertionError("uuid must be a string")
@@ -79,6 +84,7 @@ class OpenResearchConverter(OpenAlexRequester):
         return True
 
     def _validate_email(self, job_id: str, email: str) -> bool:
+        """3.2 Validates the email"""
         try:
             if not isinstance(email, str):
                 raise AssertionError("email passed to _validate_email must be a string")
@@ -89,6 +95,7 @@ class OpenResearchConverter(OpenAlexRequester):
         return True
 
     def _doi_list_formatter(self, data: list[str]) -> list[str]:
+        """3.3.1 Function to regularise the DOI information"""
         https_regex_str = r"^https:\/\/doi\.org\/"
         with_regex = re.compile(https_regex_str)
         for pos, potential_doi in enumerate(data):
@@ -97,6 +104,7 @@ class OpenResearchConverter(OpenAlexRequester):
         return data
 
     def _validate_data(self, job_id: str, data: list[str]) -> bool:
+        """3.3 Validates DOIs"""
         # Assumes list of strings containing dois
         self._logger.debug(f"job_id: {job_id}: validating data")
         doi_regex_str = r"10.\d{4,9}\/[-._;()/:A-Za-z0-9]+"
@@ -127,22 +135,25 @@ class OpenResearchConverter(OpenAlexRequester):
         return False
 
     async def process(self, job_id, data, email) -> None:
+        """0. Entry function orchestrating the preporcessing of the input data, to return OAL WorkIDs"""
         self._logger.info(f"job_id: {job_id}: orc: processing")
         self._recieve_data(job_id, data, email)
         self._logger.info(f"job_id: {job_id}: orc: data received")
         if self._check_ready(job_id):
             self._logger.info(f"job_id: {job_id}: orc: data was suitable, creating task")
-            await self._process_aio(job_id)
+            await self._process_aio(job_id)  # A OpenAlexRequester function
 
     async def process_all(self, job_id, data, email) -> None:
+        """0. Entry function orchestrating the preprocessing of the input data, to return full records"""
         self._logger.info(f"job_id: {job_id}: orc: processing")
         self._recieve_data(job_id, data, email)
         self._logger.info(f"job_id: {job_id}: orc: data received")
         if self._check_ready(job_id):
             self._logger.info(f"job_id: {job_id}: orc: data was suitable, creating task")
-            await self._process_all(job_id)
+            await self._process_all(job_id)  # A OpenAlexRequester function
 
     def return_data(self, job_id) -> tuple[dict, int]:
+        """8. Returns data to frontend"""
         self._validate_uuid(job_id=job_id)
         if self._jobs[job_id]["status"] == "complete":
             out_csv_data = None
