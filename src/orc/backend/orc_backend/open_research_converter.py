@@ -128,6 +128,7 @@ class OpenResearchConverter(OpenAlexRequester):
             return False
 
     def _check_ready(self, job_id: str) -> bool:
+        """0.1 Checks that there is input data passed from the frontend ready to be validated"""
         if self._validate_uuid(job_id):
             if self._jobs[job_id]["input_data"] is None:
                 raise ValueError("No input data given")
