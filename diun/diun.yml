@@ -1,0 +1,31 @@
+watch:
+  workers: 10
+  schedule: "0 */6 * * *"
+  jitter: 30s
+  firstCheckNotif: false
+  runOnStartup: true
+  compareDigest: true
+  healthchecks:
+    baseURL: https://hc-ping.com/
+    uuid: b134fabb-c654-4ac5-be8a-fb7e4a2e2836
+
+
+defaults:
+  watchRepo: false
+  notifyOn:
+    - new
+    - update
+  sortTags: reverse
+  includeTags: 
+    - latest
+  excludeTags:
+    - dev
+  
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    apiversion: "1.52"
+    tlsverify: true
+    watchByDefault: true
+    watchStopped: false

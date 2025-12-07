@@ -22,6 +22,8 @@ services:
     networks:
       - orc-network
       - certbot-network
+    labels:
+      - diun.enable=true
 
   certbot:
     image: certbot/certbot:latest
@@ -45,6 +47,8 @@ services:
       - ./src/env/frontend.env
     networks:
       - orc-network
+    labels:
+      - diun.enable=true
 
   backend:
     container_name: orc-backend
@@ -61,6 +65,31 @@ services:
       - ./src/env/backend.env
     networks:
       - orc-network
+    labels:
+      - diun.enable=true
+
+  diun:
+    image: crazymax/diun:latest
+    container_name: diun
+    command: serve
+    volumes:
+      - "./diun/data/:/data:rw"
+      - "./diun/diun.yml:/etc/diun/diun.yml:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    environment:
+      - "TZ=Europe/Berlin"
+      - "LOG_LEVEL=debug"
+      - "LOG_JSON=false"
+    labels:
+      - diun.enable=true
+    networks:
+      - orc-network
+    restart: always
+    healthcheck:
+      test: ["CMD", "diun",  "healthcheck"]
+      interval: 1h
+      timeout: 30s
+      retries: 5
 
 networks:
   orc-network:
