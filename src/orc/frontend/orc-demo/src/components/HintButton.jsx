@@ -19,7 +19,7 @@ const HintButton = ({ imageName }) => {
             {/* Conditional Rendering of the Image */}
             {showImage && (
                 <div className='image-style d-flex flex-column align-items-center'>
-                    <b className='txt-color text-center'>Input file format:</b>
+                    <b className='txt-color text-center'>Example input file format with header:</b>
                     <img src={imageName === 'input_template' ? input_template : null} alt="Hint" style={{ height: '400px', maxWidth: '600' }} />
                 </div>
             )}

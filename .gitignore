@@ -2,6 +2,9 @@
 logs/
 src/orc/nginx/certbot
 
+## Diun
+diun/data/
+
 ## GESIS
 badges/
 
