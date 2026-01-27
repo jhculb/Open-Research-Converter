@@ -1,0 +1,264 @@
+openapi: 3.0.3
+info:
+  title: OpenResearchConverter API
+  description: |
+    API for converting DOIs (Digital Object Identifiers) to OpenAlex IDs.
+
+    The OpenResearchConverter enables bulk conversion of bibliometric data from DOIs
+    to OpenAlex identifiers, to facilitate reproducibility in scientometric research.
+  version: 1.2.0
+  contact:
+    name: Jack Culbert
+    email: jack.culbert@gesis.org
+  license:
+    name: GPL-3.0
+    url: https://www.gnu.org/licenses/gpl-3.0-standalone.html
+
+servers:
+  - url: /api
+    description: API base path (relative)
+  - url: https://orc-demo.gesis.org/api
+    description: Production server
+
+paths:
+  /:
+    get:
+      summary: API Root
+      description: Returns an HTML page with API information and noindex robots directive.
+      operationId: getRoot
+      responses:
+        '200':
+          description: HTML description page
+          content:
+            text/html:
+              schema:
+                type: string
+
+  /healthcheck:
+    get:
+      summary: Health Check
+      description: |
+        Checks if the OpenAlex API is accessible and responding correctly.
+
+        Note: Returns 418 (I'm a teapot) when healthy, 200 when unhealthy.
+      operationId: healthCheck
+      responses:
+        '418':
+          description: Healthy - OpenAlex API is accessible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthCheckResponse'
+              example:
+                healthy: true
+                error: false
+        '200':
+          description: Unhealthy - OpenAlex API is not accessible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthCheckResponse'
+              example:
+                healthy: false
+                error: "Connection error"
+
+  /start_processing:
+    post:
+      summary: Convert DOIs to OpenAlex IDs
+      description: |
+        Submits a list of DOIs for conversion to OpenAlex IDs.
+
+        This endpoint returns:
+        - A list of OpenAlex IDs corresponding to the submitted DOIs
+        - A CSV string with DOI to OpenAlex ID mappings
+        - Statistics on how many DOIs were found vs submitted
+        - A list of DOIs that were not found in OpenAlex
+
+        DOIs can be submitted with or without the `https://doi.org/` prefix as the API automatically normalizes all DOI formats.
+      operationId: startProcessing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProcessingRequest'
+            examples:
+              commaSeparated:
+                summary: Comma-separated DOIs
+                value:
+                  email: "researcher@university.edu"
+                  input_data: "10.1038/nature12373, 10.1126/science.1231143"
+              withPrefix:
+                summary: DOIs with https prefix
+                value:
+                  email: "researcher@university.edu"
+                  input_data: "https://doi.org/10.1038/nature12373, https://doi.org/10.1126/science.1231143"
+      responses:
+        '200':
+          description: Successful conversion
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProcessingResponse'
+              example:
+                - job_id: "550e8400-e29b-41d4-a716-446655440000"
+                  output_data:
+                    - "https://openalex.org/W2102245935"
+                    - "https://openalex.org/W2015936098"
+                  output_full: "doi, oa_id\nhttps://doi.org/10.1038/nature12373,https://openalex.org/W2102245935\n"
+                  submitted_count: 3
+                  found_count: 2
+                  missing_dois:
+                    - "https://doi.org/10.1234/not-in-openalex"
+        '204':
+          description: Processing not yet complete
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+
+  /process_all:
+    post:
+      summary: Convert DOIs and retrieve full OpenAlex records
+      description: |
+        Submits DOIs for conversion and returns complete OpenAlex metadata for each work.
+
+        Returns a TSV (tab-separated values) file containing 47+ fields including:
+        - Basic metadata (title, authors, publication date)
+        - Citation data (cited_by_count, references)
+        - Open access information
+        - Topics, concepts, and keywords
+        - Institutional affiliations
+        - And more
+
+        Use this endpoint when you need comprehensive bibliometric data.
+      operationId: processAll
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProcessingRequest'
+      responses:
+        '200':
+          description: Successful conversion with full records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProcessingResponse'
+        '204':
+          description: Processing not yet complete
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+
+components:
+  schemas:
+    ProcessingRequest:
+      type: object
+      required:
+        - email
+        - input_data
+      properties:
+        email:
+          type: string
+          format: email
+          description: |
+            Email address for OpenAlex API polite pool.
+            Providing an email places your requests in OpenAlex's "polite pool"
+            with faster and more consistent response times.
+          example: researcher@university.edu
+        input_data:
+          oneOf:
+            - type: string
+              description: Comma-separated list of DOIs
+            - type: array
+              items:
+                type: string
+              description: Array of DOI strings
+          description: |
+            DOIs to convert. Can be provided as:
+            - A comma-separated string: "10.1234/abc, 10.5678/def"
+            - An array of strings: ["10.1234/abc", "10.5678/def"]
+
+            DOIs can include or omit the https://doi.org/ prefix.
+          example: "10.1038/nature12373, 10.1126/science.1231143"
+
+    ProcessingResponse:
+      type: object
+      properties:
+        job_id:
+          type: string
+          format: uuid
+          description: Unique identifier for this processing job
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        output_data:
+          type: array
+          items:
+            type: string
+            format: uri
+          description: List of OpenAlex IDs (URLs) corresponding to found DOIs
+          example:
+            - "https://openalex.org/W2102245935"
+            - "https://openalex.org/W2015936098"
+        output_full:
+          type: string
+          description: |
+            CSV or TSV formatted string containing all results.
+            For /start_processing: CSV with doi,oa_id columns
+            For /process_all: TSV with 47+ metadata columns
+          example: "doi, oa_id\nhttps://doi.org/10.1038/nature12373,https://openalex.org/W2102245935\n"
+        submitted_count:
+          type: integer
+          description: Total number of DOIs submitted in the request
+          example: 100
+        found_count:
+          type: integer
+          description: Number of DOIs successfully found in OpenAlex
+          example: 95
+        missing_dois:
+          type: array
+          items:
+            type: string
+          description: List of DOIs that were not found in OpenAlex (normalized to https://doi.org/ format)
+          example:
+            - "https://doi.org/10.1234/not-found-1"
+            - "https://doi.org/10.5678/not-found-2"
+
+    StatusResponse:
+      type: object
+      properties:
+        job_id:
+          type: string
+          format: uuid
+          description: Unique identifier for this processing job
+        status:
+          type: string
+          enum:
+            - initialised
+            - ready
+            - complete
+          description: Current status of the processing job
+
+    HealthCheckResponse:
+      type: object
+      properties:
+        healthy:
+          type: boolean
+          description: Whether the OpenAlex API is accessible from the app
+        error:
+          oneOf:
+            - type: boolean
+            - type: string
+          description: Error message if unhealthy, false if healthy and no error
+
+tags:
+  - name: Processing
+    description: DOI to OpenAlex ID conversion endpoints
+  - name: Health
+    description: Service health monitoring
