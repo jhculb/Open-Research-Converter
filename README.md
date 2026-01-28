@@ -114,6 +114,7 @@ docker compose up --build -d
 **Step 3: Access the application**
 
 Navigate to `http://localhost` or `http://127.0.0.1`
+(Note, if your browser gives secure connection is not available, please check you are not using https)
 
 ### Local Installation (Without Docker)
 
