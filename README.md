@@ -24,8 +24,13 @@ We provide here in the Open Research Coverter a tool utilising the OpenAlex API 
 	- [Table of Contents](#table-of-contents)
 	- [How to Use the ORC](#how-to-use-the-orc)
 		- [Online](#online)
-		- [Local Installation](#local-installation)
+		- [Local Installation (Docker)](#local-installation-docker)
+		- [Local Installation (Without Docker)](#local-installation-without-docker)
 		- [Please Note](#please-note)
+	- [API Documentation](#api-documentation)
+		- [Endpoints Summary](#endpoints-summary)
+		- [Example Request](#example-request)
+		- [Response Format](#response-format)
 	- [Functionality](#functionality)
 		- [NGINX Container](#nginx-container)
 		- [Frontend Container](#frontend-container)
@@ -72,27 +77,135 @@ If you wish to use the ORC without installing locally:
 5. Wait for Output
 	* If your query is successful, then in the output box the first 50 OpenAlex IDs corresponding to your DOIs will be returned.
 	* If you have more submitted than 50 DOIs, then click "download CSV" to download a csv file with the DOI in the first column and the corresponding OpenAlex ID in the second column.
-### Local Installation
-Should you wish to run the ORC locally, please follow these steps:
-1. Install docker and docker compose
-2. Transform the environment variable templates to environment variables
-	* The environment variable templates are the ```.env.template``` files
-	1. Via makefile command (on Linux):
-		1. Run  ```make set_envs```
-	2. Manually:
-		1. Copy the ```.env.template``` file to ```.env``` in the top level directory
-		2. Copy the environment variable template files in src/env/templates to src/env, and remove the ```.template``` suffix for each
-		* These are ```backend.env.template```, ```frontend.env.template```, ```js.env.template``` and ```nginx.env.template```
-		* The corresponding .env files should be named ```backend.env```, ```frontend.env```, ```js.env``` and ```nginx.env```
-3. Run ```docker compose up --build -d```
-	* Or via makefile command ```make run```
-	* This will build the containers and run the code. This may take some time
-4. Use your browser to navigate to ```localhost```, or ```127.0.0.1```
-5. Follow the instructions in the Online section from instruction 2.
+### Local Installation (Docker)
+Should you wish to run the ORC locally using Docker, please follow these steps:
+
+**Prerequisites:** Docker and Docker Compose installed
+
+**Step 1: Set up environment variables**
+
+The root `.env` file is *required* as it configures which nginx configuration to use.
+
+Via makefile (Linux/macOS):
+```bash
+make set_envs
+```
+
+Or manually:
+```bash
+# IMPORTANT: Copy the root .env.template first
+cp .env.template .env
+
+# Then copy the service-specific env files
+cp src/env_templates/backend.env.template src/env/backend.env
+cp src/env_templates/frontend.env.template src/env/frontend.env
+cp src/env_templates/js.env.template src/env/js.env
+cp src/env_templates/nginx.env.template src/env/nginx.env
+```
+
+**Note:** The root `.env` file sets `LOCAL_OR_PRODUCTION=local`, which tells Docker which nginx config to use (`local.default.conf` vs `prod.default.conf`). Without this file, docker-compose will fail with "`.default.conf`: not found".
+
+**Step 2: Build and run**
+```bash
+docker compose up --build -d
+# Or via makefile: make run
+```
+
+**Step 3: Access the application**
+
+Navigate to `http://localhost` or `http://127.0.0.1`
+(Note, if your browser gives secure connection is not available, please check you are not using https)
+
+### Local Installation (Without Docker)
+
+For development without Docker, you can run the backend and frontend separately.
+
+**Prerequisites:**
+- Python 3.11+
+- Node.js 16+ (or 22 for latest)
+- Poetry (Python package manager)
+
+**Backend Setup:**
+```bash
+# From project root
+poetry install
+
+# Run the backend server on port 8001
+poetry run python -m quart --app src.orc.backend.orc_backend.app run --port 8001
+```
+
+**Frontend Setup:**
+```bash
+cd src/orc/frontend/orc-demo
+
+# Install dependencies
+npm install
+
+# Configure API URL for local development
+# Edit .env or create one with:
+echo "REACT_APP_DEV_URL=http://localhost:8001" > .env
+echo "REACT_APP_ENV=dev" >> .env
+
+# Start the development server
+npm start
+```
+
+**CORS Configuration:**
+
+When running frontend and backend separately, you may encounter CORS issues. Two solutions:
+
+1. **Add proxy to package.json** (recommended for development):
+   ```json
+   {
+     "proxy": "http://localhost:8001"
+   }
+   ```
+   Then change `REACT_APP_DEV_URL` to empty string or `/`.
+
+2. **Add CORS headers to backend** (for testing only - not recommended for production)
 ### Please Note
 * The ORC is still in development and may contain bugs, for example:
 	* If items are not found in OpenAlex, they may not be returned leading to a smaller number of items in the output
 	* If an error happens on the backend it may not inform the frontend properly, leading to a failure (when the waiting ring disappears) without informing the user as to why.
+## API Documentation
+
+The ORC exposes a REST API for programmatic access. Full OpenAPI specification is available at `src/orc/backend/orc_backend/openapi.yaml`.
+
+### Endpoints Summary
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/` | API information page |
+| GET | `/api/healthcheck` | Check OpenAlex API connectivity (returns 418 if healthy) |
+| POST | `/api/start_processing` | Convert DOIs to OpenAlex IDs |
+| POST | `/api/process_all` | Convert DOIs and get full OpenAlex metadata |
+
+### Example Request
+
+```bash
+curl -X POST https://orc-demo.gesis.org/api/start_processing \
+  -H "Content-Type: application/json" \
+  -d '{"email": "your@email.com", "input_data": "10.1038/nature12373, 10.1126/science.1231143"}'
+```
+
+### Response Format
+
+```json
+[{
+  "job_id": "uuid-string",
+  "output_data": ["https://openalex.org/W2102245935", "https://openalex.org/W2015936098"],
+  "output_full": "doi, oa_id\n...",
+  "submitted_count": 3,
+  "found_count": 2,
+  "missing_dois": ["https://doi.org/10.1234/not-found"]
+}]
+```
+
+The response includes:
+- `submitted_count`: Number of DOIs you submitted
+- `found_count`: Number of DOIs found in OpenAlex
+- `missing_dois`: List of DOIs not found in OpenAlex
+
 ## Functionality
 The ORC functions in a containerised environment. To run this using the makefile type `make run`.
 

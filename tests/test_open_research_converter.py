@@ -54,6 +54,13 @@ def test_generate_new_job(log):
     assert orc._jobs[identifier]["status"] == "initialised"
     assert "progress" in orc._jobs[identifier]
     assert orc._jobs[identifier]["progress"] == 0
+    # Test new fields for DOI tracking
+    assert "submitted_count" in orc._jobs[identifier]
+    assert orc._jobs[identifier]["submitted_count"] == 0
+    assert "found_count" in orc._jobs[identifier]
+    assert orc._jobs[identifier]["found_count"] == 0
+    assert "missing_dois" in orc._jobs[identifier]
+    assert orc._jobs[identifier]["missing_dois"] == []
 
 
 def test_validate_data(log):
@@ -220,3 +227,56 @@ async def test_init_process_sunny_day(log, email, data, expected_output):
     assert output_code == 200
     output_data = output_response["output_data"]
     assert output_data == expected_output
+    # Verify new counter fields are present in response
+    assert "submitted_count" in output_response
+    assert "found_count" in output_response
+    assert "missing_dois" in output_response
+    assert isinstance(output_response["submitted_count"], int)
+    assert isinstance(output_response["found_count"], int)
+    assert isinstance(output_response["missing_dois"], list)
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_missing_dois_tracking(log):
+    """Test that DOIs not found in OpenAlex are tracked correctly."""
+    orc = OpenResearchConverter(log)
+    job_id = orc.generate_new_job()
+    email = "jack.culbert+orc@gesis.org"
+    # Include a valid DOI and an invalid/nonexistent DOI
+    data = [
+        "https://doi.org/10.48550/ARXIV.2406.15154",  # Valid - exists in OpenAlex
+        "https://doi.org/10.99999/this-doi-does-not-exist-12345",  # Invalid - won't be found
+    ]
+    await orc.process(job_id, data, email)
+    output_response, output_code = orc.return_data(job_id)
+    assert output_code == 200
+    # Verify submitted count matches input
+    assert output_response["submitted_count"] == 2
+    # Verify found count is 1 (only the valid DOI)
+    assert output_response["found_count"] == 1
+    # Verify the invalid DOI is in missing_dois
+    assert len(output_response["missing_dois"]) == 1
+    assert "10.99999/this-doi-does-not-exist-12345" in output_response["missing_dois"][0].lower()
+    # Verify only the valid DOI is in output_data
+    assert len(output_response["output_data"]) == 1
+    assert output_response["output_data"][0] == "https://openalex.org/W4399991117"
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_all_dois_found(log):
+    """Test that when all DOIs are found, missing_dois is empty."""
+    orc = OpenResearchConverter(log)
+    job_id = orc.generate_new_job()
+    email = "jack.culbert+orc@gesis.org"
+    data = [
+        "https://doi.org/10.48550/ARXIV.2406.15154",
+        "https://doi.org/10.7717/peerj.4375",
+    ]
+    await orc.process(job_id, data, email)
+    output_response, output_code = orc.return_data(job_id)
+    assert output_code == 200
+    assert output_response["submitted_count"] == 2
+    assert output_response["found_count"] == 2
+    assert output_response["missing_dois"] == []

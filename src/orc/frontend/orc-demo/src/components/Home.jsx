@@ -14,6 +14,11 @@ function Home() {
     const [isDownloadAll, setIsDownloadAll] = useState(false);
     const [isDownloadDisabled, setIsDownloadDisabled] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
+    // State for tracking DOI matching results
+    const [foundCount, setFoundCount] = useState(0);
+    const [submittedCount, setSubmittedCount] = useState(0);
+    const [missingDois, setMissingDois] = useState([]);
+    const [showMissing, setShowMissing] = useState(false);
     const blockedEmails = ['john.culbert@gesis.org', 'ahsan.shahid@gesis.org'];
 
     let apiUrl = process.env.REACT_APP_DEV_URL;
@@ -64,6 +69,12 @@ function Home() {
 
     const clearInput = () => {
         setText('');
+        setLimitedResult('');
+        setFoundCount(0);
+        setSubmittedCount(0);
+        setMissingDois([]);
+        setShowMissing(false);
+        setIsDownloadDisabled(true);
     }
 
     //---- function called on Convert DOIs to IDs button press
@@ -97,6 +108,11 @@ function Home() {
                 let outputData = result[0]["output_data"];
                 setjobId(result[0]["job_id"]);
                 setResult(result);
+                // Extract counter data
+                setFoundCount(result[0]["found_count"] || outputData.length);
+                setSubmittedCount(result[0]["submitted_count"] || outputData.length);
+                setMissingDois(result[0]["missing_dois"] || []);
+                setShowMissing(false);
                 if (outputData.length) {
                     setIsDownloadDisabled(false);
                     let formattedText = outputData
@@ -139,9 +155,13 @@ function Home() {
             .then(result => {
                 setjobId(result[0]["job_id"]);
                 setResult(result);
-                // setText('');
+                // Extract counter data
+                let outputData = result[0]["output_data"] || [];
+                setFoundCount(result[0]["found_count"] || outputData.length);
+                setSubmittedCount(result[0]["submitted_count"] || outputData.length);
+                setMissingDois(result[0]["missing_dois"] || []);
+                setShowMissing(false);
                 setIsDownloadAll(true);
-
             })
             .catch(error => console.log(error))
             .finally(() => {
@@ -197,6 +217,61 @@ function Home() {
                         <span className="sr-only"></span>
                     </div>
                 }
+                {/* Counter display */}
+                {submittedCount > 0 && (
+                    <div className="d-flex justify-content-between align-items-center mb-2 px-1">
+                        <span className={`badge ${foundCount === submittedCount ? 'bg-success' : 'bg-warning text-dark'}`}>
+                            Found: {foundCount} / {submittedCount}
+                        </span>
+                        {missingDois.length > 0 && (
+                            <button
+                                type="button"
+                                className="btn btn-sm btn-outline-secondary"
+                                onClick={() => setShowMissing(!showMissing)}
+                            >
+                                {showMissing ? 'Hide' : 'Show'} Missing DOIs ({missingDois.length})
+                            </button>
+                        )}
+                    </div>
+                )}
+                {/* Missing DOIs collapsible section */}
+                {showMissing && missingDois.length > 0 && (
+                    <div className="alert alert-warning mb-2 p-2">
+                        <div className="d-flex justify-content-between align-items-center mb-1">
+                            <strong>DOIs not found in OpenAlex ({missingDois.length}):</strong>
+                            <div>
+                                <button
+                                    type="button"
+                                    className="btn btn-sm btn-outline-primary me-1"
+                                    onClick={() => navigator.clipboard.writeText(missingDois.join('\n'))}
+                                >
+                                    Copy
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-sm btn-outline-secondary"
+                                    onClick={() => {
+                                        const csvContent = "doi\n" + missingDois.join('\n');
+                                        const blob = new Blob([csvContent], { type: 'text/csv' });
+                                        const link = document.createElement('a');
+                                        link.href = URL.createObjectURL(blob);
+                                        link.download = 'missing_dois.csv';
+                                        link.click();
+                                        URL.revokeObjectURL(link.href);
+                                    }}
+                                >
+                                    Download CSV
+                                </button>
+                            </div>
+                        </div>
+                        <textarea
+                            className="form-control"
+                            rows={Math.min(missingDois.length, 5)}
+                            readOnly
+                            value={missingDois.join('\n')}
+                        />
+                    </div>
+                )}
                 <TextBox
                     title={"Result Box"}
                     rows={20}
