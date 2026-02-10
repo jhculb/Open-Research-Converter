@@ -1,0 +1,36 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Open Research Converter
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Culbert
+    family-names: Jack H.
+    email: jack.culbert@gesis.org
+    affiliation: GESIS - Leibniz Institute for the Social Sciences
+    orcid: 'https://orcid.org/0009-0000-1581-4021'
+  - given-names: Muhammad Ahsan
+    family-names: Shahid
+    affiliation: GESIS - Leibniz Institute for the Social Sciences
+    orcid: 'https://orcid.org/0000-0002-7274-7934'
+  - given-names: Philipp
+    family-names: Mayr
+    affiliation: GESIS - Leibniz Institute for the Social Sciences
+    orcid: 'https://orcid.org/0000-0002-6656-1658'
+repository-code: 'https://github.com/jhculb/Open-Research-Converter'
+url: 'https://orc-demo.gesis.org'
+abstract: >-
+  The Open Research Converter (ORC) is a tool designed to
+  allow users to convert proprietary and licensed
+  bibliometric datasets to a shareable format through
+  OpenAlex's API.
+keywords:
+  - Reproducibility
+  - OpenAlex
+  - DOI
+  - Bibliometrics
+license: GPL-3.0-or-later

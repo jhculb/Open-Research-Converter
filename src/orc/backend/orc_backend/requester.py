@@ -83,6 +83,10 @@ class OpenAlexRequester:
         """
         Process DOIs and retrieve OpenAlex IDs using async concurrent requests.
 
+        Process Flow Steps 15-18: Sends concurrent requests using aiometer,
+        collects responses and extracts DOI → OpenAlex ID pairs, compares
+        returned DOIs against submitted DOIs, and tracks missing DOIs.
+
         Chunks the input DOIs, makes parallel requests to OpenAlex API,
         and stores the results. Tracks which DOIs were found vs missing.
 
@@ -304,6 +308,9 @@ class OpenAlexRequester:
         """
         Prepare OpenAlex API request URLs for lightweight (ID-only) queries.
 
+        Process Flow Step 14: Formats each chunk into OpenAlex API query with
+        filter query (works?filter=doi:DOI1|DOI2|...) and adds email to polite pool.
+
         Chunks the input DOIs and constructs API URLs with the 'select' parameter
         to retrieve only doi and id fields (faster response).
 
@@ -363,6 +370,8 @@ class OpenAlexRequester:
     ) -> Generator[tuple[list[str], int], None, None] | None:
         """
         Split input DOIs into chunks for API requests.
+
+        Process Flow Step 13: Splits DOIs into chunks of 50 for efficient API querying.
 
         OpenAlex API has a limit on the number of items that can be queried
         in a single request. This method splits large DOI lists into

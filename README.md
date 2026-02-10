@@ -31,6 +31,7 @@ We provide here in the Open Research Coverter a tool utilising the OpenAlex API 
 		- [Endpoints Summary](#endpoints-summary)
 		- [Example Request](#example-request)
 		- [Response Format](#response-format)
+	- [Process Flow](#process-flow)
 	- [Functionality](#functionality)
 		- [NGINX Container](#nginx-container)
 		- [Frontend Container](#frontend-container)
@@ -205,6 +206,82 @@ The response includes:
 - `submitted_count`: Number of DOIs you submitted
 - `found_count`: Number of DOIs found in OpenAlex
 - `missing_dois`: List of DOIs not found in OpenAlex
+
+## Process Flow
+
+This section describes the complete flow from when a user submits DOIs to when results are returned.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              USER INTERFACE                                 │
+│  1. User enters email and DOIs (via text input or CSV upload)               │
+│  2. User clicks "Submit"                                                    │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           FRONTEND (React)                                  │
+│  3. Validates email format (regex check)                                    │
+│  4. Sends POST request to /api/start_processing with email and DOI list     │
+│  5. Displays loading animation while waiting                                │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      BACKEND API (app.py)                                   │
+│  6. Receives request at /start_processing endpoint                          │
+│  7. Creates OpenResearchConverter instance                                  │
+│  8. Calls process() method with email and input data                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│              ORCHESTRATOR (open_research_converter.py)                      │
+│  9.  generate_new_job() - Creates unique job ID (UUID)                      │
+│  10. _receive_data() - Stores raw input in job dictionary                   │
+│  11. _validate_input_data() - Validates:                                    │
+│      • Job ID exists                                                        │
+│      • Email is present and valid                                           │
+│      • DOIs are present and correctly formatted                             │
+│  12. Normalizes DOIs to standard format (https://doi.org/...)               │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    REQUESTER (requester.py)                                 │
+│  13. _chunk_input_data() - Splits DOIs into chunks of 50                    │
+│  14. _prepare_chunks() - Formats each chunk into OpenAlex API query         │
+│      • Creates filter query: works?filter=doi:DOI1|DOI2|DOI3...             │
+│      • Adds email to "polite pool" for better rate limits                   │
+│  15. _process_aio() - Sends concurrent requests using aiometer              │
+│      • Respects rate limits (max 10 requests/second)                        │
+│      • Implements exponential backoff on failures                           │
+│  16. Collects responses and extracts DOI → OpenAlex ID pairs                │
+│  17. Compares returned DOIs against submitted DOIs                          │
+│  18. Tracks missing DOIs (submitted but not found in OpenAlex)              │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         RESPONSE ASSEMBLY                                   │
+│  19. return_data() - Formats final response:                                │
+│      • output_data: List of OpenAlex IDs                                    │
+│      • output_full: CSV string (doi, oa_id)                                 │
+│      • submitted_count: Total DOIs submitted                                │
+│      • found_count: DOIs successfully matched                               │
+│      • missing_dois: DOIs not found in OpenAlex                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           FRONTEND (React)                                  │
+│  20. Receives JSON response                                                 │
+│  21. Displays counter: "Found X/Y" (found_count/submitted_count)            │
+│  22. Shows first 50 OpenAlex IDs in output box                              │
+│  23. Enables "Download CSV" button for full results                         │
+│  24. If missing DOIs exist, shows expandable section to view/download them  │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
 
 ## Functionality
 The ORC functions in a containerised environment. To run this using the makefile type `make run`.

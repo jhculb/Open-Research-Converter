@@ -118,6 +118,9 @@ async def start_processing():
     """
     Convert a list of DOIs to OpenAlex IDs.
 
+    Process Flow Steps 6-8: Receives the API request, creates the converter
+    instance, and initiates processing.
+
     Accepts a JSON payload containing DOIs and an email address, queries the
     OpenAlex API, and returns the corresponding OpenAlex identifiers.
 

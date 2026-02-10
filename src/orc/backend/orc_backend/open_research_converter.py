@@ -77,6 +77,8 @@ class OpenResearchConverter(OpenAlexRequester):
         """
         Create a new processing job with a unique identifier.
 
+        Process Flow Step 9: Creates unique job ID (UUID).
+
         Initializes all required data structures for tracking the job through
         its lifecycle from creation to completion.
 
@@ -119,6 +121,8 @@ class OpenResearchConverter(OpenAlexRequester):
         """
         Receive and store input data for a job.
 
+        Process Flow Step 10: Stores raw input in job dictionary.
+
         Normalizes input data format (handles both comma-separated strings and lists),
         validates the data, and stores it in the job dictionary if valid.
 
@@ -151,6 +155,9 @@ class OpenResearchConverter(OpenAlexRequester):
     def _validate_input_data(self, job_id: str, data: list[str], email: str) -> bool:
         """
         Validate all input data for a processing request.
+
+        Process Flow Step 11: Validates job ID exists, email is present and valid,
+        and DOIs are present and correctly formatted.
 
         Performs comprehensive validation of job_id, email, and DOI data
         to ensure the request can be processed.
@@ -237,6 +244,8 @@ class OpenResearchConverter(OpenAlexRequester):
     def _doi_list_formatter(self, data: list[str]) -> list[str]:
         """
         Normalize DOIs to include the https://doi.org/ prefix.
+
+        Process Flow Step 12: Normalizes DOIs to standard format (https://doi.org/...).
 
         Args:
             data: List of DOI strings, with or without prefix.
@@ -372,6 +381,9 @@ class OpenResearchConverter(OpenAlexRequester):
     def return_data(self, job_id: str) -> tuple[dict, int]:
         """
         Retrieve the results of a completed processing job.
+
+        Process Flow Step 19: Formats final response with output_data, output_full,
+        submitted_count, found_count, and missing_dois.
 
         Returns the processed data including OpenAlex IDs, CSV/TSV output,
         and statistics about the conversion (found count, missing DOIs).
