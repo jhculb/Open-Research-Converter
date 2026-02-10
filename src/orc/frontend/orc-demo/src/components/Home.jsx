@@ -19,6 +19,8 @@ function Home() {
     const [submittedCount, setSubmittedCount] = useState(0);
     const [missingDois, setMissingDois] = useState([]);
     const [showMissing, setShowMissing] = useState(false);
+    const [invalidDois, setInvalidDois] = useState([]);
+    const [showInvalid, setShowInvalid] = useState(false);
     const blockedEmails = ['john.culbert@gesis.org', 'ahsan.shahid@gesis.org'];
 
     let apiUrl = process.env.REACT_APP_DEV_URL;
@@ -74,6 +76,8 @@ function Home() {
         setSubmittedCount(0);
         setMissingDois([]);
         setShowMissing(false);
+        setInvalidDois([]);
+        setShowInvalid(false);
         setIsDownloadDisabled(true);
     }
 
@@ -113,6 +117,8 @@ function Home() {
                 setSubmittedCount(result[0]["submitted_count"] || outputData.length);
                 setMissingDois(result[0]["missing_dois"] || []);
                 setShowMissing(false);
+                setInvalidDois(result[0]["invalid_dois"] || []);
+                setShowInvalid(false);
                 if (outputData.length) {
                     setIsDownloadDisabled(false);
                     let formattedText = outputData
@@ -161,6 +167,8 @@ function Home() {
                 setSubmittedCount(result[0]["submitted_count"] || outputData.length);
                 setMissingDois(result[0]["missing_dois"] || []);
                 setShowMissing(false);
+                setInvalidDois(result[0]["invalid_dois"] || []);
+                setShowInvalid(false);
                 setIsDownloadAll(true);
             })
             .catch(error => console.log(error))
@@ -218,20 +226,78 @@ function Home() {
                     </div>
                 }
                 {/* Counter display */}
-                {submittedCount > 0 && (
+                {(submittedCount > 0 || invalidDois.length > 0) && (
                     <div className="d-flex justify-content-between align-items-center mb-2 px-1">
-                        <span className={`badge ${foundCount === submittedCount ? 'bg-success' : 'bg-warning text-dark'}`}>
-                            Found: {foundCount} / {submittedCount}
-                        </span>
-                        {missingDois.length > 0 && (
-                            <button
-                                type="button"
-                                className="btn btn-sm btn-outline-secondary"
-                                onClick={() => setShowMissing(!showMissing)}
-                            >
-                                {showMissing ? 'Hide' : 'Show'} Missing DOIs ({missingDois.length})
-                            </button>
-                        )}
+                        <div className="d-flex align-items-center gap-2">
+                            {submittedCount > 0 && (
+                                <span className={`badge ${foundCount === submittedCount ? 'bg-success' : 'bg-warning text-dark'}`}>
+                                    Found: {foundCount} / {submittedCount}
+                                </span>
+                            )}
+                            {invalidDois.length > 0 && (
+                                <span className="badge bg-danger">
+                                    Invalid: {invalidDois.length}
+                                </span>
+                            )}
+                        </div>
+                        <div className="d-flex gap-1">
+                            {invalidDois.length > 0 && (
+                                <button
+                                    type="button"
+                                    className="btn btn-sm btn-outline-danger"
+                                    onClick={() => setShowInvalid(!showInvalid)}
+                                >
+                                    {showInvalid ? 'Hide' : 'Show'} Invalid DOIs ({invalidDois.length})
+                                </button>
+                            )}
+                            {missingDois.length > 0 && (
+                                <button
+                                    type="button"
+                                    className="btn btn-sm btn-outline-secondary"
+                                    onClick={() => setShowMissing(!showMissing)}
+                                >
+                                    {showMissing ? 'Hide' : 'Show'} Missing DOIs ({missingDois.length})
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                )}
+                {/* Invalid DOIs collapsible section */}
+                {showInvalid && invalidDois.length > 0 && (
+                    <div className="alert alert-danger mb-2 p-2">
+                        <div className="d-flex justify-content-between align-items-center mb-1">
+                            <strong>Incorrectly formatted DOIs ({invalidDois.length}):</strong>
+                            <div>
+                                <button
+                                    type="button"
+                                    className="btn btn-sm btn-outline-primary me-1"
+                                    onClick={() => navigator.clipboard.writeText(invalidDois.join('\n'))}
+                                >
+                                    Copy
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-sm btn-outline-secondary"
+                                    onClick={() => {
+                                        const csvContent = "invalid_doi\n" + invalidDois.join('\n');
+                                        const blob = new Blob([csvContent], { type: 'text/csv' });
+                                        const link = document.createElement('a');
+                                        link.href = URL.createObjectURL(blob);
+                                        link.download = 'invalid_dois.csv';
+                                        link.click();
+                                        URL.revokeObjectURL(link.href);
+                                    }}
+                                >
+                                    Download CSV
+                                </button>
+                            </div>
+                        </div>
+                        <textarea
+                            className="form-control"
+                            rows={Math.min(invalidDois.length, 5)}
+                            readOnly
+                            value={invalidDois.join('\n')}
+                        />
                     </div>
                 )}
                 {/* Missing DOIs collapsible section */}

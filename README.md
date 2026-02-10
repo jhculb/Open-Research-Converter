@@ -196,16 +196,18 @@ curl -X POST https://orc-demo.gesis.org/api/start_processing \
   "job_id": "uuid-string",
   "output_data": ["https://openalex.org/W2102245935", "https://openalex.org/W2015936098"],
   "output_full": "doi, oa_id\n...",
-  "submitted_count": 3,
+  "submitted_count": 2,
   "found_count": 2,
-  "missing_dois": ["https://doi.org/10.1234/not-found"]
+  "missing_dois": [],
+  "invalid_dois": ["not-a-doi"]
 }]
 ```
 
 The response includes:
-- `submitted_count`: Number of DOIs you submitted
+- `submitted_count`: Number of valid DOIs submitted for processing
 - `found_count`: Number of DOIs found in OpenAlex
-- `missing_dois`: List of DOIs not found in OpenAlex
+- `missing_dois`: List of valid DOIs not found in OpenAlex
+- `invalid_dois`: List of input strings that failed DOI format validation
 
 ## Process Flow
 
@@ -242,7 +244,9 @@ This section describes the complete flow from when a user submits DOIs to when r
 │  11. _validate_input_data() - Validates:                                    │
 │      • Job ID exists                                                        │
 │      • Email is present and valid                                           │
-│      • DOIs are present and correctly formatted                             │
+│      • Partitions DOIs into valid and invalid (Step 11a)                    │
+│      • Invalid DOIs are stored separately and reported to the user          │
+│      • Processing continues with valid DOIs only                            │
 │  12. Normalizes DOIs to standard format (https://doi.org/...)               │
 └─────────────────────────────────────────────────────────────────────────────┘
                                       │
@@ -267,9 +271,10 @@ This section describes the complete flow from when a user submits DOIs to when r
 │  19. return_data() - Formats final response:                                │
 │      • output_data: List of OpenAlex IDs                                    │
 │      • output_full: CSV string (doi, oa_id)                                 │
-│      • submitted_count: Total DOIs submitted                                │
+│      • submitted_count: Valid DOIs submitted for processing                 │
 │      • found_count: DOIs successfully matched                               │
 │      • missing_dois: DOIs not found in OpenAlex                             │
+│      • invalid_dois: Input strings that failed DOI format validation        │
 └─────────────────────────────────────────────────────────────────────────────┘
                                       │
                                       ▼
@@ -279,7 +284,8 @@ This section describes the complete flow from when a user submits DOIs to when r
 │  21. Displays counter: "Found X/Y" (found_count/submitted_count)            │
 │  22. Shows first 50 OpenAlex IDs in output box                              │
 │  23. Enables "Download CSV" button for full results                         │
-│  24. If missing DOIs exist, shows expandable section to view/download them  │
+│  24. If invalid DOIs exist, shows expandable section to view/download them  │
+│  25. If missing DOIs exist, shows expandable section to view/download them  │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 

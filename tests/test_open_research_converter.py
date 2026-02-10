@@ -61,6 +61,8 @@ def test_generate_new_job(log):
     assert orc._jobs[identifier]["found_count"] == 0
     assert "missing_dois" in orc._jobs[identifier]
     assert orc._jobs[identifier]["missing_dois"] == []
+    assert "invalid_dois" in orc._jobs[identifier]
+    assert orc._jobs[identifier]["invalid_dois"] == []
 
 
 def test_validate_data(log):
@@ -234,6 +236,7 @@ async def test_init_process_sunny_day(log, email, data, expected_output):
     assert isinstance(output_response["submitted_count"], int)
     assert isinstance(output_response["found_count"], int)
     assert isinstance(output_response["missing_dois"], list)
+    assert isinstance(output_response["invalid_dois"], list)
 
 
 @pytest.mark.integration
@@ -279,4 +282,53 @@ async def test_all_dois_found(log):
     assert output_code == 200
     assert output_response["submitted_count"] == 2
     assert output_response["found_count"] == 2
+    assert output_response["missing_dois"] == []
+    assert output_response["invalid_dois"] == []
+
+
+def test_partition_dois(log):
+    """Test that _partition_dois correctly separates valid and invalid DOIs."""
+    orc = OpenResearchConverter(log)
+    job_id = orc.generate_new_job()
+    data = [
+        "https://doi.org/10.48550/ARXIV.2406.15154",  # Valid
+        "not-a-doi",  # Invalid
+        "10.7717/peerj.4375",  # Valid (without prefix)
+        "hello world",  # Invalid
+        "",  # Invalid (empty string)
+    ]
+    valid, invalid = orc._partition_dois(job_id, data)
+    assert len(valid) == 2
+    assert len(invalid) == 3
+    assert "https://doi.org/10.48550/ARXIV.2406.15154" in valid
+    assert "10.7717/peerj.4375" in valid
+    assert "not-a-doi" in invalid
+    assert "hello world" in invalid
+    assert "" in invalid
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_invalid_dois_continue_processing(log):
+    """Test that invalid DOIs are separated out and valid DOIs are still processed."""
+    orc = OpenResearchConverter(log)
+    job_id = orc.generate_new_job()
+    email = "jack.culbert+orc@gesis.org"
+    # Mix of valid DOIs and invalid strings
+    data = [
+        "https://doi.org/10.48550/ARXIV.2406.15154",  # Valid - exists in OpenAlex
+        "not-a-doi",  # Invalid format
+        "hello world",  # Invalid format
+    ]
+    await orc.process(job_id, data, email)
+    output_response, output_code = orc.return_data(job_id)
+    assert output_code == 200
+    # Only the valid DOI should be submitted for processing
+    assert output_response["submitted_count"] == 1
+    assert output_response["found_count"] == 1
+    assert output_response["output_data"] == ["https://openalex.org/W4399991117"]
+    # Invalid DOIs should be reported
+    assert len(output_response["invalid_dois"]) == 2
+    assert "not-a-doi" in output_response["invalid_dois"]
+    assert "hello world" in output_response["invalid_dois"]
     assert output_response["missing_dois"] == []

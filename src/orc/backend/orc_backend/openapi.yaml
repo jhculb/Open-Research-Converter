@@ -73,8 +73,10 @@ paths:
         - A CSV string with DOI to OpenAlex ID mappings
         - Statistics on how many DOIs were found vs submitted
         - A list of DOIs that were not found in OpenAlex
+        - A list of input strings that failed DOI format validation
 
         DOIs can be submitted with or without the `https://doi.org/` prefix as the API automatically normalizes all DOI formats.
+        Incorrectly formatted DOIs are separated out, reported in the response, and the remaining valid DOIs are still processed.
       operationId: startProcessing
       requestBody:
         required: true
@@ -108,10 +110,11 @@ paths:
                     - "https://openalex.org/W2102245935"
                     - "https://openalex.org/W2015936098"
                   output_full: "doi, oa_id\nhttps://doi.org/10.1038/nature12373,https://openalex.org/W2102245935\n"
-                  submitted_count: 3
+                  submitted_count: 2
                   found_count: 2
-                  missing_dois:
-                    - "https://doi.org/10.1234/not-in-openalex"
+                  missing_dois: []
+                  invalid_dois:
+                    - "not-a-doi"
         '204':
           description: Processing not yet complete
           content:
@@ -215,7 +218,7 @@ components:
           example: "doi, oa_id\nhttps://doi.org/10.1038/nature12373,https://openalex.org/W2102245935\n"
         submitted_count:
           type: integer
-          description: Total number of DOIs submitted in the request
+          description: Total number of valid DOIs submitted for processing (excludes invalid DOIs)
           example: 100
         found_count:
           type: integer
@@ -225,10 +228,18 @@ components:
           type: array
           items:
             type: string
-          description: List of DOIs that were not found in OpenAlex (normalized to https://doi.org/ format)
+          description: List of valid DOIs that were not found in OpenAlex (normalized to https://doi.org/ format)
           example:
             - "https://doi.org/10.1234/not-found-1"
             - "https://doi.org/10.5678/not-found-2"
+        invalid_dois:
+          type: array
+          items:
+            type: string
+          description: List of input strings that failed DOI format validation and were not processed
+          example:
+            - "not-a-doi"
+            - "abc123"
 
     StatusResponse:
       type: object
