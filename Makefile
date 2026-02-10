@@ -2,12 +2,9 @@
 ifeq ($(OS),Windows_NT)
     COPY = copy
     PATHSEP = \\
-    # compile_paper is not supported on Windows (requires id -u, id -g)
-    COMPILE_PAPER_SUPPORTED = false
 else
     COPY = cp
     PATHSEP = /
-    COMPILE_PAPER_SUPPORTED = true
 endif
 
 all: code_quality lint_and_fix test security
@@ -112,8 +109,4 @@ set_envs:
 	$(COPY) src$(PATHSEP)env_templates$(PATHSEP)js.env.template src$(PATHSEP)env$(PATHSEP)js.env
 
 compile_paper:
-ifeq ($(COMPILE_PAPER_SUPPORTED),true)
-	docker run --rm --volume $(CURDIR)/paper:/data --user $(shell id -u):$(shell id -g) --env JOURNAL=joss openjournals/inara
-else
-	@echo "compile_paper is not supported on Windows (requires Unix id command)"
-endif
+	docker run --rm --volume $PWD/paper:/data --user $(id -u):$(id -g) --env JOURNAL=joss openjournals/inara
