@@ -142,6 +142,10 @@ class OpenAlexRequester:
         """
         Process DOIs and retrieve full OpenAlex metadata using async concurrent requests.
 
+        Process Flow Steps 15-18: Sends concurrent requests using aiometer,
+        collects responses and extracts full metadata, compares returned DOIs
+        against submitted DOIs, and tracks missing DOIs.
+
         Similar to _process_aio but retrieves comprehensive bibliometric metadata
         for each work instead of just the OpenAlex ID.
 
@@ -340,6 +344,9 @@ class OpenAlexRequester:
         """
         Prepare OpenAlex API request URLs for full metadata queries.
 
+        Process Flow Step 14: Formats each chunk into OpenAlex API query
+        for full bibliographic data (no field selection).
+
         Chunks the input DOIs and constructs API URLs that retrieve all
         available metadata fields for each work.
 
@@ -408,6 +415,8 @@ class OpenAlexRequester:
         """
         Normalize a DOI string to consistent https://doi.org/ format.
 
+        Process Flow Step 12: Regularises individual DOIs to https prefix and lowercase.
+
         Handles various input formats:
         - Raw DOI: "10.1234/abc" -> "https://doi.org/10.1234/abc"
         - HTTP URL: "http://doi.org/10.1234/abc" -> "https://doi.org/10.1234/abc"
@@ -441,6 +450,9 @@ class OpenAlexRequester:
     async def _request(self, request: str) -> dict:
         """
         Make an async HTTP GET request to OpenAlex with retry logic.
+
+        Process Flow Step 15 (sub-step): Sends individual API requests and
+        implements exponential backoff for rate limit compliance.
 
         Implements exponential backoff for rate limit (429) responses,
         retrying up to 5 times with delays of 1, 2, 4, 8, 16 seconds.

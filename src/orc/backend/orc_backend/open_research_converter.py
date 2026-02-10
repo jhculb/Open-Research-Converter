@@ -204,6 +204,9 @@ class OpenResearchConverter(OpenAlexRequester):
         """
         Validate that a job_id exists and is properly formatted.
 
+        Process Flow Step 11 (sub-step): Verifies the job ID is a valid string
+        and exists in the jobs dictionary.
+
         Args:
             job_id: The UUID string to validate.
 
@@ -229,6 +232,9 @@ class OpenResearchConverter(OpenAlexRequester):
     def _validate_email(self, job_id: str, email: str) -> bool:
         """
         Validate that an email is provided as a string.
+
+        Process Flow Step 11 (sub-step): Checks that the email is a valid string
+        for use with OpenAlex's polite pool.
 
         Args:
             job_id: The job identifier (for logging purposes).
@@ -277,6 +283,9 @@ class OpenResearchConverter(OpenAlexRequester):
     def _validate_data(self, job_id: str, data: list[str]) -> bool:
         """
         Validate that all items in data are valid DOI strings.
+
+        Process Flow Step 11 (sub-step): Checks all items against the DOI regex
+        pattern. Superseded by _partition_dois (Step 11a) for the main pipeline.
 
         Checks each string against the DOI regex pattern. If DOIs are missing
         the https://doi.org/ prefix, it will be added automatically.
@@ -364,6 +373,9 @@ class OpenResearchConverter(OpenAlexRequester):
         """
         Check if a job has received input data and is ready for processing.
 
+        Process Flow between Steps 11 and 13: Gate check before sending DOIs
+        to the requester for API processing.
+
         Args:
             job_id: The job identifier to check.
 
@@ -382,6 +394,9 @@ class OpenResearchConverter(OpenAlexRequester):
     async def process(self, job_id: str, data: str | list[str], email: str) -> None:
         """
         Process DOIs and retrieve their OpenAlex identifiers.
+
+        Process Flow Steps 9-18: Orchestrates the full ID conversion pipeline
+        from receiving data through to storing results.
 
         This is the main entry point for lightweight DOI conversion. It validates
         the input, queries the OpenAlex API, and stores the results in the job.
@@ -410,6 +425,9 @@ class OpenResearchConverter(OpenAlexRequester):
     async def process_all(self, job_id: str, data: str | list[str], email: str) -> None:
         """
         Process DOIs and retrieve full OpenAlex metadata.
+
+        Process Flow Steps 9-18: Orchestrates the full metadata conversion pipeline
+        from receiving data through to storing results.
 
         Similar to process(), but retrieves comprehensive bibliometric metadata
         for each work including citations, authors, topics, open access status, etc.

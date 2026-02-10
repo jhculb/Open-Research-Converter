@@ -313,32 +313,36 @@ Utilises Gunicorn for serving the app with hard coded parameters (assistance for
 		- Returns root HTML with noindex Robots
 	* Route ``/healthcheck``
 		- Queries OpenAlex to check there is a working connection
-	* Route ``/start_processing``
+	* Route ``/start_processing`` (Steps 6-8)
 		- Queries OpenAlex for WorkIDs
-	* Route ``/process_all``
+	* Route ``/process_all`` (Steps 6-8)
 		- Queries OpenAlex for full bibliographic records
 * open_research_converter.py
 	* OpenResearchConverter
 		- Contains code to coordinate processing the input DOIs (data) and returned values from OpenAlex (superclass of OpenAlexRequester)
-		* generate_new_job
+		* generate_new_job (Step 9)
 			- Creates UUID for job and assigns memory in dictionary for data
 		* process
 			- Checks input data is correctly formatted and begins querying OpenAlex for WorkIDs
 		* process_all
 			- Checks input data is correctly formatted and begins querying OpenAlex for full bibliometric data
-		* return_data
+		* return_data (Step 19)
 			- Formats and returns data to frontend
 		* Private Functions:
-			* _recieve_data
+			* _recieve_data (Step 10)
 				- Stores input data with best effort to reformat correctly
-			* _validate_input_data
-				- Checks job exists, email exists and is correctly formatted, and the data exists and is correctly formatted
+			* _validate_input_data (Step 11)
+				- Checks job exists, email exists and is correctly formatted, and partitions DOIs into valid and invalid
+			* _partition_dois (Step 11a)
+				- Separates input strings into valid and invalid DOIs; invalid DOIs are stored and reported, valid DOIs proceed to processing
 			* _validate_uuid
 				- Checks the UUID is in the job dictionary
 			* _validate_email
 				- Checks the email is a string. (Email regex exists on the frontend to check it is correctly formatted)
 			* _validate_data
 				- Checks the data is a list of valid dois (with or without `https://doi.org/` prefix).
+			* _doi_list_formatter (Step 12)
+				- Normalizes DOIs to include the https://doi.org/ prefix
 			* _check_ready
 				- Checks the formatted data (post _validate_data) is in the dictionary
 * requester.py
@@ -347,17 +351,17 @@ Utilises Gunicorn for serving the app with hard coded parameters (assistance for
 		* health_check
 			- Tests connection to OpenAlex API
 		* Private Functions
-			* _process_aio
-				- Coordinates processing the data (chunking, formatting requests) and sending requests to OpenAlex to return WorkIDs with aiometer
-			* _process_all
-				- Coordinates processing the data (chunking, formatting requests) and sending requests to OpenAlex to return full bibliographic records with aiometer
-			* _prepare_chunks
+			* _process_aio (Steps 15-18)
+				- Coordinates processing the data (chunking, formatting requests) and sending requests to OpenAlex to return WorkIDs with aiometer. Collects responses, compares returned DOIs against submitted, and tracks missing DOIs.
+			* _process_all (Steps 15-18)
+				- Coordinates processing the data (chunking, formatting requests) and sending requests to OpenAlex to return full bibliographic records with aiometer. Collects responses, compares returned DOIs against submitted, and tracks missing DOIs.
+			* _prepare_chunks (Step 14)
 				- Takes DOI chunk and formats into a request to OpenAlex API for WorkIDs
-			* _prepare_chunks_full
+			* _prepare_chunks_full (Step 14)
 				- Takes DOI chunk and formats into a request to OpenAlex API for full bibliographic data
-			* _chunk_input_data
+			* _chunk_input_data (Step 13)
 				- Splits data into 'chunks' of 50 DOIs
-			* _doi_str_formatter
+			* _doi_str_formatter (Step 12)
 				- Regularises DOIs to https prefix and lowercase
 			* _fetch
 				- Sends requests to OpenAlex API using aioclient and implements exponential backoff
