@@ -26,7 +26,7 @@ class Header extends Component {
                         </a>
                 }
                 &nbsp;&nbsp;
-                <a data-testid="is-home" href="/paper" className="mb-0 link-color button-font">
+                <a data-testid="preprint-link" href="/paper" className="mb-0 link-color button-font">
                     Preprint
                 </a>
             </div>

@@ -42,12 +42,12 @@ describe('Header Component', () => {
         expect(aboutLink).toHaveAttribute('href', '/about');
     });
 
-    test('renders "Home" icon link when isHome is false', () => {
+    test('renders "Home" text link when isHome is false', () => {
         render(<Header href="https://www.gesis.org" title="Open Research Converter" isHome={false} />);
 
         const homeLink = screen.getByTestId('is-not-home');
         expect(homeLink).toBeInTheDocument();
         expect(homeLink).toHaveAttribute('href', '/');
-        expect(homeLink.querySelector('i')).toHaveClass('fa-home');
+        expect(homeLink).toHaveTextContent('Home');
     });
 });
