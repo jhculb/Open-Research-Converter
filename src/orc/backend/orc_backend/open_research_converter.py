@@ -77,6 +77,8 @@ class OpenResearchConverter(OpenAlexRequester):
         """
         Create a new processing job with a unique identifier.
 
+        Process Flow Step 9: Creates unique job ID (UUID).
+
         Initializes all required data structures for tracking the job through
         its lifecycle from creation to completion.
 
@@ -94,6 +96,7 @@ class OpenResearchConverter(OpenAlexRequester):
             - submitted_count: Total DOIs submitted
             - found_count: DOIs successfully matched in OpenAlex
             - missing_dois: List of DOIs not found in OpenAlex
+            - invalid_dois: List of input strings that failed DOI format validation
         """
         new_job_id = uuid.uuid4().__str__()
         self._logger.debug(f"orc.py: new job created with id: {new_job_id}")
@@ -113,11 +116,14 @@ class OpenResearchConverter(OpenAlexRequester):
         self._jobs[new_job_id]["submitted_count"] = 0
         self._jobs[new_job_id]["found_count"] = 0
         self._jobs[new_job_id]["missing_dois"] = []
+        self._jobs[new_job_id]["invalid_dois"] = []
         return new_job_id
 
     def _recieve_data(self, job_id: str, data: list[str], email: str):
         """
         Receive and store input data for a job.
+
+        Process Flow Step 10: Stores raw input in job dictionary.
 
         Normalizes input data format (handles both comma-separated strings and lists),
         validates the data, and stores it in the job dictionary if valid.
@@ -152,6 +158,10 @@ class OpenResearchConverter(OpenAlexRequester):
         """
         Validate all input data for a processing request.
 
+        Process Flow Step 11: Validates job ID exists, email is present and valid,
+        and DOIs are present and correctly formatted. Incorrectly formatted DOIs
+        are separated out and stored as invalid_dois; valid DOIs proceed to processing.
+
         Performs comprehensive validation of job_id, email, and DOI data
         to ensure the request can be processed.
 
@@ -161,15 +171,17 @@ class OpenResearchConverter(OpenAlexRequester):
             email: Email address string.
 
         Returns:
-            bool: True if all validations pass, False otherwise.
+            bool: True if job_id and email are valid and at least one valid DOI exists,
+                False otherwise.
 
         Note:
-            All three validations (job_id, email, data) must pass for the
-            overall validation to succeed.
+            Job ID and email must be valid. For DOI data, the method now partitions
+            into valid and invalid DOIs rather than rejecting the entire request.
+            Invalid DOIs are stored in the job's invalid_dois field.
         """
         job_id_is_valid = False
         email_is_valid = False
-        data_is_valid = False
+        data_has_valid = False
         if job_id is not None:
             job_id_is_valid = self._validate_uuid(job_id)
             self._logger.debug(f"job_id: {job_id}: job:{job_id_is_valid}")
@@ -177,15 +189,23 @@ class OpenResearchConverter(OpenAlexRequester):
             email_is_valid = self._validate_email(job_id, email)
             self._logger.debug(f"job_id: {job_id}: email:{email_is_valid}")
         if data is not None:
-            data_is_valid = self._validate_data(job_id, data)
-        else:
-            data_is_valid = False
-        self._logger.debug(f"job_id: {job_id}: data:{data_is_valid}")
-        return job_id_is_valid and email_is_valid and data_is_valid
+            valid_dois, invalid_dois = self._partition_dois(job_id, data)
+            self._jobs[job_id]["invalid_dois"] = invalid_dois
+            if len(invalid_dois) > 0:
+                self._logger.info(f"job_id: {job_id}: {len(invalid_dois)} invalid DOIs separated out")
+            data_has_valid = len(valid_dois) > 0
+            # Replace data in-place so _recieve_data stores only valid DOIs
+            data.clear()
+            data.extend(valid_dois)
+        self._logger.debug(f"job_id: {job_id}: data_has_valid:{data_has_valid}")
+        return job_id_is_valid and email_is_valid and data_has_valid
 
     def _validate_uuid(self, job_id: str) -> bool:
         """
         Validate that a job_id exists and is properly formatted.
+
+        Process Flow Step 11 (sub-step): Verifies the job ID is a valid string
+        and exists in the jobs dictionary.
 
         Args:
             job_id: The UUID string to validate.
@@ -213,6 +233,9 @@ class OpenResearchConverter(OpenAlexRequester):
         """
         Validate that an email is provided as a string.
 
+        Process Flow Step 11 (sub-step): Checks that the email is a valid string
+        for use with OpenAlex's polite pool.
+
         Args:
             job_id: The job identifier (for logging purposes).
             email: The email address to validate.
@@ -238,6 +261,8 @@ class OpenResearchConverter(OpenAlexRequester):
         """
         Normalize DOIs to include the https://doi.org/ prefix.
 
+        Process Flow Step 12: Normalizes DOIs to standard format (https://doi.org/...).
+
         Args:
             data: List of DOI strings, with or without prefix.
 
@@ -258,6 +283,9 @@ class OpenResearchConverter(OpenAlexRequester):
     def _validate_data(self, job_id: str, data: list[str]) -> bool:
         """
         Validate that all items in data are valid DOI strings.
+
+        Process Flow Step 11 (sub-step): Checks all items against the DOI regex
+        pattern. Superseded by _partition_dois (Step 11a) for the main pipeline.
 
         Checks each string against the DOI regex pattern. If DOIs are missing
         the https://doi.org/ prefix, it will be added automatically.
@@ -294,9 +322,59 @@ class OpenResearchConverter(OpenAlexRequester):
             self._logger.error(err)
             return False
 
+    def _partition_dois(self, job_id: str, data: list[str]) -> tuple[list[str], list[str]]:
+        """
+        Partition input strings into valid and invalid DOIs.
+
+        Process Flow Step 11a: Separates incorrectly formatted DOIs from valid ones
+        so that valid DOIs can proceed to processing while invalid DOIs are reported
+        back to the user.
+
+        Checks each string against the DOI regex pattern. If a DOI is missing
+        the https://doi.org/ prefix, it is added before validation.
+
+        Args:
+            job_id: The job identifier (for logging purposes).
+            data: List of potential DOI strings to partition.
+
+        Returns:
+            tuple[list[str], list[str]]: A tuple of (valid_dois, invalid_dois).
+
+        Note:
+            DOI format validated: 10.XXXX/suffix where XXXX is 4-9 digits
+            and suffix contains alphanumeric characters and common punctuation.
+        """
+        self._logger.debug(f"job_id: {job_id}: partitioning DOIs into valid/invalid")
+        doi_regex_str = r"10.\d{4,9}\/[-._;()/:A-Za-z0-9]+"
+        doi_regex = re.compile(doi_regex_str)
+        https_regex_str = r"^https:\/\/doi\.org\/"
+        with_regex = re.compile(https_regex_str)
+        valid_dois = []
+        invalid_dois = []
+        try:
+            for potential_doi in data:
+                # Add prefix if missing before validation
+                normalized = potential_doi
+                if not bool(with_regex.match(normalized)):
+                    normalized = "https://doi.org/" + normalized
+                if doi_regex.search(normalized):
+                    valid_dois.append(potential_doi)
+                else:
+                    invalid_dois.append(potential_doi)
+            self._logger.debug(
+                f"job_id: {job_id}: partitioned {len(valid_dois)} valid, {len(invalid_dois)} invalid DOIs"
+            )
+        except TypeError as err:
+            self._logger.error(f"job_id: {job_id}: Incorrect type passed to _partition_dois - validation failed")
+            self._logger.error(err)
+        return valid_dois, invalid_dois
+
     def _check_ready(self, job_id: str) -> bool:
         """
         Check if a job has received input data and is ready for processing.
+
+        Process Flow between Steps 11 and 13: Gate check before sending DOIs
+        to the requester for API processing.
 
         Args:
             job_id: The job identifier to check.
@@ -316,6 +394,9 @@ class OpenResearchConverter(OpenAlexRequester):
     async def process(self, job_id: str, data: str | list[str], email: str) -> None:
         """
         Process DOIs and retrieve their OpenAlex identifiers.
+
+        Process Flow Steps 9-18: Orchestrates the full ID conversion pipeline
+        from receiving data through to storing results.
 
         This is the main entry point for lightweight DOI conversion. It validates
         the input, queries the OpenAlex API, and stores the results in the job.
@@ -345,6 +426,9 @@ class OpenResearchConverter(OpenAlexRequester):
         """
         Process DOIs and retrieve full OpenAlex metadata.
 
+        Process Flow Steps 9-18: Orchestrates the full metadata conversion pipeline
+        from receiving data through to storing results.
+
         Similar to process(), but retrieves comprehensive bibliometric metadata
         for each work including citations, authors, topics, open access status, etc.
 
@@ -373,8 +457,11 @@ class OpenResearchConverter(OpenAlexRequester):
         """
         Retrieve the results of a completed processing job.
 
+        Process Flow Step 19: Formats final response with output_data, output_full,
+        submitted_count, found_count, missing_dois, and invalid_dois.
+
         Returns the processed data including OpenAlex IDs, CSV/TSV output,
-        and statistics about the conversion (found count, missing DOIs).
+        and statistics about the conversion (found count, missing DOIs, invalid DOIs).
 
         Args:
             job_id: The UUID string identifying the job.
@@ -388,6 +475,7 @@ class OpenResearchConverter(OpenAlexRequester):
                     - submitted_count (int): Number of DOIs submitted
                     - found_count (int): Number of DOIs found in OpenAlex
                     - missing_dois (list): DOIs not found in OpenAlex
+                    - invalid_dois (list): Input strings that failed DOI format validation
                     - status (str): Job status (if not complete)
                 - int: HTTP status code (200 if complete, 204 if still processing)
 
@@ -397,6 +485,8 @@ class OpenResearchConverter(OpenAlexRequester):
             ...     print(f"Found {result['found_count']} of {result['submitted_count']} DOIs")
             ...     for doi in result['missing_dois']:
             ...         print(f"Not found: {doi}")
+            ...     for doi in result['invalid_dois']:
+            ...         print(f"Invalid format: {doi}")
         """
         self._validate_uuid(job_id=job_id)
         if self._jobs[job_id]["status"] == "complete":
@@ -413,6 +503,7 @@ class OpenResearchConverter(OpenAlexRequester):
                 "submitted_count": self._jobs[job_id]["submitted_count"],
                 "found_count": self._jobs[job_id]["found_count"],
                 "missing_dois": self._jobs[job_id]["missing_dois"],
+                "invalid_dois": self._jobs[job_id]["invalid_dois"],
             }, 200
         else:
             return {

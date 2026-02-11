@@ -83,6 +83,10 @@ class OpenAlexRequester:
         """
         Process DOIs and retrieve OpenAlex IDs using async concurrent requests.
 
+        Process Flow Steps 15-18: Sends concurrent requests using aiometer,
+        collects responses and extracts DOI → OpenAlex ID pairs, compares
+        returned DOIs against submitted DOIs, and tracks missing DOIs.
+
         Chunks the input DOIs, makes parallel requests to OpenAlex API,
         and stores the results. Tracks which DOIs were found vs missing.
 
@@ -137,6 +141,10 @@ class OpenAlexRequester:
     async def _process_all(self, job_id: str):
         """
         Process DOIs and retrieve full OpenAlex metadata using async concurrent requests.
+
+        Process Flow Steps 15-18: Sends concurrent requests using aiometer,
+        collects responses and extracts full metadata, compares returned DOIs
+        against submitted DOIs, and tracks missing DOIs.
 
         Similar to _process_aio but retrieves comprehensive bibliometric metadata
         for each work instead of just the OpenAlex ID.
@@ -304,6 +312,9 @@ class OpenAlexRequester:
         """
         Prepare OpenAlex API request URLs for lightweight (ID-only) queries.
 
+        Process Flow Step 14: Formats each chunk into OpenAlex API query with
+        filter query (works?filter=doi:DOI1|DOI2|...) and adds email to polite pool.
+
         Chunks the input DOIs and constructs API URLs with the 'select' parameter
         to retrieve only doi and id fields (faster response).
 
@@ -332,6 +343,9 @@ class OpenAlexRequester:
     def _prepare_chunks_full(self, job_id: str) -> list[str] | None:
         """
         Prepare OpenAlex API request URLs for full metadata queries.
+
+        Process Flow Step 14: Formats each chunk into OpenAlex API query
+        for full bibliographic data (no field selection).
 
         Chunks the input DOIs and constructs API URLs that retrieve all
         available metadata fields for each work.
@@ -363,6 +377,8 @@ class OpenAlexRequester:
     ) -> Generator[tuple[list[str], int], None, None] | None:
         """
         Split input DOIs into chunks for API requests.
+
+        Process Flow Step 13: Splits DOIs into chunks of 50 for efficient API querying.
 
         OpenAlex API has a limit on the number of items that can be queried
         in a single request. This method splits large DOI lists into
@@ -399,6 +415,8 @@ class OpenAlexRequester:
         """
         Normalize a DOI string to consistent https://doi.org/ format.
 
+        Process Flow Step 12: Regularises individual DOIs to https prefix and lowercase.
+
         Handles various input formats:
         - Raw DOI: "10.1234/abc" -> "https://doi.org/10.1234/abc"
         - HTTP URL: "http://doi.org/10.1234/abc" -> "https://doi.org/10.1234/abc"
@@ -432,6 +450,9 @@ class OpenAlexRequester:
     async def _request(self, request: str) -> dict:
         """
         Make an async HTTP GET request to OpenAlex with retry logic.
+
+        Process Flow Step 15 (sub-step): Sends individual API requests and
+        implements exponential backoff for rate limit compliance.
 
         Implements exponential backoff for rate limit (429) responses,
         retrying up to 5 times with delays of 1, 2, 4, 8, 16 seconds.

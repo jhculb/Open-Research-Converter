@@ -118,6 +118,9 @@ async def start_processing():
     """
     Convert a list of DOIs to OpenAlex IDs.
 
+    Process Flow Steps 6-8: Receives the API request, creates the converter
+    instance, and initiates processing.
+
     Accepts a JSON payload containing DOIs and an email address, queries the
     OpenAlex API, and returns the corresponding OpenAlex identifiers.
 
@@ -136,13 +139,18 @@ async def start_processing():
             - job_id (str): Unique identifier for this processing job
             - output_data (list): List of OpenAlex IDs (URLs)
             - output_full (str): CSV formatted string with DOI to OpenAlex ID mappings
-            - submitted_count (int): Number of DOIs submitted
+            - submitted_count (int): Number of valid DOIs submitted for processing
             - found_count (int): Number of DOIs found in OpenAlex
             - missing_dois (list): DOIs not found in OpenAlex
+            - invalid_dois (list): Input strings that failed DOI format validation
 
     HTTP Status Codes:
         200: Processing complete, results returned
         204: Processing not yet complete (status returned instead)
+
+    Note:
+        Incorrectly formatted DOIs are separated out and returned in invalid_dois.
+        The remaining valid DOIs are still processed normally.
 
     Example Request::
 
@@ -150,7 +158,7 @@ async def start_processing():
         Content-Type: application/json
         {
             "email": "researcher@university.edu",
-            "input_data": "10.1038/nature12373, 10.1126/science.1231143"
+            "input_data": "10.1038/nature12373, not-a-doi, 10.1126/science.1231143"
         }
 
     Example Response::
@@ -161,7 +169,8 @@ async def start_processing():
             "output_full": "doi, oa_id\\nhttps://doi.org/10.1038/nature12373,...",
             "submitted_count": 2,
             "found_count": 1,
-            "missing_dois": ["https://doi.org/10.1126/science.1231143"]
+            "missing_dois": ["https://doi.org/10.1126/science.1231143"],
+            "invalid_dois": ["not-a-doi"]
         }]
     """
     log.debug("app.py: start_processing called")
@@ -196,15 +205,19 @@ async def start_processing_all():
             - job_id (str): Unique identifier for this processing job
             - output_data (list): List of OpenAlex IDs (URLs)
             - output_full (str): TSV formatted string with full metadata (47+ fields)
-            - submitted_count (int): Number of DOIs submitted
+            - submitted_count (int): Number of valid DOIs submitted for processing
             - found_count (int): Number of DOIs found in OpenAlex
             - missing_dois (list): DOIs not found in OpenAlex
+            - invalid_dois (list): Input strings that failed DOI format validation
 
     HTTP Status Codes:
         200: Processing complete, results returned
         204: Processing not yet complete
 
     Note:
+        Incorrectly formatted DOIs are separated out and returned in invalid_dois.
+        The remaining valid DOIs are still processed normally.
+
         The output_full field contains tab-separated values (TSV) with fields including:
         doi, oa_id, ids, title, language, display_name, is_retracted, authorships,
         publication_date, publication_year, open_access, primary_topic, topics,

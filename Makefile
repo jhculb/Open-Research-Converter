@@ -1,3 +1,12 @@
+# Cross-platform detection
+ifeq ($(OS),Windows_NT)
+    COPY = copy
+    PATHSEP = \\
+else
+    COPY = cp
+    PATHSEP = /
+endif
+
 all: code_quality lint_and_fix test security
 
 all_no_fix: code_quality lint test security
@@ -20,7 +29,7 @@ test_v: test_coverage_v
 test_vv: test_coverage_vv
 
 test_javascript:
-	(cd ./src/orc/frontend/orc-demo ; npm test)
+	cd ./src/orc/frontend/orc-demo && npm test
 
 security: bandit
 
@@ -62,10 +71,10 @@ install_pyright:
 	poetry install
 
 run:
-	docker-compose down && docker-compose up --build -d
+	docker compose down && docker compose up --build -d
 
 redeploy:
-	git pull && docker-compose down && docker-compose up --build -d
+	git pull && docker compose down && docker compose up --build -d
 
 view_container_logs_backend:
 	docker logs --tail 50 --follow --timestamps orc-backend
@@ -83,17 +92,21 @@ test_badges:
 	mkdir badges
 	python generate_badges.py
 
-test_javascript:
-	npm test
-
 certificates_dry_run:
-	docker compose run --rm  certbot certonly --webroot --webroot-path /var/www/certbot/ --dry-run -d orc-demo.gesis.org
+	docker compose run --rm certbot certonly --webroot --webroot-path /var/www/certbot/ --dry-run -d orc-demo.gesis.org
+
+certificates_renew:
+	docker compose run --rm certbot renew --webroot --webroot-path /var/www/certbot/ -n
 
 certificates_create_and_load:
-	docker compose run --rm  certbot certonly --webroot --webroot-path /var/www/certbot/ -d orc-demo.gesis.org
+	docker compose run --rm certbot certonly --webroot --webroot-path /var/www/certbot/ -d orc-demo.gesis.org
 
 set_envs:
-	cp .env.template .env && cp src/env_templates/backend.env.template src/env/backend.env && cp src/env_templates/frontend.env.template src/env/frontend.env && cp ./src/env_templates/nginx.env.template ./src/env/nginx.env && cp ./src/env_templates/js.env.template ./src/env/js.env
+	$(COPY) .env.template .env
+	$(COPY) src$(PATHSEP)env_templates$(PATHSEP)backend.env.template src$(PATHSEP)env$(PATHSEP)backend.env
+	$(COPY) src$(PATHSEP)env_templates$(PATHSEP)frontend.env.template src$(PATHSEP)env$(PATHSEP)frontend.env
+	$(COPY) src$(PATHSEP)env_templates$(PATHSEP)nginx.env.template src$(PATHSEP)env$(PATHSEP)nginx.env
+	$(COPY) src$(PATHSEP)env_templates$(PATHSEP)js.env.template src$(PATHSEP)env$(PATHSEP)js.env
 
 compile_paper:
 	docker run --rm --volume $PWD/paper:/data --user $(id -u):$(id -g) --env JOURNAL=joss openjournals/inara

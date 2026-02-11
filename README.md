@@ -31,6 +31,7 @@ We provide here in the Open Research Coverter a tool utilising the OpenAlex API 
 		- [Endpoints Summary](#endpoints-summary)
 		- [Example Request](#example-request)
 		- [Response Format](#response-format)
+	- [Process Flow](#process-flow)
 	- [Functionality](#functionality)
 		- [NGINX Container](#nginx-container)
 		- [Frontend Container](#frontend-container)
@@ -195,16 +196,98 @@ curl -X POST https://orc-demo.gesis.org/api/start_processing \
   "job_id": "uuid-string",
   "output_data": ["https://openalex.org/W2102245935", "https://openalex.org/W2015936098"],
   "output_full": "doi, oa_id\n...",
-  "submitted_count": 3,
+  "submitted_count": 2,
   "found_count": 2,
-  "missing_dois": ["https://doi.org/10.1234/not-found"]
+  "missing_dois": [],
+  "invalid_dois": ["not-a-doi"]
 }]
 ```
 
 The response includes:
-- `submitted_count`: Number of DOIs you submitted
+- `submitted_count`: Number of valid DOIs submitted for processing
 - `found_count`: Number of DOIs found in OpenAlex
-- `missing_dois`: List of DOIs not found in OpenAlex
+- `missing_dois`: List of valid DOIs not found in OpenAlex
+- `invalid_dois`: List of input strings that failed DOI format validation
+
+## Process Flow
+
+This section describes the complete flow from when a user submits DOIs to when results are returned.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              USER INTERFACE                                 │
+│  1. User enters email and DOIs (via text input or CSV upload)               │
+│  2. User clicks "Submit"                                                    │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           FRONTEND (React)                                  │
+│  3. Validates email format (regex check)                                    │
+│  4. Sends POST request to /api/start_processing with email and DOI list     │
+│  5. Displays loading animation while waiting                                │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      BACKEND API (app.py)                                   │
+│  6. Receives request at /start_processing endpoint                          │
+│  7. Creates OpenResearchConverter instance                                  │
+│  8. Calls process() method with email and input data                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│              ORCHESTRATOR (open_research_converter.py)                      │
+│  9.  generate_new_job() - Creates unique job ID (UUID)                      │
+│  10. _receive_data() - Stores raw input in job dictionary                   │
+│  11. _validate_input_data() - Validates:                                    │
+│      • Job ID exists                                                        │
+│      • Email is present and valid                                           │
+│      • Partitions DOIs into valid and invalid (Step 11a)                    │
+│      • Invalid DOIs are stored separately and reported to the user          │
+│      • Processing continues with valid DOIs only                            │
+│  12. Normalizes DOIs to standard format (https://doi.org/...)               │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    REQUESTER (requester.py)                                 │
+│  13. _chunk_input_data() - Splits DOIs into chunks of 50                    │
+│  14. _prepare_chunks() - Formats each chunk into OpenAlex API query         │
+│      • Creates filter query: works?filter=doi:DOI1|DOI2|DOI3...             │
+│      • Adds email to "polite pool" for better rate limits                   │
+│  15. _process_aio() - Sends concurrent requests using aiometer              │
+│      • Respects rate limits (max 10 requests/second)                        │
+│      • Implements exponential backoff on failures                           │
+│  16. Collects responses and extracts DOI → OpenAlex ID pairs                │
+│  17. Compares returned DOIs against submitted DOIs                          │
+│  18. Tracks missing DOIs (submitted but not found in OpenAlex)              │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         RESPONSE ASSEMBLY                                   │
+│  19. return_data() - Formats final response:                                │
+│      • output_data: List of OpenAlex IDs                                    │
+│      • output_full: CSV string (doi, oa_id)                                 │
+│      • submitted_count: Valid DOIs submitted for processing                 │
+│      • found_count: DOIs successfully matched                               │
+│      • missing_dois: DOIs not found in OpenAlex                             │
+│      • invalid_dois: Input strings that failed DOI format validation        │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           FRONTEND (React)                                  │
+│  20. Receives JSON response                                                 │
+│  21. Displays counter: "Found X/Y" (found_count/submitted_count)            │
+│  22. Shows first 50 OpenAlex IDs in output box                              │
+│  23. Enables "Download CSV" button for full results                         │
+│  24. If invalid DOIs exist, shows expandable section to view/download them  │
+│  25. If missing DOIs exist, shows expandable section to view/download them  │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
 
 ## Functionality
 The ORC functions in a containerised environment. To run this using the makefile type `make run`.
@@ -230,32 +313,36 @@ Utilises Gunicorn for serving the app with hard coded parameters (assistance for
 		- Returns root HTML with noindex Robots
 	* Route ``/healthcheck``
 		- Queries OpenAlex to check there is a working connection
-	* Route ``/start_processing``
+	* Route ``/start_processing`` (Steps 6-8)
 		- Queries OpenAlex for WorkIDs
-	* Route ``/process_all``
+	* Route ``/process_all`` (Steps 6-8)
 		- Queries OpenAlex for full bibliographic records
 * open_research_converter.py
 	* OpenResearchConverter
 		- Contains code to coordinate processing the input DOIs (data) and returned values from OpenAlex (superclass of OpenAlexRequester)
-		* generate_new_job
+		* generate_new_job (Step 9)
 			- Creates UUID for job and assigns memory in dictionary for data
 		* process
 			- Checks input data is correctly formatted and begins querying OpenAlex for WorkIDs
 		* process_all
 			- Checks input data is correctly formatted and begins querying OpenAlex for full bibliometric data
-		* return_data
+		* return_data (Step 19)
 			- Formats and returns data to frontend
 		* Private Functions:
-			* _recieve_data
+			* _recieve_data (Step 10)
 				- Stores input data with best effort to reformat correctly
-			* _validate_input_data
-				- Checks job exists, email exists and is correctly formatted, and the data exists and is correctly formatted
+			* _validate_input_data (Step 11)
+				- Checks job exists, email exists and is correctly formatted, and partitions DOIs into valid and invalid
+			* _partition_dois (Step 11a)
+				- Separates input strings into valid and invalid DOIs; invalid DOIs are stored and reported, valid DOIs proceed to processing
 			* _validate_uuid
 				- Checks the UUID is in the job dictionary
 			* _validate_email
 				- Checks the email is a string. (Email regex exists on the frontend to check it is correctly formatted)
 			* _validate_data
 				- Checks the data is a list of valid dois (with or without `https://doi.org/` prefix).
+			* _doi_list_formatter (Step 12)
+				- Normalizes DOIs to include the https://doi.org/ prefix
 			* _check_ready
 				- Checks the formatted data (post _validate_data) is in the dictionary
 * requester.py
@@ -264,17 +351,17 @@ Utilises Gunicorn for serving the app with hard coded parameters (assistance for
 		* health_check
 			- Tests connection to OpenAlex API
 		* Private Functions
-			* _process_aio
-				- Coordinates processing the data (chunking, formatting requests) and sending requests to OpenAlex to return WorkIDs with aiometer
-			* _process_all
-				- Coordinates processing the data (chunking, formatting requests) and sending requests to OpenAlex to return full bibliographic records with aiometer
-			* _prepare_chunks
+			* _process_aio (Steps 15-18)
+				- Coordinates processing the data (chunking, formatting requests) and sending requests to OpenAlex to return WorkIDs with aiometer. Collects responses, compares returned DOIs against submitted, and tracks missing DOIs.
+			* _process_all (Steps 15-18)
+				- Coordinates processing the data (chunking, formatting requests) and sending requests to OpenAlex to return full bibliographic records with aiometer. Collects responses, compares returned DOIs against submitted, and tracks missing DOIs.
+			* _prepare_chunks (Step 14)
 				- Takes DOI chunk and formats into a request to OpenAlex API for WorkIDs
-			* _prepare_chunks_full
+			* _prepare_chunks_full (Step 14)
 				- Takes DOI chunk and formats into a request to OpenAlex API for full bibliographic data
-			* _chunk_input_data
+			* _chunk_input_data (Step 13)
 				- Splits data into 'chunks' of 50 DOIs
-			* _doi_str_formatter
+			* _doi_str_formatter (Step 12)
 				- Regularises DOIs to https prefix and lowercase
 			* _fetch
 				- Sends requests to OpenAlex API using aioclient and implements exponential backoff
