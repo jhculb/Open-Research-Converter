@@ -25,6 +25,7 @@ References:
 import asyncio
 import functools
 import logging
+import os
 import re
 from typing import Generator
 
@@ -78,6 +79,7 @@ class OpenAlexRequester:
         self._rate_limit_interval = 1
         self._max_concurrent_per_second_aio = 8
         self._aio_client = AsyncClient()
+        self._api_key = os.environ.get("OPENALEX_API_KEY")
 
     async def _process_aio(self, job_id: str):
         """
@@ -293,8 +295,9 @@ class OpenAlexRequester:
             >>> if status == 418:
             ...     print("OpenAlex API is healthy")
         """
+        key_param = f"&api_key={self._api_key}" if self._api_key else ""
         try:
-            response = await self._aio_client.get(HEALTHCHECK_ADDR)
+            response = await self._aio_client.get(HEALTHCHECK_ADDR + key_param)
             if response.json() != HEALTH_CHECK_RESPONSE:
                 self._logger.error("Health check failed - response not as expected")
                 return {"healthy": False, "error": "unknown"}, 200
@@ -331,8 +334,9 @@ class OpenAlexRequester:
         chunked_data = self._chunk_input_data(job_id)
         if chunked_data is not None:
             chunked_data = list(chunked_data)
+            key_param = f"&api_key={self._api_key}" if self._api_key else ""
             return [
-                f"https://api.openalex.org/works?filter=doi:{'|'.join(chunks)}&per-page={chunklen}&mailto={self._jobs[job_id]['email']}&select=id,doi"
+                f"https://api.openalex.org/works?filter=doi:{'|'.join(chunks)}&per-page={chunklen}&mailto={self._jobs[job_id]['email']}&select=id,doi{key_param}"
                 for chunks, chunklen in chunked_data
             ]
 
@@ -363,8 +367,9 @@ class OpenAlexRequester:
         chunked_data = self._chunk_input_data(job_id)
         if chunked_data is not None:
             chunked_data = list(chunked_data)
+            key_param = f"&api_key={self._api_key}" if self._api_key else ""
             return [
-                f"https://api.openalex.org/works?filter=doi:{'|'.join(chunks)}&per-page={chunklen}&mailto={self._jobs[job_id]['email']}"
+                f"https://api.openalex.org/works?filter=doi:{'|'.join(chunks)}&per-page={chunklen}&mailto={self._jobs[job_id]['email']}{key_param}"
                 for chunks, chunklen in chunked_data
             ]
 

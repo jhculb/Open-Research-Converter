@@ -141,7 +141,7 @@ class OpenResearchConverter(OpenAlexRequester):
             - Logs errors if validation fails
         """
         if isinstance(data, str):
-            data = list(map(str.strip, data.split(",")))
+            data = list(map(str.strip, data.strip(",").split(",")))
         if isinstance(data, list):
             data = list(map(str.strip, data))
         if self._validate_input_data(job_id, data, email):
