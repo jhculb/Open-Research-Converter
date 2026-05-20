@@ -37,11 +37,13 @@ from __future__ import annotations
 import logging
 
 from orc.backend.orc_backend.open_research_converter import OpenResearchConverter
-from quart import Quart, jsonify, request
+from quart import Blueprint, Quart, jsonify, request
 from quart_cors import cors
 
 app = Quart(__name__)
 cors = cors(app)
+
+api_bp = Blueprint("api", __name__, url_prefix="/api")
 
 gunicorn_error_logger = logging.getLogger("gunicorn.error")
 app.logger.handlers.extend(gunicorn_error_logger.handlers)
@@ -80,7 +82,7 @@ def hello_world():
     return description
 
 
-@app.route("/healthcheck", methods=["GET"])
+@api_bp.route("/healthcheck", methods=["GET"])
 async def healthcheck():
     """
     Check the health status of the OpenAlex API connection.
@@ -113,7 +115,7 @@ async def healthcheck():
     return await orc.health_check()
 
 
-@app.route("/start_processing", methods=["POST"])
+@api_bp.route("/start_processing", methods=["POST"])
 async def start_processing():
     """
     Convert a list of DOIs to OpenAlex IDs.
@@ -187,7 +189,7 @@ async def start_processing():
     return response
 
 
-@app.route("/process_all", methods=["POST"])
+@api_bp.route("/process_all", methods=["POST"])
 async def start_processing_all():
     """
     Convert DOIs to OpenAlex IDs and retrieve full bibliometric metadata.
@@ -244,3 +246,6 @@ async def start_processing_all():
     response.headers.add("Access-Control-Allow-Origin", "*")
     log.debug(f"app.py: get_data response: {response}")
     return response
+
+
+app.register_blueprint(api_bp)
