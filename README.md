@@ -81,7 +81,7 @@ If you wish to use the ORC without installing locally:
 ### Local Installation (Docker)
 Should you wish to run the ORC locally using Docker, please follow these steps:
 
-**Prerequisites:** Docker and Docker Compose installed
+**Prerequisites:** Docker and Docker Compose installed, an OpenAlex API key has been obtained ([see here](https://developers.openalex.org/api-reference/introduction))
 
 **Step 1: Set up environment variables**
 
@@ -105,6 +105,11 @@ cp src/env_templates/nginx.env.template src/env/nginx.env
 ```
 
 **Note:** The root `.env` file sets `LOCAL_OR_PRODUCTION=local`, which tells Docker which nginx config to use (`local.default.conf` vs `prod.default.conf`). Without this file, docker-compose will fail with "`.default.conf`: not found".
+
+**API Key:** An [OpenAlex API key](https://openalex.org/) is required. Replace the placeholder in `src/env/backend.env`:
+```
+OPENALEX_API_KEY=your-api-key
+```
 
 **Step 2: Build and run**
 ```bash
@@ -305,7 +310,7 @@ A separate README detailing the Frontend container can be found at `src/orc/fron
 ### Backend Container
 Exposes port 8001 for app traffic.
 
-Utilises Gunicorn for serving the app with hard coded parameters (assistance for injecting these parameters into the entrypoint command without using shell style or `bash -c...` would be appreciated). These can be changed in the ENTRYPOINT command in the Dockerfile.
+Utilises Gunicorn for serving the app. Worker count and other parameters can be configured via `GUNICORN_NUM_WORKERS` in `src/env/backend.env` (defaults to 9). Additional parameters can be changed in the ENTRYPOINT command in the Dockerfile.
 
 * app.py
 	- Contains async API to interface with the JavaScript Application
@@ -393,19 +398,19 @@ All dependency management for the backend is managed by poetry. For the frontend
 Following PEP621, configuration for core project metadata is stored in the pyproject.toml where possible.
 ### Known Bugs
 1. [B1] - Error handling is currently not performed on the frontend, leading to the process occasionally stopping without informing the user
-2. [B2] - Reports of DOI input string ending in comma failing.
+2. ~~[B2] - Reports of DOI input string ending in comma failing.~~
 ### Planned Features
 #### Major
 1. [M1] - For items that may exist in other databases without a DOI but contain enough information to confidently match (e.g. author names, title, publishing date, &c.), extending the ORCs capability to match these records.
 #### Minor
-1. [m1] - Better handling of items which do not exist in OpenAlex (return "Not found" or similar rather than dropping)
+1. [m1] - ~~Better handling of items which do not exist in OpenAlex (return "Not found" or similar rather than dropping)~~
 2. [m2] - Improving test coverage and quality
 3. [m3] - Reinstating Typecheck for the backend
 4. [m4] - ~~Implement frontend Testing~~
-5. [m5] - Standardising .env variable names and values (local/dev/prod/production)
+5. [m5] - ~~Standardising .env variable names and values (local/dev/prod/production)~~
 6. [m6] - Implement frontend logging
 7. [m7] - ~~Change the bind mount for certbot to a docker volume.~~
-8. [m8] - Adding ability to change gunicorn parameters via ARG/ENV in the backend container. (see ``Functionality/Backend Container``)
+8. [m8] - ~~Adding ability to change gunicorn parameters via ARG/ENV in the backend container.(see ``Functionality/Backend Container``)~~
 ### Contributing
 Please raise github issues with bugs. Any frontend development experience would be greatly appreciated.
 ### Tips for Development

@@ -39,6 +39,9 @@ HEALTHCHECK_ADDR = "https://api.openalex.org/?mailto=jack.culbert@gesis.org"
 #: Expected JSON response from a healthy OpenAlex API
 HEALTH_CHECK_RESPONSE = {"documentation_url": "https://openalex.org/rest-api", "msg": "Don't panic", "version": "0.0.1"}
 
+#: OpenAlex API keys are 22-character alphanumeric strings
+_OPENALEX_API_KEY_RE = re.compile(r"^[A-Za-z0-9]{22}$")
+
 
 class OpenAlexRequester:
     """
@@ -79,7 +82,21 @@ class OpenAlexRequester:
         self._rate_limit_interval = 1
         self._max_concurrent_per_second_aio = 8
         self._aio_client = AsyncClient()
-        self._api_key = os.environ.get("OPENALEX_API_KEY")
+        raw_key = os.environ.get("OPENALEX_API_KEY")
+        if raw_key is None:
+            self._logger.warning("OPENALEX_API_KEY is not set")
+            self._api_key = None
+        else:
+            stripped_key = raw_key.strip()
+            if stripped_key != raw_key:
+                self._logger.warning("OPENALEX_API_KEY had leading/trailing whitespace — trimmed")
+            if not _OPENALEX_API_KEY_RE.match(stripped_key):
+                self._logger.warning(
+                    "OPENALEX_API_KEY does not match expected format (22 alphanumeric characters) — key will not be used"
+                )
+                self._api_key = None
+            else:
+                self._api_key = stripped_key
 
     async def _process_aio(self, job_id: str):
         """
