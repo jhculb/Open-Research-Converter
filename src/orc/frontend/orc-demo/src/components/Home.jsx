@@ -23,7 +23,7 @@ function Home() {
     const [showInvalid, setShowInvalid] = useState(false);
     const blockedEmails = ['john.culbert@gesis.org', 'ahsan.shahid@gesis.org'];
 
-    let apiUrl = process.env.REACT_APP_DEV_URL;
+    let apiUrl = process.env.REACT_APP_DEV_URL || 'http://localhost:8001';
     if (process.env.REACT_APP_ENV === "production") {
         apiUrl = process.env.REACT_APP_PROD_URL;
     }

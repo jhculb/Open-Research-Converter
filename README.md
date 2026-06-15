@@ -136,9 +136,14 @@ For development without Docker, you can run the backend and frontend separately.
 # From project root
 poetry install
 
+# Set your OpenAlex API key
+export OPENALEX_API_KEY=your-api-key  # Linux/macOS
+# $env:OPENALEX_API_KEY="your-api-key"  # Windows (PowerShell)
+
 # Run the backend server on port 8001
 poetry run python -m quart --app src.orc.backend.orc_backend.app run --port 8001
 ```
+If successful, browsing to http://127.0.0.1:8001 should present a plaintext webpage with the following text: "ORC API using quart".
 
 **Frontend Setup:**
 ```bash
@@ -147,14 +152,11 @@ cd src/orc/frontend/orc-demo
 # Install dependencies
 npm install
 
-# Configure API URL for local development
-# Edit .env or create one with:
-echo "REACT_APP_DEV_URL=http://localhost:8001" > .env
-echo "REACT_APP_ENV=dev" >> .env
-
 # Start the development server
 npm start
 ```
+
+**Note:** `src/orc/frontend/orc-demo/.env` is pre-configured with `REACT_APP_DEV_URL=http://localhost:8001` for local development. If you need to change the backend URL, edit that file directly in a text editor (do not use shell redirection such as `echo … > .env`, as this produces a BOM-encoded file that the React toolchain cannot read).
 
 **CORS Configuration:**
 
