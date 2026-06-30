@@ -21,19 +21,6 @@ servers:
     description: Production server
 
 paths:
-  /:
-    get:
-      summary: API Root
-      description: Returns an HTML page with API information and noindex robots directive.
-      operationId: getRoot
-      responses:
-        '200':
-          description: HTML description page
-          content:
-            text/html:
-              schema:
-                type: string
-
   /healthcheck:
     get:
       summary: Health Check
@@ -88,12 +75,10 @@ paths:
               commaSeparated:
                 summary: Comma-separated DOIs
                 value:
-                  email: "researcher@university.edu"
                   input_data: "10.1038/nature12373, 10.1126/science.1231143"
               withPrefix:
                 summary: DOIs with https prefix
                 value:
-                  email: "researcher@university.edu"
                   input_data: "https://doi.org/10.1038/nature12373, https://doi.org/10.1126/science.1231143"
       responses:
         '200':
@@ -165,17 +150,8 @@ components:
     ProcessingRequest:
       type: object
       required:
-        - email
         - input_data
       properties:
-        email:
-          type: string
-          format: email
-          description: |
-            Email address for OpenAlex API polite pool.
-            Providing an email places your requests in OpenAlex's "polite pool"
-            with faster and more consistent response times.
-          example: researcher@university.edu
         input_data:
           oneOf:
             - type: string

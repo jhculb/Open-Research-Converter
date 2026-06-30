@@ -1,6 +1,7 @@
 ## ORC
 logs/
 src/orc/nginx/certbot
+diun/
 
 ## Diun
 diun/data/
