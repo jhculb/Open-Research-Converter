@@ -313,11 +313,17 @@ class OpenAlexRequester:
             ...     print("OpenAlex API is healthy")
         """
         key_param = f"&api_key={self._api_key}" if self._api_key else ""
+        expected_api_version = "0.1"
         try:
             response = await self._aio_client.get(HEALTHCHECK_ADDR + key_param)
-            if response.json()["msg"] != HEALTH_CHECK_RESPONSE["msg"]:
-                self._logger.error("Health check failed - response not as expected")
-                return {"healthy": False, "error": "unknown"}, 200
+            if response.json()["version"] != expected_api_version:
+                self._logger.error(
+                    f"Health check failed - OpenAlex API version mismatch: expected {expected_api_version}, received {response.json()['version']}"
+                )
+                return {
+                    "healthy": False,
+                    "error": f"OpenAlex API version mismatch: expected {expected_api_version}, received {response.json()['version']}",
+                }, 200
         except requests.ConnectionError as conn_err:
             self._logger.error("Health check failed - Connection error")
             self._logger.error(conn_err)
