@@ -71,10 +71,10 @@ install_pyright:
 	poetry install
 
 run:
-	docker compose down && docker compose up --build -d
+	docker compose down && docker compose pull && docker compose up --build -d
 
 redeploy:
-	git pull && docker compose down && docker compose up --build -d
+	git pull && docker compose down && docker compose pull && docker compose up --build -d
 
 view_container_logs_backend:
 	docker logs --tail 50 --follow --timestamps orc-backend
