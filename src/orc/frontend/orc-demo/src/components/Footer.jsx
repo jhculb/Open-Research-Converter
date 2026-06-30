@@ -1,7 +1,7 @@
 import React from 'react';
 import './styles/Footer.sass'
 import kb_logo from '../images/KB_logo.svg';
-import Bmbf from '../images/bmbf.svg';
+import bmftr from '../images/bmftr.svg';
 const Footer = () => {
     return (
         <footer className="footer-bg-color text-color text-center">
@@ -14,8 +14,8 @@ const Footer = () => {
                     <span className="email-color ms-1"> ahsan.shahid@gesis.org</span>
                 </p>
                 <p className="mt-2">
-                    <a href="https://www.bmbf.de/bmbf/en/home/home_node.html" target="_blank" rel="noopener noreferrer">
-                        <img src={Bmbf} alt="Bmbf" style={{ height: '120px', maxWidth: '180px', verticalAlign: 'middle' }} />
+                    <a href="https://www.bmftr.bund.de/EN/Home/home_node.html" target="_blank" rel="noopener noreferrer">
+                        <img src={bmftr} alt="BMFTR" style={{ height: '120px', maxWidth: '180px', verticalAlign: 'middle' }} />
                     </a>
                     &nbsp;&nbsp;
                     <a href="https://bibliometrie.info/forschung/" target="_blank" rel="noopener noreferrer">

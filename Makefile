@@ -7,7 +7,7 @@ else
     PATHSEP = /
 endif
 
-all: code_quality lint_and_fix test security
+all: code_quality lint_and_fix test security test_javascript
 
 all_no_fix: code_quality lint test security
 

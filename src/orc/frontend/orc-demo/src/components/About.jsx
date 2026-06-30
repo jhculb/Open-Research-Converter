@@ -109,13 +109,13 @@ const About = () => {
 
             <h4 className="headings-color"><i className="fas fa-dollar-sign me-2 mt-3"></i>Funding</h4>
             <p>
-                This work was funded by the <a href="https://www.bmbf.de/bmbf/en/home/home_node.html" target="_blank" rel="noopener noreferrer">
-                Federal Ministry of Education and Research (BMBF)
+                This work was funded by the <a href="https://www.bmftr.bund.de/EN/Home/home_node.html" target="_blank" rel="noopener noreferrer">
+                Federal Ministry of Research, Technology and Space (BMFTR)
             </a> via funding numbers: 16WIK2301B /
                 16WIK2301E, The <a href="https://bibliometrie.info/forschung/" target="_blank" rel="noopener noreferrer">
                 OPENBIB
                 </a> project.
-                We acknowledge support by Federal Ministry of Education and Research, Germany under grant number
+                We acknowledge support by Federal Ministry of Research, Technology and Space, Germany under grant number
                 01PQ17001, the Competence Network for Bibliometrics.
             </p>
             <p>

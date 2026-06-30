@@ -170,13 +170,15 @@ function Home() {
                     <CsvFileReader className="m-1 w-100" setText={setText} />
                     <HintButton className="ml-2" imageName='input_template'></HintButton>
                 </div>
-                <div className="mt-2 flex-grow-1">
+                <div className="mt-2 flex-grow-1 d-flex flex-column">
                     <TextBox
                         title={"Input Box"}
                         rows={16}
                         placeholder={'Please enter comma separated DOIs or upload a csv file (max. size 1 MB) containing DOIs in the first column'}
                         value={text}
                         onChange={handleTextChange}
+                        wrapperClassName="flex-grow-1 d-flex flex-column"
+                        style={{ flexGrow: 1 }}
                     />
                     <div className="d-flex justify-content-center">
                         <button type="button" className={`btn ${(!(text) || isLoading) ? 'btn-disabled' : 'btn-color'}`} disabled={(!(text) || isLoading)} onClick={() => clearInput()}>Clear Input</button>

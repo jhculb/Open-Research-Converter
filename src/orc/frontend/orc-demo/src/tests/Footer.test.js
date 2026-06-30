@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import Footer from '../components/Footer';
 import kb_logo from '../images/KB_logo.svg';
-import Bmbf from '../images/bmbf.svg';
+import bmftr from '../images/bmftr.svg';
+
 
 describe('Footer Component', () => {
     test('renders the GESIS imprint link', () => {
@@ -38,13 +39,13 @@ describe('Footer Component', () => {
         expect(emailAhsan).toBeInTheDocument();
     });
 
-    test('renders Bmbf image with correct src and alt attributes', () => {
+    test('renders BMFTR image with correct src and alt attributes', () => {
         render(<Footer />);
 
-        const bmbfImage = screen.getByAltText('Bmbf');
-        expect(bmbfImage).toBeInTheDocument();
-        expect(bmbfImage).toHaveAttribute('src', Bmbf);
-        expect(bmbfImage).toHaveAttribute('alt', 'Bmbf');
+        const bmftrImage = screen.getByAltText('BMFTR');
+        expect(bmftrImage).toBeInTheDocument();
+        expect(bmftrImage).toHaveAttribute('src', bmftr);
+        expect(bmftrImage).toHaveAttribute('alt', 'BMFTR');
     });
 
     test('renders KB image with correct src and alt attributes', () => {
@@ -56,14 +57,14 @@ describe('Footer Component', () => {
         expect(KbImage).toHaveAttribute('alt', 'Kb');
     });
 
-    test('Bmbf and KB links open in a new tab with correct rel attribute', () => {
+    test('BMFTR and KB links open in a new tab with correct rel attribute', () => {
         render(<Footer />);
 
-        const bmbfLink = screen.getByAltText('Bmbf').closest('a');
+        const bmftrLink = screen.getByAltText('BMFTR').closest('a');
         const KbLink = screen.getByAltText('Kb').closest('a');
 
-        expect(bmbfLink).toHaveAttribute('target', '_blank');
-        expect(bmbfLink).toHaveAttribute('rel', 'noopener noreferrer');
+        expect(bmftrLink).toHaveAttribute('target', '_blank');
+        expect(bmftrLink).toHaveAttribute('rel', 'noopener noreferrer');
 
         expect(KbLink).toHaveAttribute('target', '_blank');
         expect(KbLink).toHaveAttribute('rel', 'noopener noreferrer');
