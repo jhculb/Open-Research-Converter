@@ -21,7 +21,6 @@ const About = () => {
             <h5 className="headings-color"><i className="fas fa-book me-2"></i>Instructions</h5>
             <ol>
                 <li>Navigate to <a href="https://orc-demo.gesis.org" target="_blank" rel="noopener noreferrer">https://orc-demo.gesis.org</a></li>
-                <li>Fill in your email address into the email box. This is so that OpenAlex can monitor traffic and places your requests in the "polite pool," where responses are faster and more consistent.</li>
                 <li>Input your DOI data:</li>
                 <ul>
                     <li><strong>Via text box:</strong> The ORC expects a comma-separated list of DOIs. It does not mind whether DOIs are prefaced with "https://doi.org/"</li>

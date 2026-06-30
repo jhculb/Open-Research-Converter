@@ -21,7 +21,6 @@ Example:
         POST /start_processing
         Content-Type: application/json
         {
-            "email": "researcher@university.edu",
             "input_data": "10.1038/nature12373, 10.1126/science.1231143"
         }
 
@@ -128,9 +127,6 @@ async def start_processing():
 
     Request Body:
         JSON object with the following fields:
-            - email (str): Email address for OpenAlex polite pool access.
-                Providing an email places requests in OpenAlex's "polite pool"
-                with faster and more consistent response times.
             - input_data (str or list): DOIs to convert. Can be:
                 - A comma-separated string: "10.1234/abc, 10.5678/def"
                 - An array of strings: ["10.1234/abc", "10.5678/def"]
@@ -159,7 +155,6 @@ async def start_processing():
         POST /start_processing
         Content-Type: application/json
         {
-            "email": "researcher@university.edu",
             "input_data": "10.1038/nature12373, not-a-doi, 10.1126/science.1231143"
         }
 
@@ -179,9 +174,8 @@ async def start_processing():
     json_data = await request.get_json()
     job_id = orc.generate_new_job()
     text = json_data["input_data"]
-    email = json_data["email"]
-    log.debug(f"app.py: start_processing input: job_id: {job_id}, text:{text}, email: {email}")
-    await orc.process(job_id, text, email)
+    log.debug(f"app.py: start_processing input: job_id: {job_id}, text:{text}")
+    await orc.process(job_id, text)
     log.debug(f"app.py: finished processing {job_id}")
     response = jsonify(orc.return_data(job_id))
     response.headers.add("Access-Control-Allow-Origin", "*")
@@ -199,7 +193,6 @@ async def start_processing_all():
 
     Request Body:
         JSON object with the following fields:
-            - email (str): Email address for OpenAlex polite pool access.
             - input_data (str or list): DOIs to convert (same format as /start_processing).
 
     Returns:
@@ -230,7 +223,6 @@ async def start_processing_all():
         POST /process_all
         Content-Type: application/json
         {
-            "email": "researcher@university.edu",
             "input_data": ["10.1038/nature12373"]
         }
     """
@@ -238,9 +230,8 @@ async def start_processing_all():
     json_data = await request.get_json()
     job_id = orc.generate_new_job()
     text = json_data["input_data"]
-    email = json_data["email"]
-    log.debug(f"app.py: start_processing input: job_id: {job_id}, text:{text}, email: {email}")
-    await orc.process_all(job_id, text, email)
+    log.debug(f"app.py: start_processing input: job_id: {job_id}, text:{text}")
+    await orc.process_all(job_id, text)
     log.debug(f"app.py: finished processing {job_id}")
     response = jsonify(orc.return_data(job_id))
     response.headers.add("Access-Control-Allow-Origin", "*")

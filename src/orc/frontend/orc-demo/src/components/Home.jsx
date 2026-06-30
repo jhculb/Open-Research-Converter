@@ -5,8 +5,6 @@ import CsvFileReader from './CsvFileReader';
 import HintButton from './HintButton';
 
 function Home() {
-    const [email, setEmail] = useState('');
-    const [validEmail, setValidEmail] = useState(false);
     const [text, setText] = useState('');
     const [result, setResult] = useState('');
     const [limitedResult, setLimitedResult] = useState('');
@@ -21,8 +19,6 @@ function Home() {
     const [showMissing, setShowMissing] = useState(false);
     const [invalidDois, setInvalidDois] = useState([]);
     const [showInvalid, setShowInvalid] = useState(false);
-    const blockedEmails = ['john.culbert@gesis.org', 'ahsan.shahid@gesis.org'];
-
     let apiUrl = process.env.REACT_APP_DEV_URL || 'http://localhost:8001';
     if (process.env.REACT_APP_ENV === "production") {
         apiUrl = process.env.REACT_APP_PROD_URL;
@@ -30,24 +26,6 @@ function Home() {
 
     const handleTextChange = (event) => {
         setText(event.target.value);
-    };
-    const handleEmailChange = (event) => {
-        let email = event.target.value;
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        setEmail(email);
-        // Check if email is valid
-        if (!emailRegex.test(email)) {
-            setValidEmail(false);
-            return;
-        }
-        // Check if email is blocked
-        if (blockedEmails.includes(email.toLowerCase())) {
-            setValidEmail(false);
-            setEmail('');
-            alert('Oops! Smart move! Please insert your personal e-mail address.');
-        } else {
-            setValidEmail(true);
-        }
     };
 
     //---- function called on Download IDS/Full Records button press
@@ -84,7 +62,7 @@ function Home() {
     //---- function called on Convert DOIs to IDs button press
     const onGetIds = () => {
         let url = apiUrl + '/api/start_processing';
-        let data = { "email": email, "input_data": text };
+        let data = { "input_data": text };
         setIsLoading(true);
         fetch(url, {
             method: 'POST',
@@ -137,7 +115,7 @@ function Home() {
     //---- function called on Download Full Records button press
     const onGetAll = () => {
         let url = apiUrl + '/api/process_all';
-        let data = { "email": email, "input_data": text };
+        let data = { "input_data": text };
         setIsLoading(true);
         fetch(url, {
             method: 'POST',
@@ -188,17 +166,6 @@ function Home() {
     return (
         <div className="row">
             <div className="col-12 col-md-6 d-flex flex-column">
-                <div className="mt-2">
-                    <TextBox
-                        customClass={email === "" ? "" : (validEmail ? "custom-valid-focus" : "custom-invalid-focus")}
-                        title={"Email"}
-                        rows={1}
-                        placeholder={'Please enter your email address'}
-                        value={email}
-                        type="email"
-                        onChange={handleEmailChange}
-                    />
-                </div>
                 <div className="mt-2 d-flex flex-grow-0 align-items-center upload-border">
                     <CsvFileReader className="m-1 w-100" setText={setText} />
                     <HintButton className="ml-2" imageName='input_template'></HintButton>
@@ -214,7 +181,7 @@ function Home() {
                     <div className="d-flex justify-content-center">
                         <button type="button" className={`btn ${(!(text) || isLoading) ? 'btn-disabled' : 'btn-color'}`} disabled={(!(text) || isLoading)} onClick={() => clearInput()}>Clear Input</button>
                         &nbsp;&nbsp;&nbsp;&nbsp;
-                        <button type="button" className={`btn ${(!(text && validEmail) || isLoading) ? 'btn-disabled' : 'btn-color'}`} disabled={(!(text && validEmail) || isLoading)} onClick={() => onGetIds()}>Convert DOIs to IDs</button>
+                        <button type="button" className={`btn ${(!text || isLoading) ? 'btn-disabled' : 'btn-color'}`} disabled={(!text || isLoading)} onClick={() => onGetIds()}>Convert DOIs to IDs</button>
                     </div>
                 </div>
             </div>
@@ -349,7 +316,7 @@ function Home() {
                 <div className="d-flex justify-content-center mb-1">
                     <button type="button" className={`btn ${isDownloadDisabled ? 'btn-disabled' : 'btn-color'}`} disabled={isDownloadDisabled} onClick={() => downloadResult()}>Download IDs</button>
                     &nbsp;&nbsp;&nbsp;&nbsp;
-                    <button type="button" className={`btn ${(!(text && validEmail) || isLoading) ? 'btn-disabled' : 'btn-color'}`} disabled={(!(text && validEmail) || isLoading)} onClick={() => onGetAll()}>Download Full Records</button>
+                    <button type="button" className={`btn ${(!text || isLoading) ? 'btn-disabled' : 'btn-color'}`} disabled={(!text || isLoading)} onClick={() => onGetAll()}>Download Full Records</button>
                 </div>
             </div>
         </div>

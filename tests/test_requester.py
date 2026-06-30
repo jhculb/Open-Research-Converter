@@ -70,33 +70,30 @@ def test_chunk_input_data_invalid_chunksize(log, invalid_chunksize):
 
 
 @pytest.mark.parametrize(
-    ["chunk_data", "chunk_len", "email", "expected_ids"],
+    ["chunk_data", "chunk_len", "expected_ids"],
     [
         [
             ["https://doi.org/10.48550/ARXIV.2406.15154"],
             1,
-            "jack.culbert+orc@gesis.org",
             ["https://openalex.org/W4399991117"],
         ],
         [
             ["https://doi.org/10.48550/ARXIV.2406.15154", "https://doi.org/10.5281/zenodo.6936227"],
             2,
-            "jack.culbert+orc@gesis.org",
             ["https://openalex.org/W4399991117", "https://openalex.org/W4288680697"],
         ],
         [
             ["https://doi.org/10.5281/zenodo.6936227", "https://doi.org/10.48550/ARXIV.2406.15154"],
             2,
-            "jack.culbert+orc@gesis.org",
             ["https://openalex.org/W4288680697", "https://openalex.org/W4399991117"],
         ],
     ],
 )
 @pytest.mark.asyncio
 @pytest.mark.integration
-async def test_request(log, chunk_data, chunk_len, email, expected_ids):
+async def test_request(log, chunk_data, chunk_len, expected_ids):
     orc = OpenResearchConverter(log)
-    query = f'https://api.openalex.org/works?filter=doi:{"|".join(chunk_data)}&per-page={chunk_len}&mailto={email}&select=id,doi'
+    query = f'https://api.openalex.org/works?filter=doi:{"|".join(chunk_data)}&per-page={chunk_len}&select=id,doi'
     response = await orc._request(query)
     returned_ids = [result["id"] for result in response["results"]]
     assert set(returned_ids) == set(expected_ids)

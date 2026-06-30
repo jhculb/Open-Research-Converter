@@ -29,30 +29,14 @@ beforeAll(() => {
 });
 
 describe('Home Component', () => {
-    test('renders email input and buttons', () => {
+    test('renders input box and buttons', () => {
         render(<Home />);
 
-        const emailInput = screen.getByPlaceholderText('Please enter your email address');
         const clearInputButton = screen.getByText('Clear Input');
         const convertButton = screen.getByText('Convert DOIs to IDs');
 
-        expect(emailInput).toBeInTheDocument();
         expect(clearInputButton).toBeInTheDocument();
         expect(convertButton).toBeInTheDocument();
-    });
-
-    test('validates email and blocks certain emails', () => {
-        render(<Home />);
-
-        const emailInput = screen.getByPlaceholderText('Please enter your email address');
-
-        // Enter a blocked email
-        fireEvent.change(emailInput, { target: { value: 'ahsan.shahid@gesis.org' } });
-        expect(emailInput.value).toBe(''); // Blocked emails should be cleared
-
-        // Enter a valid email
-        fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-        expect(emailInput.value).toBe('test@example.com'); // Valid email should be accepted
     });
 
     test('clears input box when "Clear Input" button is clicked', () => {
@@ -76,12 +60,10 @@ describe('Home Component', () => {
 
         render(<Home />);
 
-        const emailInput = screen.getByPlaceholderText('Please enter your email address');
         const inputBox = screen.getByPlaceholderText('Please enter comma separated DOIs or upload a csv file (max. size 1 MB) containing DOIs in the first column');
         const convertButton = screen.getByText('Convert DOIs to IDs');
 
-        // Enter valid email and DOIs
-        fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+        // Enter DOIs
         fireEvent.change(inputBox, { target: { value: 'https://doi.org/10.48550/ARXIV.2406.15154, 10.7717/peerj.4375, https://doi.org/10.5210/fm.v15i7.2874' } });
 
         // Click "Convert DOIs to IDs" button
@@ -107,12 +89,10 @@ describe('Home Component', () => {
 
         render(<Home />);
 
-        const emailInput = screen.getByPlaceholderText('Please enter your email address');
         const inputBox = screen.getByPlaceholderText('Please enter comma separated DOIs or upload a csv file (max. size 1 MB) containing DOIs in the first column');
         const convertButton = screen.getByText('Convert DOIs to IDs');
 
-        // Enter valid email and DOIs
-        fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+        // Enter DOIs
         fireEvent.change(inputBox, { target: { value: 'https://doi.org/10.48550/ARXIV.2406.15154, 10.7717/peerj.4375, https://doi.org/10.5210/fm.v15i7.2874,' } });
 
         // Click "Convert DOIs to IDs" button
@@ -130,19 +110,13 @@ describe('Home Component', () => {
         // expect(errorMessage).toBeInTheDocument();
     });
 
-    test('disables "Convert DOIs to IDs" button when email or DOIs are missing', () => {
+    test('disables "Convert DOIs to IDs" button when DOIs are missing', () => {
         render(<Home />);
 
         const convertButton = screen.getByText('Convert DOIs to IDs');
 
-        // Initially, button should be disabled because no email or DOIs are provided
+        // Initially, button should be disabled because no DOIs are provided
         expect(convertButton).toBeDisabled();
-
-        // Enter email but leave input box empty
-        const emailInput = screen.getByPlaceholderText('Please enter your email address');
-        fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-
-        expect(convertButton).toBeDisabled(); // Still disabled because DOIs are missing
 
         // Enter DOIs
         const inputBox = screen.getByPlaceholderText('Please enter comma separated DOIs or upload a csv file (max. size 1 MB) containing DOIs in the first column');
@@ -151,4 +125,3 @@ describe('Home Component', () => {
         expect(convertButton).not.toBeDisabled(); // Now button should be enabled
     });
 });
-

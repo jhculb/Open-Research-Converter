@@ -48,8 +48,6 @@ def test_generate_new_job(log):
     assert orc._jobs[identifier]["input_data"] is None
     assert "output_data" in orc._jobs[identifier]
     assert orc._jobs[identifier]["output_data"] is None
-    assert "email" in orc._jobs[identifier]
-    assert orc._jobs[identifier]["email"] is None
     assert "status" in orc._jobs[identifier]
     assert orc._jobs[identifier]["status"] == "initialised"
     assert "progress" in orc._jobs[identifier]
@@ -95,15 +93,13 @@ def test_check_ready_wrong_uuid(log):
 @pytest.mark.integration
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    ["email", "data", "expected_output"],
+    ["data", "expected_output"],
     [
         [
-            "jack.culbert+orc@gesis.org",
             "https://doi.org/10.48550/ARXIV.2406.15154",
             ["https://openalex.org/W4399991117"],
         ],
         [
-            "jack.culbert+orc@gesis.org",
             ["https://doi.org/10.48550/ARXIV.2406.15154", "https://doi.org/10.7717/peerj.4375"],
             [
                 "https://openalex.org/W4399991117",
@@ -111,7 +107,6 @@ def test_check_ready_wrong_uuid(log):
             ],
         ],
         [
-            "jack.culbert+orc@gesis.org",
             [
                 "https://doi.org/10.48550/ARXIV.2406.15154",
                 "https://doi.org/10.7717/peerj.4375",
@@ -221,10 +216,10 @@ def test_check_ready_wrong_uuid(log):
         ],
     ],
 )
-async def test_init_process_sunny_day(log, email, data, expected_output):
+async def test_init_process_sunny_day(log, data, expected_output):
     orc = OpenResearchConverter(log)
     job_id = orc.generate_new_job()
-    await orc.process(job_id, data, email)
+    await orc.process(job_id, data)
     output_response, output_code = orc.return_data(job_id)
     assert output_code == 200
     output_data = output_response["output_data"]
@@ -245,13 +240,12 @@ async def test_missing_dois_tracking(log):
     """Test that DOIs not found in OpenAlex are tracked correctly."""
     orc = OpenResearchConverter(log)
     job_id = orc.generate_new_job()
-    email = "jack.culbert+orc@gesis.org"
     # Include a valid DOI and an invalid/nonexistent DOI
     data = [
         "https://doi.org/10.48550/ARXIV.2406.15154",  # Valid - exists in OpenAlex
         "https://doi.org/10.99999/this-doi-does-not-exist-12345",  # Invalid - won't be found
     ]
-    await orc.process(job_id, data, email)
+    await orc.process(job_id, data)
     output_response, output_code = orc.return_data(job_id)
     assert output_code == 200
     # Verify submitted count matches input
@@ -272,12 +266,11 @@ async def test_all_dois_found(log):
     """Test that when all DOIs are found, missing_dois is empty."""
     orc = OpenResearchConverter(log)
     job_id = orc.generate_new_job()
-    email = "jack.culbert+orc@gesis.org"
     data = [
         "https://doi.org/10.48550/ARXIV.2406.15154",
         "https://doi.org/10.7717/peerj.4375",
     ]
-    await orc.process(job_id, data, email)
+    await orc.process(job_id, data)
     output_response, output_code = orc.return_data(job_id)
     assert output_code == 200
     assert output_response["submitted_count"] == 2
@@ -313,14 +306,13 @@ async def test_invalid_dois_continue_processing(log):
     """Test that invalid DOIs are separated out and valid DOIs are still processed."""
     orc = OpenResearchConverter(log)
     job_id = orc.generate_new_job()
-    email = "jack.culbert+orc@gesis.org"
     # Mix of valid DOIs and invalid strings
     data = [
         "https://doi.org/10.48550/ARXIV.2406.15154",  # Valid - exists in OpenAlex
         "not-a-doi",  # Invalid format
         "hello world",  # Invalid format
     ]
-    await orc.process(job_id, data, email)
+    await orc.process(job_id, data)
     output_response, output_code = orc.return_data(job_id)
     assert output_code == 200
     # Only the valid DOI should be submitted for processing

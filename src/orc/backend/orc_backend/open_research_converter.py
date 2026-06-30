@@ -19,7 +19,7 @@ Example:
 
         orc = OpenResearchConverter(logger)
         job_id = orc.generate_new_job()
-        await orc.process(job_id, ["10.1038/nature12373"], "researcher@university.edu")
+        await orc.process(job_id, ["10.1038/nature12373"])
         result, status_code = orc.return_data(job_id)
 """
 
@@ -56,7 +56,6 @@ class OpenResearchConverter(OpenAlexRequester):
             await orc.process(
                 job_id,
                 "10.1038/nature12373, 10.1126/science.1231143",
-                "researcher@university.edu"
             )
             result, status = orc.return_data(job_id)
             print(f"Found {result['found_count']} of {result['submitted_count']} DOIs")
@@ -91,7 +90,6 @@ class OpenResearchConverter(OpenAlexRequester):
 
         Job Data Structure:
             - input_data: List of DOIs to process (None until data received)
-            - email: User's email for OpenAlex polite pool
             - status: One of "initialised", "ready", "complete"
             - submitted_count: Total DOIs submitted
             - found_count: DOIs successfully matched in OpenAlex
@@ -108,7 +106,6 @@ class OpenResearchConverter(OpenAlexRequester):
         self._jobs[new_job_id]["output_data"] = None
         self._jobs[new_job_id]["output_csv_data"] = None
         self._jobs[new_job_id]["lock"] = asyncio.Lock()
-        self._jobs[new_job_id]["email"] = None
         self._jobs[new_job_id]["status"] = "initialised"
         self._jobs[new_job_id]["progress"] = 0
         self._jobs[new_job_id]["task_group"] = None
@@ -119,7 +116,7 @@ class OpenResearchConverter(OpenAlexRequester):
         self._jobs[new_job_id]["invalid_dois"] = []
         return new_job_id
 
-    def _recieve_data(self, job_id: str, data: list[str], email: str):
+    def _recieve_data(self, job_id: str, data: list[str]):
         """
         Receive and store input data for a job.
 
@@ -133,7 +130,6 @@ class OpenResearchConverter(OpenAlexRequester):
             data: DOIs to process. Can be:
                 - A comma-separated string: "10.1234/abc, 10.5678/def"
                 - A list of strings: ["10.1234/abc", "10.5678/def"]
-            email: User's email address for OpenAlex polite pool.
 
         Side Effects:
             - Updates job status to "ready" if validation passes
@@ -144,50 +140,41 @@ class OpenResearchConverter(OpenAlexRequester):
             data = list(map(str.strip, data.strip(",").split(",")))
         if isinstance(data, list):
             data = list(map(str.strip, data))
-        if self._validate_input_data(job_id, data, email):
+        if self._validate_input_data(job_id, data):
             try:
                 self._jobs[job_id]["input_data"] = data
-                self._jobs[job_id]["email"] = email
                 self._jobs[job_id]["status"] = "ready"
             except Exception as err:
                 self._logger.error(err)
         else:
             self._logger.error("job_id: {job_id}: _validate_input_data failed")
 
-    def _validate_input_data(self, job_id: str, data: list[str], email: str) -> bool:
+    def _validate_input_data(self, job_id: str, data: list[str]) -> bool:
         """
         Validate all input data for a processing request.
 
-        Process Flow Step 11: Validates job ID exists, email is present and valid,
-        and DOIs are present and correctly formatted. Incorrectly formatted DOIs
-        are separated out and stored as invalid_dois; valid DOIs proceed to processing.
-
-        Performs comprehensive validation of job_id, email, and DOI data
-        to ensure the request can be processed.
+        Process Flow Step 11: Validates job ID exists and DOIs are present and
+        correctly formatted. Incorrectly formatted DOIs are separated out and
+        stored as invalid_dois; valid DOIs proceed to processing.
 
         Args:
             job_id: The UUID string identifying the job (must exist in _jobs).
             data: List of DOI strings to validate.
-            email: Email address string.
 
         Returns:
-            bool: True if job_id and email are valid and at least one valid DOI exists,
+            bool: True if job_id is valid and at least one valid DOI exists,
                 False otherwise.
 
         Note:
-            Job ID and email must be valid. For DOI data, the method now partitions
-            into valid and invalid DOIs rather than rejecting the entire request.
+            For DOI data, the method partitions into valid and invalid DOIs
+            rather than rejecting the entire request.
             Invalid DOIs are stored in the job's invalid_dois field.
         """
         job_id_is_valid = False
-        email_is_valid = False
         data_has_valid = False
         if job_id is not None:
             job_id_is_valid = self._validate_uuid(job_id)
             self._logger.debug(f"job_id: {job_id}: job:{job_id_is_valid}")
-        if email is not None:
-            email_is_valid = self._validate_email(job_id, email)
-            self._logger.debug(f"job_id: {job_id}: email:{email_is_valid}")
         if data is not None:
             valid_dois, invalid_dois = self._partition_dois(job_id, data)
             self._jobs[job_id]["invalid_dois"] = invalid_dois
@@ -198,7 +185,7 @@ class OpenResearchConverter(OpenAlexRequester):
             data.clear()
             data.extend(valid_dois)
         self._logger.debug(f"job_id: {job_id}: data_has_valid:{data_has_valid}")
-        return job_id_is_valid and email_is_valid and data_has_valid
+        return job_id_is_valid and data_has_valid
 
     def _validate_uuid(self, job_id: str) -> bool:
         """
@@ -225,34 +212,6 @@ class OpenResearchConverter(OpenAlexRequester):
                 raise KeyError(f"job_id: {job_id}: uuid {job_id} not in job keys")
         except KeyError as err:
             self._logger.error("job_id: {job_id}: uuid not in Jobs")
-            self._logger.error(err)
-            return False
-        return True
-
-    def _validate_email(self, job_id: str, email: str) -> bool:
-        """
-        Validate that an email is provided as a string.
-
-        Process Flow Step 11 (sub-step): Checks that the email is a valid string
-        for use with OpenAlex's polite pool.
-
-        Args:
-            job_id: The job identifier (for logging purposes).
-            email: The email address to validate.
-
-        Returns:
-            bool: True if email is a string, False otherwise.
-
-        Note:
-            This performs basic type checking only. Full email format validation
-            is performed on the frontend. The email is used for OpenAlex's
-            polite pool, which provides faster response times.
-        """
-        try:
-            if not isinstance(email, str):
-                raise AssertionError("email passed to _validate_email must be a string")
-        except AssertionError as err:
-            self._logger.error(f"job_id: {job_id}: email not string for uuid")
             self._logger.error(err)
             return False
         return True
@@ -391,7 +350,7 @@ class OpenResearchConverter(OpenAlexRequester):
             return True
         return False
 
-    async def process(self, job_id: str, data: str | list[str], email: str) -> None:
+    async def process(self, job_id: str, data: str | list[str]) -> None:
         """
         Process DOIs and retrieve their OpenAlex identifiers.
 
@@ -404,7 +363,6 @@ class OpenResearchConverter(OpenAlexRequester):
         Args:
             job_id: The UUID string identifying the job (from generate_new_job()).
             data: DOIs to process. Can be a comma-separated string or list of strings.
-            email: User's email for OpenAlex polite pool access.
 
         Side Effects:
             - Updates job status from "initialised" -> "ready" -> "complete"
@@ -412,17 +370,17 @@ class OpenResearchConverter(OpenAlexRequester):
 
         Example:
             >>> job_id = orc.generate_new_job()
-            >>> await orc.process(job_id, "10.1038/nature12373", "user@example.com")
+            >>> await orc.process(job_id, "10.1038/nature12373")
             >>> result, status = orc.return_data(job_id)
         """
         self._logger.info(f"job_id: {job_id}: orc: processing")
-        self._recieve_data(job_id, data, email)
+        self._recieve_data(job_id, data)
         self._logger.info(f"job_id: {job_id}: orc: data received")
         if self._check_ready(job_id):
             self._logger.info(f"job_id: {job_id}: orc: data was suitable, creating task")
             await self._process_aio(job_id)  # A OpenAlexRequester function
 
-    async def process_all(self, job_id: str, data: str | list[str], email: str) -> None:
+    async def process_all(self, job_id: str, data: str | list[str]) -> None:
         """
         Process DOIs and retrieve full OpenAlex metadata.
 
@@ -435,7 +393,6 @@ class OpenResearchConverter(OpenAlexRequester):
         Args:
             job_id: The UUID string identifying the job (from generate_new_job()).
             data: DOIs to process. Can be a comma-separated string or list of strings.
-            email: User's email for OpenAlex polite pool access.
 
         Side Effects:
             - Updates job status from "initialised" -> "ready" -> "complete"
@@ -447,7 +404,7 @@ class OpenResearchConverter(OpenAlexRequester):
             keywords, referenced_works, and many more.
         """
         self._logger.info(f"job_id: {job_id}: orc: processing")
-        self._recieve_data(job_id, data, email)
+        self._recieve_data(job_id, data)
         self._logger.info(f"job_id: {job_id}: orc: data received")
         if self._check_ready(job_id):
             self._logger.info(f"job_id: {job_id}: orc: data was suitable, creating task")

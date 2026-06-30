@@ -8,7 +8,6 @@ for bulk DOI to OpenAlex ID conversion.
 The module implements polite API usage following OpenAlex guidelines:
 - Rate limiting to max 8 concurrent requests per second
 - Exponential backoff on 429 (Too Many Requests) responses
-- Email-based polite pool access for faster response times
 
 Classes:
     OpenAlexRequester: Base class for OpenAlex API communication.
@@ -34,10 +33,11 @@ import requests
 from httpx import AsyncClient
 
 #: URL for OpenAlex API health check endpoint
-HEALTHCHECK_ADDR = "https://api.openalex.org/?mailto=jack.culbert@gesis.org"
+HEALTHCHECK_ADDR = "https://api.openalex.org/"
 
 #: Expected JSON response from a healthy OpenAlex API
-HEALTH_CHECK_RESPONSE = {"documentation_url": "https://openalex.org/rest-api", "msg": "Don't panic", "version": "0.0.1"}
+HEALTH_CHECK_RESPONSE = {"version": "0.1", "documentation_url": "/docs", "msg": "Don't panic"}
+
 
 #: OpenAlex API keys are 22-character alphanumeric strings
 _OPENALEX_API_KEY_RE = re.compile(r"^[A-Za-z0-9]{22}$")
@@ -315,7 +315,7 @@ class OpenAlexRequester:
         key_param = f"&api_key={self._api_key}" if self._api_key else ""
         try:
             response = await self._aio_client.get(HEALTHCHECK_ADDR + key_param)
-            if response.json() != HEALTH_CHECK_RESPONSE:
+            if response.json()["msg"] != HEALTH_CHECK_RESPONSE["msg"]:
                 self._logger.error("Health check failed - response not as expected")
                 return {"healthy": False, "error": "unknown"}, 200
         except requests.ConnectionError as conn_err:
@@ -333,7 +333,7 @@ class OpenAlexRequester:
         Prepare OpenAlex API request URLs for lightweight (ID-only) queries.
 
         Process Flow Step 14: Formats each chunk into OpenAlex API query with
-        filter query (works?filter=doi:DOI1|DOI2|...) and adds email to polite pool.
+        filter query (works?filter=doi:DOI1|DOI2|...).
 
         Chunks the input DOIs and constructs API URLs with the 'select' parameter
         to retrieve only doi and id fields (faster response).
@@ -353,7 +353,7 @@ class OpenAlexRequester:
             chunked_data = list(chunked_data)
             key_param = f"&api_key={self._api_key}" if self._api_key else ""
             return [
-                f"https://api.openalex.org/works?filter=doi:{'|'.join(chunks)}&per-page={chunklen}&mailto={self._jobs[job_id]['email']}&select=id,doi{key_param}"
+                f"https://api.openalex.org/works?filter=doi:{'|'.join(chunks)}&per-page={chunklen}&select=id,doi{key_param}"
                 for chunks, chunklen in chunked_data
             ]
 
@@ -366,7 +366,7 @@ class OpenAlexRequester:
         Prepare OpenAlex API request URLs for full metadata queries.
 
         Process Flow Step 14: Formats each chunk into OpenAlex API query
-        for full bibliographic data (no field selection).
+        for full bibliographic data (no field selection, no email parameter).
 
         Chunks the input DOIs and constructs API URLs that retrieve all
         available metadata fields for each work.
@@ -386,7 +386,7 @@ class OpenAlexRequester:
             chunked_data = list(chunked_data)
             key_param = f"&api_key={self._api_key}" if self._api_key else ""
             return [
-                f"https://api.openalex.org/works?filter=doi:{'|'.join(chunks)}&per-page={chunklen}&mailto={self._jobs[job_id]['email']}{key_param}"
+                f"https://api.openalex.org/works?filter=doi:{'|'.join(chunks)}&per-page={chunklen}{key_param}"
                 for chunks, chunklen in chunked_data
             ]
 
