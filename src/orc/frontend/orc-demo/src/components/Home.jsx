@@ -33,7 +33,7 @@ function Home() {
         setIsDownloadDisabled(true);
         setLimitedResult('');
         setIsDownloadAll(false);
-        let outputData = isDownloadAll ? result[0]["output_full"][0] : result[0]["output_full"];
+        let outputData = result[0]["output_full"];
         const lines = outputData.trim().split('\n');
         const header = lines[0];
         const rows = lines.slice(1).join('\n');

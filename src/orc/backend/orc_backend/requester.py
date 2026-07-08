@@ -6,7 +6,7 @@ OpenAlex API. It handles rate limiting, request chunking, and response processin
 for bulk DOI to OpenAlex ID conversion.
 
 The module implements polite API usage following OpenAlex guidelines:
-- Rate limiting to max 8 concurrent requests per second
+- Rate limiting to max 10 concurrent requests per second
 - Exponential backoff on 429 (Too Many Requests) responses
 
 Classes:
@@ -80,7 +80,7 @@ class OpenAlexRequester:
         self._logger = logging.getLogger(__name__)
         self._jobs = {}
         self._rate_limit_interval = 1
-        self._max_concurrent_per_second_aio = 8
+        self._max_concurrent_per_second_aio = 10
         self._aio_client = AsyncClient()
         raw_key = os.environ.get("OPENALEX_API_KEY")
         if raw_key is None:
@@ -122,7 +122,7 @@ class OpenAlexRequester:
             - status: Set to "complete" on success
 
         Note:
-            Uses aiometer for rate-limited concurrent requests (max 8/second).
+            Uses aiometer for rate-limited concurrent requests (max 10/second).
             Results are re-sorted to match the original input order.
         """
         oa_requests = self._prepare_chunks(job_id)
@@ -281,7 +281,7 @@ class OpenAlexRequester:
                         + "\n"
                         for aio_response in self._jobs[job_id]["aio_responses"]
                     ]
-                ),
+                )
             )
             self._logger.info(f"job_id: {job_id}: aiometer bulk csv string creation successful")
             self._jobs[job_id]["status"] = "complete"

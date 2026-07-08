@@ -44,7 +44,7 @@ const About = () => {
 
             <h6 className="headings-color"><i className="fas fa-pen me-2"></i>Want to Cite?</h6>
             <p>
-                As of release on the 16th of September 2024: This software is being submitted to <a href="https://joss.theoj.org/" target="_blank" rel="noopener noreferrer">JOSS</a>, citation details pending.
+                As of release of v1.1.0 on the 5th of November 2024: This software has been submitted to <a href="https://joss.theoj.org/" target="_blank" rel="noopener noreferrer">JOSS</a>, citation details pending.
             </p>
 
             <h6 className="headings-color"><i className="fas fa-bug me-2"></i>Report an issue</h6>

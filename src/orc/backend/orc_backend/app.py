@@ -10,10 +10,10 @@ The API enables researchers to:
 - Check API health status
 
 Endpoints:
-    GET  /              : API information page
-    GET  /healthcheck   : Check OpenAlex API connectivity
-    POST /start_processing : Convert DOIs to OpenAlex IDs
-    POST /process_all   : Convert DOIs and retrieve full OpenAlex metadata
+    GET  /api/          : API information page
+    GET  /api/healthcheck   : Check OpenAlex API connectivity
+    POST /api/start_processing : Convert DOIs to OpenAlex IDs
+    POST /api/process_all   : Convert DOIs and retrieve full OpenAlex metadata
 
 Example:
     To convert DOIs to OpenAlex IDs::
@@ -53,7 +53,7 @@ log = app.logger
 orc = OpenResearchConverter(log)
 
 
-@app.route("/", methods=["GET"])
+@api_bp.route("/", methods=["GET"])
 def hello_world():
     """
     Return the API root page.
@@ -122,8 +122,8 @@ async def start_processing():
     Process Flow Steps 6-8: Receives the API request, creates the converter
     instance, and initiates processing.
 
-    Accepts a JSON payload containing DOIs and an email address, queries the
-    OpenAlex API, and returns the corresponding OpenAlex identifiers.
+    Accepts a JSON payload containing DOIs, queries the OpenAlex API, and
+    returns the corresponding OpenAlex identifiers.
 
     Request Body:
         JSON object with the following fields:
@@ -177,10 +177,11 @@ async def start_processing():
     log.debug(f"app.py: start_processing input: job_id: {job_id}, text:{text}")
     await orc.process(job_id, text)
     log.debug(f"app.py: finished processing {job_id}")
-    response = jsonify(orc.return_data(job_id))
+    data, status_code = orc.return_data(job_id)
+    response = jsonify(data)
     response.headers.add("Access-Control-Allow-Origin", "*")
     log.debug(f"app.py: get_data response: {response}")
-    return response
+    return response, status_code
 
 
 @api_bp.route("/process_all", methods=["POST"])
@@ -233,10 +234,11 @@ async def start_processing_all():
     log.debug(f"app.py: start_processing input: job_id: {job_id}, text:{text}")
     await orc.process_all(job_id, text)
     log.debug(f"app.py: finished processing {job_id}")
-    response = jsonify(orc.return_data(job_id))
+    data, status_code = orc.return_data(job_id)
+    response = jsonify(data)
     response.headers.add("Access-Control-Allow-Origin", "*")
     log.debug(f"app.py: get_data response: {response}")
-    return response
+    return response, status_code
 
 
 app.register_blueprint(api_bp)

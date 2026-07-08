@@ -10,7 +10,7 @@ const Footer = () => {
                 <a href="https://bibliometrie.info/en/research" className="mb-0 link-color">Project Website </a> &nbsp;|&nbsp;
                 <a href="https://github.com/jhculb/Open-Research-Converter" className="mb-0 link-color">Codebase </a>
                 <p className="mb-0 text-color">E-mail:
-                    <span className="email-color ms-1"> john.culbert@gesis.org</span> &nbsp;|
+                    <span className="email-color ms-1"> jack.culbert@gesis.org</span> &nbsp;|
                     <span className="email-color ms-1"> ahsan.shahid@gesis.org</span>
                 </p>
                 <p className="mt-2">

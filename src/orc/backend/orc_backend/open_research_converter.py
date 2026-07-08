@@ -38,7 +38,7 @@ class OpenResearchConverter(OpenAlexRequester):
 
     This class manages the lifecycle of conversion jobs, including:
     - Job creation and tracking
-    - Input validation (DOIs, email)
+    - Input validation (DOIs)
     - Coordination with the OpenAlex API
     - Result formatting and retrieval
 

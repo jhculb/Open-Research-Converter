@@ -61,9 +61,7 @@ We provide here in the Open Research Coverter a tool utilising the OpenAlex API 
 ### Online
 If you wish to use the ORC without installing locally:
 1. Navigate to https://orc-demo.gesis.org
-2. Fill your the email address into the email box
-	* This is so that OpenAlex can monitor traffic, and places your requests in the "polite pool", where responses are faster and more consistent.
-3. Input your DOI data:
+2. Input your DOI data:
 	* The ORC expects a comma separated list of DOIs in the text box
 	* The ORC does not mind whether DOIs are prefaced with "https://doi.org/"
 	1. Via csv file
@@ -73,9 +71,9 @@ If you wish to use the ORC without installing locally:
 	2. Via copy and paste into the text box
 		* You can also manually copy and paste your DOI data into the text box
 	* The ORC can accept thousands of DOIs, though this may take a few minutes.
-4. Click Submit
+3. Click Submit
 	* A waiting animation should play in the right hand output box, if this flashes and then disappears your query may have been unsuccessful. Please try one more time, and then check your input.
-5. Wait for Output
+4. Wait for Output
 	* If your query is successful, then in the output box the first 50 OpenAlex IDs corresponding to your DOIs will be returned.
 	* If you have more submitted than 50 DOIs, then click "download CSV" to download a csv file with the DOI in the first column and the corresponding OpenAlex ID in the second column.
 ### Local Installation (Docker)
@@ -143,7 +141,7 @@ export OPENALEX_API_KEY=your-api-key  # Linux/macOS
 # Run the backend server on port 8001
 poetry run python -m quart --app src.orc.backend.orc_backend.app run --port 8001
 ```
-If successful, browsing to http://127.0.0.1:8001 should present a plaintext webpage with the following text: "ORC API using quart".
+If successful, browsing to http://127.0.0.1:8001 should present an HTML page with the heading: "ORC API using quart".
 
 **Frontend Setup:**
 ```bash
@@ -183,7 +181,7 @@ The ORC exposes a REST API for programmatic access. Full OpenAPI specification i
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/` | API information page |
+| GET | `/` | API information page (served directly at http://host:8001/) |
 | GET | `/api/healthcheck` | Check OpenAlex API connectivity (returns 418 if healthy) |
 | POST | `/api/start_processing` | Convert DOIs to OpenAlex IDs |
 | POST | `/api/process_all` | Convert DOIs and get full OpenAlex metadata |
@@ -193,7 +191,7 @@ The ORC exposes a REST API for programmatic access. Full OpenAPI specification i
 ```bash
 curl -X POST https://orc-demo.gesis.org/api/start_processing \
   -H "Content-Type: application/json" \
-  -d '{"email": "your@email.com", "input_data": "10.1038/nature12373, 10.1126/science.1231143"}'
+  -d '{"input_data": "10.1038/nature12373, 10.1126/science.1231143"}'
 ```
 
 ### Response Format
@@ -223,16 +221,15 @@ This section describes the complete flow from when a user submits DOIs to when r
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                              USER INTERFACE                                 │
-│  1. User enters email and DOIs (via text input or CSV upload)               │
+│  1. User enters DOIs (via text input or CSV upload)                         │
 │  2. User clicks "Submit"                                                    │
 └─────────────────────────────────────────────────────────────────────────────┘
                                       │
                                       ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                           FRONTEND (React)                                  │
-│  3. Validates email format (regex check)                                    │
-│  4. Sends POST request to /api/start_processing with email and DOI list     │
-│  5. Displays loading animation while waiting                                │
+│  3. Sends POST request to /api/start_processing with DOI list               │
+│  4. Displays loading animation while waiting                                │
 └─────────────────────────────────────────────────────────────────────────────┘
                                       │
                                       ▼
@@ -240,7 +237,7 @@ This section describes the complete flow from when a user submits DOIs to when r
 │                      BACKEND API (app.py)                                   │
 │  6. Receives request at /start_processing endpoint                          │
 │  7. Creates OpenResearchConverter instance                                  │
-│  8. Calls process() method with email and input data                        │
+│  8. Calls process() method with input data                                  │
 └─────────────────────────────────────────────────────────────────────────────┘
                                       │
                                       ▼
@@ -250,7 +247,6 @@ This section describes the complete flow from when a user submits DOIs to when r
 │  10. _receive_data() - Stores raw input in job dictionary                   │
 │  11. _validate_input_data() - Validates:                                    │
 │      • Job ID exists                                                        │
-│      • Email is present and valid                                           │
 │      • Partitions DOIs into valid and invalid (Step 11a)                    │
 │      • Invalid DOIs are stored separately and reported to the user          │
 │      • Processing continues with valid DOIs only                            │
@@ -263,7 +259,6 @@ This section describes the complete flow from when a user submits DOIs to when r
 │  13. _chunk_input_data() - Splits DOIs into chunks of 50                    │
 │  14. _prepare_chunks() - Formats each chunk into OpenAlex API query         │
 │      • Creates filter query: works?filter=doi:DOI1|DOI2|DOI3...             │
-│      • Adds email to "polite pool" for better rate limits                   │
 │  15. _process_aio() - Sends concurrent requests using aiometer              │
 │      • Respects rate limits (max 10 requests/second)                        │
 │      • Implements exponential backoff on failures                           │
@@ -339,13 +334,11 @@ Utilises Gunicorn for serving the app. Worker count and other parameters can be 
 			* _recieve_data (Step 10)
 				- Stores input data with best effort to reformat correctly
 			* _validate_input_data (Step 11)
-				- Checks job exists, email exists and is correctly formatted, and partitions DOIs into valid and invalid
+				- Checks job exists and partitions DOIs into valid and invalid
 			* _partition_dois (Step 11a)
 				- Separates input strings into valid and invalid DOIs; invalid DOIs are stored and reported, valid DOIs proceed to processing
 			* _validate_uuid
 				- Checks the UUID is in the job dictionary
-			* _validate_email
-				- Checks the email is a string. (Email regex exists on the frontend to check it is correctly formatted)
 			* _validate_data
 				- Checks the data is a list of valid dois (with or without `https://doi.org/` prefix).
 			* _doi_list_formatter (Step 12)
@@ -431,9 +424,9 @@ If you are having difficulties using the ORC locally or at [orc-demo.gesis.org](
 * Muhammad Ahsan Shahid - Frontend Developer - [ORCID](https://orcid.org/0000-0002-7274-7934), [LinkedIn](https://www.linkedin.com/in/muhammad-ahsan-shahid/), [Github](https://github.com/MAhsanShahid)
 * Philipp Mayr - Team Lead - [ORCID](https://orcid.org/0000-0002-6656-1658)
 ### Funding
-This work was funded by the Federal Ministry of Education and Research
+This work was funded by the Federal Ministry of Research, Technology and Space (BMFTR)
 via funding numbers: 16WIK2301B / 16WIK2301E, The OpenBib project. We
-acknowledge support by Federal Ministry of Education and Research, Germany under grant number 01PQ17001, the Competence Network for Bibliometrics.
+acknowledge support by the Federal Ministry of Research, Technology and Space (BMFTR), Germany under grant number 01PQ17001, the Competence Network for Bibliometrics.
 
 Jack Culbert, and Philipp Mayr received additional funding by the European Union under the Horizon Europe grant OMINO – Overcoming Multilevel INformation Overload under grant number 101086321
 ## How to Cite

@@ -32,7 +32,7 @@ describe('Footer Component', () => {
     test('renders email addresses correctly', () => {
         render(<Footer />);
 
-        const emailJohn = screen.getByText('john.culbert@gesis.org');
+        const emailJohn = screen.getByText('jack.culbert@gesis.org');
         const emailAhsan = screen.getByText('ahsan.shahid@gesis.org');
 
         expect(emailJohn).toBeInTheDocument();
