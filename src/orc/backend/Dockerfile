@@ -29,4 +29,8 @@ WORKDIR /app/src/orc/backend/orc_backend
 
 EXPOSE ${APP_PORT}
 
-ENTRYPOINT [ "poetry", "run", "gunicorn", "app:app", "--worker-class", "uvicorn.workers.UvicornWorker", "-w", "9", "-b", "0.0.0.0:8001", "--access-logfile", "/app/logs/gunicorn_access.log", "--error-logfile", "/app/logs/gunicorn_error.log", "--log-level", "debug", "--timeout", "30"]
+# Use sh -c so GUNICORN_NUM_WORKERS / GUNICORN_LOG_LEVEL from the env file are
+# honoured (the old exec-array form hardcoded 9 workers and ignored the env,
+# which caused OOM kills on memory-limited hosts). `exec` keeps gunicorn as PID 1
+# so it still receives SIGTERM for graceful shutdown.
+ENTRYPOINT ["sh", "-c", "exec poetry run gunicorn app:app --worker-class uvicorn.workers.UvicornWorker -w ${GUNICORN_NUM_WORKERS:-9} -b 0.0.0.0:8001 --access-logfile /app/logs/gunicorn_access.log --error-logfile /app/logs/gunicorn_error.log --log-level ${GUNICORN_LOG_LEVEL:-info} --timeout ${GUNICORN_TIMEOUT:-60}"]

@@ -46,7 +46,7 @@ api_bp = Blueprint("api", __name__, url_prefix="/api")
 
 gunicorn_error_logger = logging.getLogger("gunicorn.error")
 app.logger.handlers.extend(gunicorn_error_logger.handlers)
-app.logger.setLevel(logging.DEBUG)
+app.logger.setLevel(logging.INFO)
 
 log = app.logger
 

@@ -29,8 +29,7 @@ import re
 from typing import Generator
 
 import aiometer
-import requests
-from httpx import AsyncClient
+from httpx import AsyncClient, HTTPError
 
 #: URL for OpenAlex API health check endpoint
 HEALTHCHECK_ADDR = "https://api.openalex.org/"
@@ -76,7 +75,6 @@ class OpenAlexRequester:
         Sets up logging, initializes the jobs dictionary, and creates an
         async HTTP client for API communication.
         """
-        logging.basicConfig(level=logging.DEBUG)
         self._logger = logging.getLogger(__name__)
         self._jobs = {}
         self._rate_limit_interval = 1
@@ -312,26 +310,30 @@ class OpenAlexRequester:
             >>> if status == 418:
             ...     print("OpenAlex API is healthy")
         """
-        key_param = f"&api_key={self._api_key}" if self._api_key else ""
+        # HEALTHCHECK_ADDR has no query string, so the api key must start the
+        # query with "?" (using "&" produces ".../&api_key=..." which OpenAlex
+        # treats as an invalid ID lookup and returns a response with no "version").
+        key_param = f"?api_key={self._api_key}" if self._api_key else ""
         expected_api_version = "0.1"
         try:
             response = await self._aio_client.get(HEALTHCHECK_ADDR + key_param)
-            if response.json()["version"] != expected_api_version:
+            received_version = response.json()["version"]
+            if received_version != expected_api_version:
                 self._logger.error(
-                    f"Health check failed - OpenAlex API version mismatch: expected {expected_api_version}, received {response.json()['version']}"
+                    f"Health check failed - OpenAlex API version mismatch: expected {expected_api_version}, received {received_version}"
                 )
                 return {
                     "healthy": False,
-                    "error": f"OpenAlex API version mismatch: expected {expected_api_version}, received {response.json()['version']}",
+                    "error": f"OpenAlex API version mismatch: expected {expected_api_version}, received {received_version}",
                 }, 200
-        except requests.ConnectionError as conn_err:
+        except HTTPError as conn_err:
             self._logger.error("Health check failed - Connection error")
             self._logger.error(conn_err)
-            return {"healthy": False, "error": conn_err.__str__}, 200
-        except requests.JSONDecodeError as decode_err:
-            self._logger.error("Health check failed - JSON decode error")
+            return {"healthy": False, "error": str(conn_err)}, 200
+        except (KeyError, ValueError) as decode_err:
+            self._logger.error("Health check failed - unexpected OpenAlex response")
             self._logger.error(decode_err)
-            return {"healthy": False, "error": decode_err.__str__}, 200
+            return {"healthy": False, "error": str(decode_err)}, 200
         return {"healthy": True, "error": False}, 418
 
     def _prepare_chunks(self, job_id: str) -> list[str] | None:

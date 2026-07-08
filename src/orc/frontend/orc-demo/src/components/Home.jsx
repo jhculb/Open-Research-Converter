@@ -19,7 +19,11 @@ function Home() {
     const [showMissing, setShowMissing] = useState(false);
     const [invalidDois, setInvalidDois] = useState([]);
     const [showInvalid, setShowInvalid] = useState(false);
-    let apiUrl = process.env.REACT_APP_DEV_URL || 'http://localhost:8001';
+    // Default to a same-origin (relative) URL so requests are routed through the
+    // nginx reverse proxy regardless of how the host/port is forwarded to the
+    // browser. Only set REACT_APP_DEV_URL when targeting a backend on a different
+    // origin (e.g. running the frontend outside docker without the proxy).
+    let apiUrl = process.env.REACT_APP_DEV_URL || '';
     if (process.env.REACT_APP_ENV === "production") {
         apiUrl = process.env.REACT_APP_PROD_URL;
     }
@@ -33,7 +37,7 @@ function Home() {
         setIsDownloadDisabled(true);
         setLimitedResult('');
         setIsDownloadAll(false);
-        let outputData = result[0]["output_full"];
+        let outputData = result["output_full"];
         const lines = outputData.trim().split('\n');
         const header = lines[0];
         const rows = lines.slice(1).join('\n');
@@ -87,15 +91,15 @@ function Home() {
                 return response.json();  // Assuming the response is JSON
             })
             .then(result => {
-                let outputData = result[0]["output_data"];
-                setjobId(result[0]["job_id"]);
+                let outputData = result["output_data"];
+                setjobId(result["job_id"]);
                 setResult(result);
                 // Extract counter data
-                setFoundCount(result[0]["found_count"] || outputData.length);
-                setSubmittedCount(result[0]["submitted_count"] || outputData.length);
-                setMissingDois(result[0]["missing_dois"] || []);
+                setFoundCount(result["found_count"] || outputData.length);
+                setSubmittedCount(result["submitted_count"] || outputData.length);
+                setMissingDois(result["missing_dois"] || []);
                 setShowMissing(false);
-                setInvalidDois(result[0]["invalid_dois"] || []);
+                setInvalidDois(result["invalid_dois"] || []);
                 setShowInvalid(false);
                 if (outputData.length) {
                     setIsDownloadDisabled(false);
@@ -137,15 +141,15 @@ function Home() {
                 return response.json();  // Assuming the response is JSON
             })
             .then(result => {
-                setjobId(result[0]["job_id"]);
+                setjobId(result["job_id"]);
                 setResult(result);
                 // Extract counter data
-                let outputData = result[0]["output_data"] || [];
-                setFoundCount(result[0]["found_count"] || outputData.length);
-                setSubmittedCount(result[0]["submitted_count"] || outputData.length);
-                setMissingDois(result[0]["missing_dois"] || []);
+                let outputData = result["output_data"] || [];
+                setFoundCount(result["found_count"] || outputData.length);
+                setSubmittedCount(result["submitted_count"] || outputData.length);
+                setMissingDois(result["missing_dois"] || []);
                 setShowMissing(false);
-                setInvalidDois(result[0]["invalid_dois"] || []);
+                setInvalidDois(result["invalid_dois"] || []);
                 setShowInvalid(false);
                 setIsDownloadAll(true);
             })
