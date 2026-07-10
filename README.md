@@ -197,7 +197,7 @@ curl -X POST https://orc-demo.gesis.org/api/start_processing \
 ### Response Format
 
 ```json
-[{
+{
   "job_id": "uuid-string",
   "output_data": ["https://openalex.org/W2102245935", "https://openalex.org/W2015936098"],
   "output_full": "doi, oa_id\n...",
@@ -205,7 +205,7 @@ curl -X POST https://orc-demo.gesis.org/api/start_processing \
   "found_count": 2,
   "missing_dois": [],
   "invalid_dois": ["not-a-doi"]
-}]
+}
 ```
 
 The response includes:
