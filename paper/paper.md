@@ -59,7 +59,7 @@ The Open Research Converter has been used in the release of two datasets:  @culb
 
 # Acknowledgements
 
-This work was funded by the Federal Ministry of Education and Research via funding numbers: 16WIK2301B / 16WIK2301E, The [OpenBib Project](https://bibliometrie.info/en/research/) [@schmidt_2024].
+This work was funded by the Federal Ministry of Education and Research via funding numbers: 16WIK2301B / 16WIK2301E, The [OpenBib Project](https://bibliometrie.info/en/research/) [@schmidt2025data].
 We acknowledge support by Federal Ministry of Education and Research, Germany under grant number 01PQ17001, the Competence Network for Bibliometrics.
 
 Jack Culbert and Philipp Mayr received additional funding by the European Union under the Horizon Europe grant [OMINO – Overcoming Multilevel INformation Overload](https://ominoproject.eu) under grant number 101086321 [@holyst2024].
