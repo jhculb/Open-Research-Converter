@@ -20,11 +20,11 @@
   "identifier": "",
   "codeRepository": "https://github.com/jhculb/Open-Research-Converter",
   "datePublished": "2024-10-29",
-  "dateModified": "2024-10-29",
+  "dateModified": "2026-07-24",
   "dateCreated": "2024-10-29",
   "description": "The Open Research Converter is a tool designed to allow users to convert bibliometric datasets to a sharable format using OpenAlex",
   "keywords": "Reproduciblity, Scientometrics, Bibliometrics, Open Science, Reproducible Bibliometrics",
-  "license": "GPL v3.0",
+  "license": "GPL v3.0-or-later",
   "title": "Open Research Converter",
-  "version": "v1.1.0"
+  "version": "v1.1.1"
 }
