@@ -11,7 +11,7 @@ authors:
   - name: Jack H. Culbert
     corresponding: true
     orcid: 0009-0000-1581-4021
-    affiliation: 1
+    affiliation: "1, 2"
   - name: Muhammad Ahsan Shahid
     affiliation: 1
     orcid: 0000-0002-7274-7934
@@ -22,6 +22,9 @@ affiliations:
   - index: 1
     name: GESIS -- Leibniz Institute for the Social Sciences
     ror: 00hx57361
+  - index: 2
+    name: Heinrich Heine Universität Düsseldorf
+    ror: 024z2rq82
 date: 5 November 2024
 bibliography: paper.bib
 
@@ -29,7 +32,7 @@ bibliography: paper.bib
 
 # Summary
 
-The [Open Research Converter (ORC)](https://orc-demo.gesis.org/) is a tool designed to allow researchers, developers and others using bibliographic data to bulk convert their data to a shareable format utilising [OpenAlex](https://openalex.org/).
+The [Open Research Converter (ORC)](https://orc-demo.gesis.org/) is a tool designed to allow researchers, developers and others using bibliographic data to convert their data in bulk to a shareable format utilising [OpenAlex](https://openalex.org/).
 
 # Statement of need
 
@@ -55,7 +58,7 @@ The tool has been tested on datasets of 100,000 DOIs and was stable. At time of 
 
 # Research projects
 
-The Open Research Converter has been used in the release of two datasets:  @culbert_2024_10997451 which complements @gupta_2024 and @smirnova_2024_10607235 which complements @mir_2024.
+The Open Research Converter has been used in the release of two datasets: @culbert_2024_10997451 which complements @gupta_2024 and @smirnova_2024_10607235 which complements @mir_2024.
 
 # Acknowledgements
 
