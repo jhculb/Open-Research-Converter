@@ -54,7 +54,7 @@ The Open Research Converter is a containerised Python- and JavaScript-based tool
 
 The tool has been tested on datasets of 100,000 DOIs and was stable. At time of writing, a running version of the ORC can be found at [orc-demo.gesis.org](https://orc-demo.gesis.org/), and the code is released [on GitHub](https://github.com/jhculb/Open-Research-Converter) under a GPL-3.0+ license.
 
-The tool requires an OpenAlex API key to function, details of which are found [here](https://developers.openalex.org/guides/authentication).
+The tool requires an OpenAlex API key to function, details of which are found [in the Authentication & Pricing section](https://developers.openalex.org/guides/authentication) of the [OpenAlex Developers Guide](https://developers.openalex.org/).
 
 ![Homepage for the ORC.\label{fig:orc-homepage}](orc_homepage.png)
 
