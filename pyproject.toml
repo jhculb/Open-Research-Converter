@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "Open Research Converter"
-version = "1.2.0"
+version = "1.2.1"
 authors = [
     "Jack Culbert <jack.culbert@gesis.org>",
     "Ahsan Shahid <ahsan.shahid@gesis.org>",

@@ -74,7 +74,7 @@
     "Docker"
   ],
   "relatedLink": "https://orc-demo.gesis.org",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "funding": "16WIK2301E from BMBF project, 101086321 from EU Horizons project OMINO",
   "issueTracker": "https://github.com/jhculb/Open-Research-Converter/issues"
 }
