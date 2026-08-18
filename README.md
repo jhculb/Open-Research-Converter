@@ -432,6 +432,7 @@ Jack Culbert, and Philipp Mayr received additional funding by the European Union
 ## How to Cite
 
 Please cite the JOSS paper:
+
 Markdown:
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.08205/status.svg)](https://doi.org/10.21105/joss.08205)
 
