@@ -444,6 +444,7 @@ HTML:
 reStructuredText:
 .. image:: https://joss.theoj.org/papers/10.21105/joss.08205/status.svg
    :target: https://doi.org/10.21105/joss.08205
+
 ### Thanks
 Please remember to also cite the OpenAlex work:
 ```bib
