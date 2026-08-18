@@ -430,7 +430,19 @@ acknowledge support by the Federal Ministry of Research, Technology and Space (B
 
 Jack Culbert, and Philipp Mayr received additional funding by the European Union under the Horizon Europe grant OMINO – Overcoming Multilevel INformation Overload under grant number 101086321
 ## How to Cite
-As of release of v1.1.0 on the 5th of November 2024: This software has been submitted to [JOSS](https://joss.theoj.org/), citation details pending.
+
+Please cite the JOSS paper:
+Markdown:
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.08205/status.svg)](https://doi.org/10.21105/joss.08205)
+
+HTML:
+<a style="border-width:0" href="https://doi.org/10.21105/joss.08205">
+  <img src="https://joss.theoj.org/papers/10.21105/joss.08205/status.svg" alt="DOI badge" >
+</a>
+
+reStructuredText:
+.. image:: https://joss.theoj.org/papers/10.21105/joss.08205/status.svg
+   :target: https://doi.org/10.21105/joss.08205
 ### Thanks
 Please remember to also cite the OpenAlex work:
 ```bib
