@@ -1,36 +1,42 @@
-# This CITATION.cff file was generated with cffinit.
-# Visit https://bit.ly/cffinit to generate yours today!
-
-cff-version: 1.2.0
-title: Open Research Converter
-message: >-
-  If you use this software, please cite it using the
-  metadata from this file.
-type: software
+cff-version: "1.2.0"
 authors:
-  - given-names: Culbert
-    family-names: Jack H.
-    email: jack.culbert@gesis.org
-    affiliation: GESIS - Leibniz Institute for the Social Sciences
-    orcid: 'https://orcid.org/0009-0000-1581-4021'
-  - given-names: Muhammad Ahsan
-    family-names: Shahid
-    affiliation: GESIS - Leibniz Institute for the Social Sciences
-    orcid: 'https://orcid.org/0000-0002-7274-7934'
-  - given-names: Philipp
-    family-names: Mayr
-    affiliation: GESIS - Leibniz Institute for the Social Sciences
-    orcid: 'https://orcid.org/0000-0002-6656-1658'
-repository-code: 'https://github.com/jhculb/Open-Research-Converter'
-url: 'https://orc-demo.gesis.org'
-abstract: >-
-  The Open Research Converter (ORC) is a tool designed to
-  allow users to convert proprietary and licensed
-  bibliometric datasets to a shareable format through
-  OpenAlex's API.
-keywords:
-  - Reproducibility
-  - OpenAlex
-  - DOI
-  - Bibliometrics
-license: GPL-3.0-or-later
+- family-names: Culbert
+  given-names: Jack H.
+  orcid: "https://orcid.org/0009-0000-1581-4021"
+- family-names: Shahid
+  given-names: Muhammad Ahsan
+  orcid: "https://orcid.org/0000-0002-7274-7934"
+- family-names: Mayr
+  given-names: Philipp
+  orcid: "https://orcid.org/0000-0002-6656-1658"
+contact:
+- family-names: Culbert
+  given-names: Jack H.
+  orcid: "https://orcid.org/0009-0000-1581-4021"
+doi: 10.5281/zenodo.21835255
+message: If you use this software, please cite our article in the
+  Journal of Open Source Software.
+preferred-citation:
+  authors:
+  - family-names: Culbert
+    given-names: Jack H.
+    orcid: "https://orcid.org/0009-0000-1581-4021"
+  - family-names: Shahid
+    given-names: Muhammad Ahsan
+    orcid: "https://orcid.org/0000-0002-7274-7934"
+  - family-names: Mayr
+    given-names: Philipp
+    orcid: "https://orcid.org/0000-0002-6656-1658"
+  date-published: 2026-08-18
+  doi: 10.21105/joss.08205
+  issn: 2475-9066
+  issue: 124
+  journal: Journal of Open Source Software
+  publisher:
+    name: Open Journals
+  start: 8205
+  title: "ORC: The Open Research Converter"
+  type: article
+  url: "https://joss.theoj.org/papers/10.21105/joss.08205"
+  volume: 11
+title: "ORC: The Open Research Converter"

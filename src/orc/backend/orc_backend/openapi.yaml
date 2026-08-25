@@ -6,7 +6,7 @@ info:
 
     The OpenResearchConverter enables bulk conversion of bibliometric data from DOIs
     to OpenAlex identifiers, to facilitate reproducibility in scientometric research.
-  version: 1.2.0
+  version: 1.2.1
   contact:
     name: Jack Culbert
     email: jack.culbert@gesis.org

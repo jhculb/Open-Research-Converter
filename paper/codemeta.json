@@ -1,30 +1,80 @@
 {
-  "@context": "https://raw.githubusercontent.com/codemeta/codemeta/master/codemeta.jsonld",
-  "@type": "Code",
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "type": "SoftwareSourceCode",
+  "applicationCategory": "Bibliometrics",
   "author": [
     {
-      "@id": "https://orcid.org/0009-0000-1581-4021",
-      "@type": "Person",
+      "id": "https://orcid.org/0009-0000-1581-4021",
+      "type": "Person",
+      "affiliation": [
+        {
+          "type": "Organization",
+          "name": "GESIS - Leibniz Institute for the Social Sciences",
+          "id": "https://ror.org/018afyw53"
+        },
+        {
+          "type": "Organization",
+          "name": "Heinrich Heine University Düsseldorf",
+          "id": "https://ror.org/024z2rq82"
+        }
+      ],
       "email": "jack.culbert@gesis.org",
-      "name": "Jack H. Culbert",
-      "affiliation": "GESIS - Leibniz Institute for the Social Sciences"
+      "familyName": "Culbert",
+      "givenName": "Jack H."
     },
     {
-      "@id": "https://orcid.org/0000-0002-7274-7934",
-      "@type": "Person",
-      "email": "ahsan.shahid@gesis.org",
-      "name": "Muhammad Ahsan Shahid",
-      "affiliation": "GESIS - Leibniz Institute for the Social Sciences"
+      "type": "schema:Role",
+      "schema:author": "https://orcid.org/0009-0000-1581-4021",
+      "schema:roleName": "Developer"
     }
   ],
-  "identifier": "",
   "codeRepository": "https://github.com/jhculb/Open-Research-Converter",
-  "datePublished": "2024-10-29",
-  "dateModified": "2026-07-24",
+  "contributor": [
+    {
+      "id": "https://orcid.org/0000-0002-7274-7934",
+      "type": "Person",
+      "affiliation": {
+        "type": "Organization",
+        "name": "GESIS - Leibniz Institute for the Social Sciences",
+        "id": "https://ror.org/018afyw53"
+      },
+      "email": "ahsan.shahid@gesis.org",
+      "familyName": "Shahid",
+      "givenName": "Muhammad Ahsan"
+    },
+    {
+      "type": "schema:Role",
+      "contributor": "https://orcid.org/0000-0002-7274-7934",
+      "schema:roleName": "Developer"
+    }
+  ],
   "dateCreated": "2024-10-29",
-  "description": "The Open Research Converter is a tool designed to allow users to convert bibliometric datasets to a sharable format using OpenAlex",
-  "keywords": "Reproduciblity, Scientometrics, Bibliometrics, Open Science, Reproducible Bibliometrics",
-  "license": "GPL v3.0-or-later",
-  "title": "Open Research Converter",
-  "version": "v1.1.1"
+  "dateModified": "2026-07-27",
+  "datePublished": "2026-07-27",
+  "description": " The Open Research Converter (ORC) is a tool designed to allow users to convert proprietary and licensed bibliometric datasets to a shareable format through OpenAlex's API.",
+  "funder": [
+    {
+      "type": "Organization",
+      "name": "EU Horizons"
+    },
+    {
+      "type": "Organization",
+      "name": "BMBF - Bundesministerium für Bildung und Forschung"
+    }
+  ],
+  "keywords": [
+    "Open Science",
+    "Reproducibility"
+  ],
+  "license": "https://spdx.org/licenses/GPL-3.0-or-later",
+  "name": "Open Research Converter",
+  "programmingLanguage": [
+    "Python",
+    "Javascript",
+    "Docker"
+  ],
+  "relatedLink": "https://orc-demo.gesis.org",
+  "version": "1.2.1",
+  "funding": "16WIK2301E from BMBF project, 101086321 from EU Horizons project OMINO",
+  "issueTracker": "https://github.com/jhculb/Open-Research-Converter/issues"
 }

@@ -11,7 +11,7 @@ authors:
   - name: Jack H. Culbert
     corresponding: true
     orcid: 0009-0000-1581-4021
-    affiliation: 1
+    affiliation: "1, 2"
   - name: Muhammad Ahsan Shahid
     affiliation: 1
     orcid: 0000-0002-7274-7934
@@ -21,7 +21,10 @@ authors:
 affiliations:
   - index: 1
     name: GESIS -- Leibniz Institute for the Social Sciences
-    ror: 00hx57361
+    ror: 018afyw53
+  - index: 2
+    name: Heinrich Heine University Düsseldorf
+    ror: 024z2rq82
 date: 5 November 2024
 bibliography: paper.bib
 
@@ -29,7 +32,7 @@ bibliography: paper.bib
 
 # Summary
 
-The [Open Research Converter (ORC)](https://orc-demo.gesis.org/) is a tool designed to allow researchers, developers and others using bibliographic data to bulk convert their data to a shareable format utilising [OpenAlex](https://openalex.org/).
+The [Open Research Converter (ORC)](https://orc-demo.gesis.org/) is a tool designed to allow researchers, developers and others using bibliographic data to convert their data in bulk to a shareable format utilising [OpenAlex](https://openalex.org/).
 
 # Statement of need
 
@@ -37,7 +40,7 @@ Bibliometrics and in particular Scientometrics suffers from a lack of reproducib
 
 OpenAlex [@priem_openalex_2022], released in 2022, is an open-source bibliometric database compiled by [Our Research](https://ourresearch.org/) which releases its data with a maximally permissive copyright (specifically under the [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/) deed), allowing free sharing of all data. This has allowed bibliometric researchers to download and interrogate the data as they see fit, and enables sharing of data.
 
-However, dealing with OpenAlex data can be cumbersome. The methods of access are currently via the [website](https://openalex.org/), [API](https://api.openalex.org/), or a [data dump](https://docs.openalex.org/download-all-data/openalex-snapshot), each of which have associated challenges for researchers. Namely, use of the website limits the amount of information available to be displayed and may require downloading and then processing the data further to achieve the desired insights, use of the API requires a level of technical knowledge and is rate limited by OpenAlex, and the data dumps are very large (approximately 300GB at time of writing) and also require technical knowledge in the processing and interrogation of the data.
+However, dealing with OpenAlex data can be cumbersome. The methods of access are currently via the [website](https://openalex.org/), [API](https://api.openalex.org/), or a [data dump](https://docs.openalex.org/download-all-data/openalex-snapshot), each of which have associated challenges for researchers. Namely, use of the website limits the amount of information available to be displayed and may require downloading and then processing the data further to achieve the desired insights, use of the API requires a level of technical knowledge and is rate limited by OpenAlex, and the data dumps are very large (approximately 330GB compressed and 1.6TB decompressed, at time of writing) and also require technical knowledge in the processing and interrogation of the data.
 
 Easing the barrier of access to OpenAlex is a current theme of work in the bibliometrics community. For example, @massimo_2024 have created a tool in the R programming language, [openalexR](https://docs.ropensci.org/openalexR/), capable of bulk collection of OpenAlex data and processing this data from OpenAlex's JSON-based data format to a tabular format. Similarly [OpenAlex Networks](https://github.com/filipinascimento/openalexnet) [@silva_oanet] is a Python library for generation of OpenAlex datasets and processing of citation and coauthorship networks. [OpenAlexNet](https://www.nuget.org/packages/OpenAlexNet) is a C# wrapper for OpenAlex enabling searching of OpenAlex.
 
@@ -51,11 +54,13 @@ The Open Research Converter is a containerised Python- and JavaScript-based tool
 
 The tool has been tested on datasets of 100,000 DOIs and was stable. At time of writing, a running version of the ORC can be found at [orc-demo.gesis.org](https://orc-demo.gesis.org/), and the code is released [on GitHub](https://github.com/jhculb/Open-Research-Converter) under a GPL-3.0+ license.
 
+The tool requires an OpenAlex API key to function, details of which are found [in the Authentication & Pricing section](https://developers.openalex.org/guides/authentication) of the [OpenAlex Developers Guide](https://developers.openalex.org/).
+
 ![Homepage for the ORC.\label{fig:orc-homepage}](orc_homepage.png)
 
 # Research projects
 
-The Open Research Converter has been used in the release of two datasets:  @culbert_2024_10997451 which complements @gupta_2024 and @smirnova_2024_10607235 which complements @mir_2024.
+The Open Research Converter has been used in the release of two datasets: @culbert_2024_10997451 which complements @gupta_2024 and @smirnova_2024_10607235 which complements @mir_2024.
 
 # Acknowledgements
 
