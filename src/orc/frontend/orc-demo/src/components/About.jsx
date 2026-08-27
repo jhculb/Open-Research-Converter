@@ -44,7 +44,7 @@ const About = () => {
 
             <h6 className="headings-color"><i className="fas fa-pen me-2"></i>Want to Cite?</h6>
             <p>
-                As of release of v1.1.0 on the 5th of November 2024: This software has been submitted to <a href="https://joss.theoj.org/" target="_blank" rel="noopener noreferrer">JOSS</a>, citation details pending.
+                Please cite <a href="https://joss.theoj.org/papers/10.21105/joss.08205" target="_blank" rel="noopener noreferrer">the ORC paper</a>: Culbert et al., (2026). ORC: The Open Research Converter. Journal of Open Source Software, 11(124), 8205, <a href="https://doi.org/10.21105/joss.08205" target="_blank" rel="noopener noreferrer">https://doi.org/10.21105/joss.08205</a>.
             </p>
 
             <h6 className="headings-color"><i className="fas fa-bug me-2"></i>Report an issue</h6>
